@@ -1,0 +1,1 @@
+- Voir pourquoi tooltip est loin quand on est en écran réduit (on verra un jour peut-être)

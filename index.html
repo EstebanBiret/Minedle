@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="assets/boutique/pioche/pioche_diamant.webp" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" />
+    <title>Minedle</title>
+  </head>
+  <body>
+
+    <div id="background-blur"></div>
+
+    <div id="sections-container">
+
+      <div id="section-main">
+
+        <div id="parametres" class="mc-ui-box">
+          <span>Paramètres</span>
+        </div>
+
+        <div id="logo">
+          <img src="./assets/logo.png" width="100%" alt="Logo du site"/>
+        </div>
+
+        <div id="blocs-actuels-infos">
+          <span id="blocs-actuels" class="bolder green-text">0</span>
+          <span class="bolder">blocs minés</span>
+        </div>
+
+        <div id="bloc-img-container">
+          <img
+            src="./assets/blocs/pierre.webp"
+            alt=""
+            id="bloc-img"
+            draggable="false"
+          />
+        </div>
+
+        <div id="cps-infos" class="mc-ui-box">
+          <span id="bps-label">par seconde : 0</span>
+          <span id="bpc-label">par clic : 0</span>
+        </div>
+
+      </div>
+
+      <div id="section-entites" class="mc-ui-box sections-parameters">
+
+        <script id="entite-template" type="text/template">
+          <div class="mc-bar-ui entite tooltip-element disabled" onclick="achatEntite(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
+              <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
+            <div class="mid-section">
+              <p class="entite-txt">{{nom}}</p>
+              <div class="cout-info">
+                <p class="cout-text entite-txt "><span class="disabled-cost" id="{{nom}}-cout">{{cout_actuel}}</span></p> 
+                <img src="/assets/blocs/pierre.webp" alt="" class="bloc-img-entite" />
+              </div>
+            </div>
+            <div class="right-section entite-txt disabled"><span id="x-entite">x</span><span id="{{nom}}-quantite">0</span></div>
+          </div>
+        </script>
+
+        <p class="mc-label">Entités</p>
+        <div id="entites-container" class="container"></div>
+
+      </div>      
+
+      <div id="section-boutique" class="mc-ui-box sections-parameters">
+
+        <script id="boutique-template" type="text/template">
+          <div class="mc-bar-ui boutique tooltip-element disabled" onclick="achatBoutique(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
+              <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
+            <div class="mid-section">
+              <p class="entite-txt">{{nom}}</p>
+              <div class="cout-info">
+                <p class="cout-text entite-txt "><span class="disabled-cost" id="{{nom}}-cout">{{cout}}</span></p> 
+                <img src="/assets/blocs/pierre.webp" alt="" class="bloc-img-entite" />
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </script>
+
+        <p class="mc-label">Boutique</p>
+        <div id="boutique-container" class="container"></div>
+
+      </div>
+
+      <div id="section-inventaire" class="mc-ui-box sections-parameters">
+        <p class="mc-label" id="inventaire-label">Inventaire (0/36)</p>
+        <table class="grille">
+          <tbody>
+            <tr>
+              <td id="inventaire-1"></td>
+              <td id="inventaire-2"></td>
+              <td id="inventaire-3"></td>
+              <td id="inventaire-4"></td>
+              <td id="inventaire-5"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-6"></td>
+              <td id="inventaire-7"></td>
+              <td id="inventaire-8"></td>
+              <td id="inventaire-9"></td>
+              <td id="inventaire-10"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-11"></td>
+              <td id="inventaire-12"></td>
+              <td id="inventaire-13"></td>
+              <td id="inventaire-14"></td>
+              <td id="inventaire-15"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-16"></td>
+              <td id="inventaire-17"></td>
+              <td id="inventaire-18"></td>
+              <td id="inventaire-19"></td>
+              <td id="inventaire-20"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-21"></td>
+              <td id="inventaire-22"></td>
+              <td id="inventaire-23"></td>
+              <td id="inventaire-24"></td>
+              <td id="inventaire-25"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-26"></td>
+              <td id="inventaire-27"></td>
+              <td id="inventaire-28"></td>
+              <td id="inventaire-29"></td>
+              <td id="inventaire-30"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-31"></td>
+              <td id="inventaire-32"></td>
+              <td id="inventaire-33"></td>
+              <td id="inventaire-34"></td>
+              <td id="inventaire-35"></td>
+            </tr>
+            <tr>
+              <td id="inventaire-36"></td>
+            </tr>
+          </tbody>
+          
+        </table>
+
+        <p id="succes-label" class="mc-label">Succès (0/30)</p>
+        <table class="grille succes">
+          <tbody>
+            <tr>
+              <td id="succes-1"></td>              
+              <td id="succes-2"></td>    
+              <td id="succes-3"></td>           
+              <td id="succes-4"></td>             
+              <td id="succes-5"></td>            
+            </tr>
+            <tr>
+              <td id="succes-6"></td>            
+              <td id="succes-7"></td>               
+              <td id="succes-8"></td>             
+              <td id="succes-9"></td>            
+              <td id="succes-10"></td>        
+            </tr>
+            <tr>
+              <td id="succes-11"></td>            
+              <td id="succes-12"></td>            
+              <td id="succes-13"></td>          
+              <td id="succes-14"></td>            
+              <td id="succes-15"></td>              
+            </tr>
+            <tr>
+              <td id="succes-16"></td>          
+              <td id="succes-17"></td>          
+              <td id="succes-18"></td>           
+              <td id="succes-19"></td>          
+              <td id="succes-20"></td>            
+            </tr>
+            <tr>
+              <td id="succes-21"></td>            
+              <td id="succes-22"></td>            
+              <td id="succes-23"></td>              
+              <td id="succes-24"></td>             
+              <td id="succes-25"></td>           
+            </tr>
+            <tr>
+              <td id="succes-26"></td>       
+              <td id="succes-27"></td>           
+              <td id="succes-28"></td>           
+              <td id="succes-29"></td>            
+              <td id="succes-30"></td>              
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div id="credits" class="mc-ui-box">
+      <span>Crédits : 
+        <span id="surtom" class="tooltip-element" data-tooltip-title="Design" data-tooltip-content-deux="Tooltips & interfaces de coffre dans le style de Minecraft">Surtom, </span>
+        <span id="cookie-clicker" class="tooltip-element" data-tooltip-title="Gameplay" data-tooltip-content-deux="Mécanique du site inspiré du célèbre jeu 'Cookie Clicker'">Cookie Clicker</span>
+      </span>
+    </div>
+  </body>
+
+  <div id="tooltip" class="transparent">
+    <div id="tooltip-title"></div>
+    <div id="tooltip-content"></div>
+    <div id="tooltip-content-deux"></div>
+    <div id="tooltip-rendement-ratio"></div>
+  </div>
+
+  <!-- Fenêtre des paramètres ouverte -->
+  <div id="parametres-modal" class="modal">
+    <div id="parametres-modal-content" class="mc-ui-box">
+
+      <div>
+        <span class="close" onclick="fermerModalParametres()">&times;</span>
+      </div>
+
+      <div id="importer-progression" class="mc-ui-button">
+        <div class="title" onclick="importerProgression()">Importer la progression</div>
+      </div>
+      <div id="exporter-progression" class="mc-ui-button">
+        <div class="title" onclick="exporterProgression()">Exporter la progression</div>
+      </div>
+      <div id="supprimer-progression" class="mc-ui-button">
+        <div class="title" onclick="supprimerProgression()">Supprimer la progression</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Message des bonus -->
+  <div id="bonusDisplay" style="font-size: 1vw; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; display: none;"></div>
+
+  <script type="module" src="index.js"></script>
+</html>
