@@ -682,7 +682,7 @@ particle {
   }
 }
 
-#cookie-clicker {
+#cookie {
   &:hover {
     cursor: pointer;
     color: #e2a728;

@@ -816,7 +816,7 @@ document.getElementById('surtom').addEventListener('click', () => {
   window.open('https://surtom.yvelin.net/', '_blank');  
 });
 
-document.getElementById('cookie-clicker').addEventListener('click', () => {
+document.getElementById('cookie').addEventListener('click', () => {
   window.open('https://orteil.dashnet.org/cookieclicker/', '_blank');  
 });
 
