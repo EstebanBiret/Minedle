@@ -218,11 +218,11 @@ body {
 
 /* Entités */
 #section-entites {
-  margin-top: 80px!important;
+  margin-top: 60px!important;
   width: 20%;
   height: auto;
   overflow-y: auto!important;
-  max-height: 750px;
+  max-height: 84vh;
 }
 
 .bloc-img-entite {
@@ -280,8 +280,8 @@ body {
   width: 20%;
   overflow-y: auto!important;
   height: auto;
-  max-height: 750px;
-  margin-top: 80px!important;
+  max-height: 84vh;
+  margin-top: 60px!important;
 }
 
 /* Inventaire et succès */
@@ -289,8 +289,8 @@ body {
   width: 20%;
   overflow-y: auto!important;
   height: auto;
-  max-height: 750px;
-  margin-top: 80px!important;
+  max-height: 84vh;
+  margin-top: 60px!important;
 }
 
 .succes {
@@ -720,7 +720,7 @@ particle {
   #section-main {
     width: 95%!important;
     margin-left: 4vw;
-    margin-top: 100px;
+    margin-top: 100px!important;
     height: auto;
   }
 
@@ -734,10 +734,10 @@ particle {
   }
 
   #section-entites {
-    margin-top: 80px!important;
+    margin-top: 60px!important;
     width: 80%!important;
     height: auto;
-    max-height: 600px;
+    max-height: 71vh;
   }
 
   .entite-img {
@@ -762,12 +762,16 @@ particle {
     margin-left: 7vw;
     margin-bottom: 50px;
     height: auto;
+    max-height: 71vh;
+    margin-top: 0px!important;
   }
 
   #section-inventaire {
     width: 80%!important;
     margin-bottom: 50px;
     height: auto;
+    max-height: 71vh;    
+    margin-top: 0px!important;
   }
 
   .grille tbody tr td {
@@ -786,19 +790,6 @@ particle {
 }
 
 @media screen and (max-width: 650px) {
-  #cps-infos, .mc-label {
-    font-size: 10px;
-  }
-  #section-entites, #section-boutique, #section-inventaire {
-    max-height: 400px!important;
-  }
-  .grille tbody tr td {
-    width: 10vw;
-    height: 5.5vw;
-  }
-}
-
-@media screen and (max-width: 470px) {
   #sections-container {
     row-gap: 30px!important;
     column-gap: 30px!important;
@@ -829,6 +820,4 @@ particle {
   .entite-txt {
     font-size: 1vw;
   }
-
-  
 }
