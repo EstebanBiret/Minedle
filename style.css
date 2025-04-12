@@ -161,10 +161,15 @@ body {
   flex-direction: column;
   align-items: center;
   width: 25%;
-  gap: 2.5em;
-  margin-top: 130px!important;
+  gap: clamp(0.5em, 3vh, 2.5em);
+  margin-top: clamp(18vh, 10vh, 130px);
 }
-  
+
+#logo img {
+  max-height: 10vh;
+  object-fit: contain;
+}
+
 #blocs-actuels-infos {
   display: flex;
   flex-direction: column;
@@ -172,7 +177,8 @@ body {
   align-items: center;
   text-align: center;
   word-break: normal;
-  font-size: 2vw;
+  font-size: clamp(1rem, 3vh, 2.5rem);
+
   text-align: center;
 }
 
@@ -200,6 +206,8 @@ body {
 #bloc-img {
   width: 80%;
   animation: float 3s ease-in-out infinite;
+  max-height: 30vh;
+  object-fit: contain;
 }
 
 #bloc-img:hover {
@@ -212,7 +220,8 @@ body {
   gap: 8px;
   align-items: center;
   padding: 1.5vmin;
-  font-size: .9vw;
+  font-size: clamp(0.8rem, 2vh, 1.8rem);
+
   text-align: center;
 }
 
@@ -220,9 +229,8 @@ body {
 #section-entites {
   margin-top: 60px!important;
   width: 20%;
-  height: auto;
+  height: 80vh;
   overflow-y: auto!important;
-  max-height: 84vh;
 }
 
 .bloc-img-entite {
@@ -280,7 +288,7 @@ body {
   width: 20%;
   overflow-y: auto!important;
   height: auto;
-  max-height: 84vh;
+  max-height: 80vh;
   margin-top: 60px!important;
 }
 
@@ -288,8 +296,7 @@ body {
 #section-inventaire {
   width: 20%;
   overflow-y: auto!important;
-  height: auto;
-  max-height: 84vh;
+  height: 80vh;
   margin-top: 60px!important;
 }
 

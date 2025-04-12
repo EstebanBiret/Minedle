@@ -972,9 +972,6 @@ const bonus = {
         message: "Clics x777 pendant 10s",
         effect: () => {
             afficherBonus("Clics x777 pendant 10s");
-            /*setTimeout(() => {
-                supprimerBonus();
-            }, 10000);*/
         }
     },
     fullMultiplier: {
@@ -982,9 +979,6 @@ const bonus = {
         message: "Clics et production x7 pendant 45s",
         effect: () => {
             afficherBonus("Clics et production x7 pendant 45s");
-            /*setTimeout(() => {
-                supprimerBonus();
-            }, 45000);*/
         }
     }
 };
