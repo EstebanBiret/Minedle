@@ -20,10 +20,10 @@ const timeout = (div) => {
 }
 
 //sons
-const sonAchatEntite = new Audio('/assets/audio/entite.mp3');
-const sonAchatBoutique = new Audio('/assets/audio/boutique.mp3');
-const sonSuccesDebloque = new Audio('/assets/audio/succes.mp3');
-const sonPommeOr = new Audio('/assets/audio/pomme_or.mp3');
+const sonAchatEntite = new Audio('./assets/audio/entite.mp3');
+const sonAchatBoutique = new Audio('./assets/audio/boutique.mp3');
+const sonSuccesDebloque = new Audio('./assets/audio/succes.mp3');
+const sonPommeOr = new Audio('./assets/audio/pomme_or.mp3');
 sonAchatEntite.volume = 0.5;
 sonAchatBoutique.volume = 0.5;
 sonSuccesDebloque.volume = 0.5;
@@ -363,6 +363,13 @@ function majBoutique() {
       document.getElementById(`${amelioration.nom}-cout`).innerHTML = formatNombre(Math.round(amelioration.cout));
     }
   });
+
+  //afficher un message si aucune amélioration n'est disponible à l'achat
+  const messageVide = document.getElementById('boutique-vide');
+  if (messageVide) {
+    const ameliorationsVisibles = document.querySelectorAll('#boutique-container .boutique:not(.bloque)').length;
+    messageVide.style.display = ameliorationsVisibles === 0 ? 'block' : 'none';
+  }
 }
 
 /* PARTIE ENTITE */
