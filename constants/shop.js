@@ -1,10 +1,10 @@
-import { defaultBoutiqueValues } from "./defaultValues.js";
+import { defaultShopValues } from "./defaultValues.js";
 
-function creerBoutique() {
-  const boutiqueContainer = document.getElementById('boutique-container')
+function createShop() {
+  const shopContainer = document.getElementById('boutique-container')
   const template = document.getElementById('boutique-template').textContent
 
-  defaultBoutiqueValues.forEach((obj) => {
+  defaultShopValues.forEach((obj) => {
     let html = template;
 
     Object.keys(obj).forEach((key) => {
@@ -14,25 +14,25 @@ function creerBoutique() {
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = html.trim();
-    const boutiqueElement = tempDiv.firstChild;
+    const shopElement = tempDiv.firstChild;
 
-    boutiqueElement.querySelectorAll("*").forEach((child) => {
+    shopElement.querySelectorAll("*").forEach((child) => {
       child.classList.add("tooltip-element");
       child.setAttribute("data-tooltip-title", obj.nom);
       child.setAttribute("data-tooltip-content-deux", obj.description);
     });
 
-    boutiqueContainer.appendChild(boutiqueElement);
+    shopContainer.appendChild(shopElement);
   });
 }
 
-creerBoutique()
+createShop()
 
-export const boutique = [
+export const shop = [
 	{
     id: 1,
     nom: 'Doigt de Notch',
-    image: './assets/boutique/clic/clic_1.webp',
+    image: './assets/shop/click/click_1.webp',
     description: 'Les clics sont deux fois plus efficaces.',
     cout: 200,
     categorie: 'clic',
@@ -41,7 +41,7 @@ export const boutique = [
   {
     id: 2,
     nom: 'Mineur frénétique',	
-    image: './assets/boutique/clic/clic_2.webp',
+    image: './assets/shop/click/click_2.webp',
     description: 'Les clics sont deux fois plus efficaces.',
     cout: 1200,
     categorie: 'clic',
@@ -50,7 +50,7 @@ export const boutique = [
   {
     id: 3,
     nom: 'Efficacité maximale',	
-    image: './assets/boutique/clic/clic_3.webp',
+    image: './assets/shop/click/click_3.webp',
     description: 'Les clics sont deux fois plus efficaces.',
     cout: 3600,
     categorie: 'clic',
@@ -59,7 +59,7 @@ export const boutique = [
   {
     id: 4,
     nom: 'Pioche en pierre',	
-    image: './assets/boutique/pioche/pioche_pierre.webp',
+    image: './assets/shop/pickaxes/stone-pickaxe.webp',
     description: 'Les pioches sont deux fois plus efficaces.',
     cout: 100,
     categorie: 'Pioche',
@@ -68,7 +68,7 @@ export const boutique = [
   {
     id: 5,
     nom: 'Pioche en fer',	
-    image: './assets/boutique/pioche/pioche_fer.webp',
+    image: './assets/shop/pickaxes/iron-pickaxe.webp',
     description: 'Les pioches sont deux fois plus efficaces.',
     cout: 500,
     categorie: 'Pioche',
@@ -77,7 +77,7 @@ export const boutique = [
   {
     id: 6,
     nom: 'Pioche en or',	
-    image: './assets/boutique/pioche/pioche_or.webp',
+    image: './assets/shop/pickaxes/golden-pickaxe.webp',
     description: 'Les pioches sont deux fois plus efficaces.',
     cout: 5000,
     categorie: 'Pioche',
@@ -86,7 +86,7 @@ export const boutique = [
   {
     id: 7,
     nom: 'Pioche en diamant',	
-    image: './assets/boutique/pioche/pioche_diamant.webp',
+    image: './assets/shop/pickaxes/diamond-pickaxe.webp',
     description: 'Les pioches sont deux fois plus efficaces.',
     cout: 500000,
     categorie: 'Pioche',
@@ -95,7 +95,7 @@ export const boutique = [
   {
     id: 8,
     nom: 'Protection du village',	
-    image: './assets/boutique/villageois/villageois_1.webp',
+    image: './assets/shop/villager/villager_1.webp',
     description: 'Les villageois sont deux fois plus efficaces.',
     cout: 2000,
     categorie: 'Villageois',
@@ -104,7 +104,7 @@ export const boutique = [
   {
     id: 9,
     nom: 'Des émeraudes ou rien',	
-    image: './assets/boutique/villageois/villageois_2.webp',
+    image: './assets/shop/villager/villager_2.webp',
     description: 'Les villageois sont deux fois plus efficaces.',
     cout: 10000,
     categorie: 'Villageois',
@@ -113,7 +113,7 @@ export const boutique = [
   {
     id: 10,
     nom: 'Marchand douteux',
-    image: './assets/boutique/villageois/villageois_3.webp',	
+    image: './assets/shop/villager/villager_3.webp',	
     description: 'Les villageois sont deux fois plus efficaces.',
     cout: 75000,
     categorie: 'Villageois',
@@ -122,7 +122,7 @@ export const boutique = [
   {
     id: 11,
     nom: 'Volaille ardente',	
-    image: './assets/boutique/poulet/poulet_1.webp',
+    image: './assets/shop/chicken/chicken_1.webp',
     description: 'Les poulets sont deux fois plus efficaces.',
     cout: 10000,
     categorie: 'Poulet',
@@ -131,7 +131,7 @@ export const boutique = [
   {
     id: 12,
     nom: 'Basse-cour agitée',
-    image: './assets/boutique/poulet/poulet_2.webp',	
+    image: './assets/shop/chicken/chicken_2.webp',	
     description: 'Les poulets sont deux fois plus efficaces.',
     cout: 50000,
     categorie: 'Poulet',
@@ -140,7 +140,7 @@ export const boutique = [
   {
     id: 13,
     nom: 'Escadron à plumes',	
-    image: './assets/boutique/poulet/poulet_3.webp',
+    image: './assets/shop/chicken/chicken_3.webp',
     description: 'Les poulets sont deux fois plus efficaces.',
     cout: 250000,
     categorie: 'Poulet',
@@ -149,7 +149,7 @@ export const boutique = [
   {
     id: 14,
     nom: 'Braaaiiins...',	
-    image: './assets/boutique/zombie/zombie_1.webp',
+    image: './assets/shop/zombie/zombie_1.webp',
     description: 'Les zombies sont deux fois plus efficaces.',
     cout: 50000,
     categorie: 'Zombie',
@@ -158,7 +158,7 @@ export const boutique = [
   {
     id: 15,
     nom: 'Zombieland',	
-    image: './assets/boutique/zombie/zombie_2.webp',
+    image: './assets/shop/zombie/zombie_2.webp',
     description: 'Les zombies sont deux fois plus efficaces.',
     cout: 250000,
     categorie: 'Zombie',
@@ -167,7 +167,7 @@ export const boutique = [
   {
     id: 16,
     nom: 'Horde inarrêtable',	
-    image: './assets/boutique/zombie/zombie_3.webp',
+    image: './assets/shop/zombie/zombie_3.webp',
     description: 'Les zombies sont deux fois plus efficaces.',
     cout: 1250000,
     categorie: 'Zombie',
@@ -176,7 +176,7 @@ export const boutique = [
   {
     id: 17,
     nom: 'Galeries bien rodées',	
-    image: './assets/boutique/mineshaft/mineshaft_1.webp',
+    image: './assets/shop/mineshaft/mineshaft_1.webp',
     description: 'Les mineshafts sont deux fois plus efficaces.',
     cout: 250000,
     categorie: 'Mineshaft',
@@ -185,7 +185,7 @@ export const boutique = [
   {
     id: 18,
     nom: 'Vers les profondeurs',	
-    image: './assets/boutique/mineshaft/mineshaft_2.webp',
+    image: './assets/shop/mineshaft/mineshaft_2.webp',
     description: 'Les mineshafts sont deux fois plus efficaces.',
     cout: 1250000,
     categorie: 'Mineshaft',
@@ -194,7 +194,7 @@ export const boutique = [
   {
     id: 19,
     nom: 'Mines de la Moria',
-    image: './assets/boutique/mineshaft/mineshaft_3.webp',	
+    image: './assets/shop/mineshaft/mineshaft_3.webp',	
     description: 'Les mineshafts sont deux fois plus efficaces.',
     cout: 6000000,
     categorie: 'Mineshaft',
@@ -203,7 +203,7 @@ export const boutique = [
   {
     id: 20,
     nom: 'Hallucinations champêtres',	
-    image: './assets/boutique/champimeuh/champimeuh_1.webp',
+    image: './assets/shop/mooshroom/mooshroom_1.webp',
     description: 'Les champimeuh sont deux fois plus efficaces.',
     cout: 1250000,
     categorie: 'Champimeuh',
@@ -212,7 +212,7 @@ export const boutique = [
   {
     id: 21,
     nom: 'Expansion fongique',	
-    image: './assets/boutique/champimeuh/champimeuh_2.webp',
+    image: './assets/shop/mooshroom/mooshroom_2.webp',
     description: 'Les champimeuh sont deux fois plus efficaces.',
     cout: 6000000,
     categorie: 'Champimeuh',
@@ -221,7 +221,7 @@ export const boutique = [
   {
     id: 22,
     nom: 'Domination mycélienne',
-    image: './assets/boutique/champimeuh/champimeuh_3.webp',	
+    image: './assets/shop/mooshroom/mooshroom_3.webp',	
     description: 'Les champimeuh sont deux fois plus efficaces.',
     cout: 30000000,
     categorie: 'Champimeuh',
@@ -230,7 +230,7 @@ export const boutique = [
   {
     id: 23,
     nom: 'Nuée rampante',	
-    image: './assets/boutique/araignee/araignee_1.webp',
+    image: './assets/shop/spider/spider_1.webp',
     description: 'Les araignées sont deux fois plus efficaces.',
     cout: 6000000,
     categorie: 'Araignée',
@@ -239,7 +239,7 @@ export const boutique = [
   {
     id: 24,
     nom: 'Toiles perfides',	
-    image: './assets/boutique/araignee/araignee_2.webp',
+    image: './assets/shop/spider/spider_2.webp',
     description: 'Les araignées sont deux fois plus efficaces.',
     cout: 30000000,
     categorie: 'Araignée',
@@ -248,7 +248,7 @@ export const boutique = [
   {
     id: 25,
     nom: 'Terreur souterraine',	
-    image: './assets/boutique/araignee/araignee_3.webp',
+    image: './assets/shop/spider/spider_3.webp',
     description: 'Les araignées sont deux fois plus efficaces.',
     cout: 150000000,
     categorie: 'Araignée',
@@ -257,7 +257,7 @@ export const boutique = [
   {
     id: 26,
     nom: 'Neige qui cogne',	
-    image: './assets/boutique/golem_neige/golem_neige_1.webp',
+    image: './assets/shop/ice-golem/ice-golem_1.webp',
     cout: 30000000,
     categorie: 'Golem de neige',
     description: 'Les golems de neige sont deux fois plus efficaces.',
@@ -266,7 +266,7 @@ export const boutique = [
   {
     id: 27,
     nom: 'Blizzard ambulant',	
-    image: './assets/boutique/golem_neige/golem_neige_2.webp',
+    image: './assets/shop/ice-golem/ice-golem_2.webp',
     description: 'Les golems de neige sont deux fois plus efficaces.',
     cout: 150000000,
     categorie: 'Golem de neige',
@@ -275,7 +275,7 @@ export const boutique = [
   {
     id: 28,
     nom: 'Hiver nucléaire',	
-    image: './assets/boutique/golem_neige/golem_neige_3.webp',
+    image: './assets/shop/ice-golem/ice-golem_3.webp',
     description: 'Les golems de neige sont deux fois plus efficaces.',
     cout: 750000000,
     categorie: 'Golem de neige',
@@ -284,7 +284,7 @@ export const boutique = [
   {
     id: 29,
     nom: 'Ombre menaçante',	
-    image: './assets/boutique/wither/wither_1.webp',
+    image: './assets/shop/wither/wither_1.webp',
     description: 'Les withers sont deux fois plus efficaces.',
     cout: 150000000,
     categorie: 'Wither',
@@ -293,7 +293,7 @@ export const boutique = [
   {
     id: 30,
     nom: 'Triple menace',	
-    image: './assets/boutique/wither/wither_2.webp',
+    image: './assets/shop/wither/wither_2.webp',
     description: 'Les withers sont deux fois plus efficaces.',
     cout: 750000000,
     categorie: 'Wither',
@@ -302,7 +302,7 @@ export const boutique = [
   {
     id: 31,
     nom: 'Ultime destruction',	
-    image: './assets/boutique/wither/wither_3.webp',
+    image: './assets/shop/wither/wither_3.webp',
     description: 'Les withers sont deux fois plus efficaces.',
     cout: 3500000000,
     categorie: 'Wither',
@@ -311,7 +311,7 @@ export const boutique = [
   {
     id: 32,
     nom: 'Entre deux dimensions',	
-    image: './assets/boutique/portail_end/portail_end_1.webp',
+    image: './assets/shop/end-portal/end-portal_1.webp',
     description: 'Les portails de l’End sont deux fois plus efficaces.',
     cout: 1000000000,
     categorie: 'Portail de l’End',
@@ -320,7 +320,7 @@ export const boutique = [
   {
     id: 33,
     nom: 'Voyage sans retour',	
-    image: './assets/boutique/portail_end/portail_end_2.webp',
+    image: './assets/shop/end-portal/end-portal_2.webp',
     description: 'Les portails de l’End sont deux fois plus efficaces.',
     cout: 5000000000,
     categorie: 'Portail de l’End',
@@ -329,7 +329,7 @@ export const boutique = [
   {
     id: 34,
     nom: 'La Fin ?',
-    image: './assets/boutique/portail_end/portail_end_3.webp',	
+    image: './assets/shop/end-portal/end-portal_3.webp',	
     description: 'Les portails de l’End sont deux fois plus efficaces.',
     cout: 25000000000,
     categorie: 'Portail de l’End',
@@ -338,7 +338,7 @@ export const boutique = [
   {
     id: 35,
     nom: 'Verger interdit',	
-    image: './assets/boutique/pomme_or/pomme_or_1.webp',
+    image: './assets/shop/golden-apple/golden-apple_1.webp',
     description: 'Les pommes dorées apparaissent plus souvent.',
     cout: 77777,
     categorie: 'pomme_or',
@@ -347,7 +347,7 @@ export const boutique = [
   {
     id: 36,
     nom: 'Le festin de Notch',	
-    image: './assets/boutique/pomme_or/pomme_or_2.webp',
+    image: './assets/shop/golden-apple/golden-apple_2.webp',
     description: 'Les pommes dorées apparaissent plus souvent.',
     cout: 777777,
     categorie: 'pomme_or',

@@ -1,7 +1,7 @@
 import { defaultEntitiesValues } from "./defaultValues.js";
 
-function creerEntites() {
-  const entitesContainer = document.getElementById('entites-container')
+function createEntities() {
+  const entitiesContainer = document.getElementById('entites-container')
   const template = document.getElementById('entite-template').textContent
 
   defaultEntitiesValues.forEach((obj) => {
@@ -14,21 +14,21 @@ function creerEntites() {
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = html.trim();
-    const entiteElement = tempDiv.firstChild;
+    const entityElement = tempDiv.firstChild;
 
-    entiteElement.querySelectorAll("*").forEach((child) => {
+    entityElement.querySelectorAll("*").forEach((child) => {
       child.classList.add("tooltip-element");
       child.setAttribute("data-tooltip-title", obj.nom);
       child.setAttribute("data-tooltip-content", obj.description);
     });
 
-    entitesContainer.appendChild(entiteElement);
+    entitiesContainer.appendChild(entityElement);
   });
 }
 
-creerEntites()
+createEntities()
 
-export const entites = [
+export const entities = [
   {
     nom: 'Pioche',
     cout_initial: 15,
@@ -131,14 +131,14 @@ export const entites = [
   }
 ];
 
-const RATIO_ENTITE_AUGMENTATION_PRIX = 1.2;
+const PRICE_INCREASE_RATIO = 1.2;
 
-//calculer le rendement total d'une entité
-export function calculerRendement(rendement_initial, quantite) {
+// compute an entity's total yield
+export function computeYield(rendement_initial, quantite) {
   return parseFloat((rendement_initial * Math.pow(1.1, quantite)).toFixed(2));
 }
 
-//calculer le coût d'achat d'une entité en fonction de la quantité possédée
-export function calculerCout(cout_initial, quantite) {
-    return Math.floor(cout_initial * Math.pow(RATIO_ENTITE_AUGMENTATION_PRIX, quantite));
+// compute an entity's purchase cost based on the quantity owned
+export function computeCost(cout_initial, quantite) {
+    return Math.floor(cout_initial * Math.pow(PRICE_INCREASE_RATIO, quantite));
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="assets/boutique/pioche/pioche_diamant.webp" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
     <link rel="stylesheet" href="style.css?v=6" />
     <title>Minedle</title>
   </head>
@@ -20,7 +20,7 @@
         </div>
 
         <div id="logo">
-          <img src="./assets/logo.png" width="100%" alt="Logo du site"/>
+          <img src="./assets/home/logo.png" width="100%" alt="Logo du site"/>
         </div>
 
         <div id="blocs-actuels-infos">
@@ -30,7 +30,7 @@
 
         <div id="bloc-img-container">
           <img
-            src="./assets/blocs/pierre.webp"
+            src="./assets/blocks/stone.webp"
             alt=""
             id="bloc-img"
             draggable="false"
@@ -49,13 +49,13 @@
         <div id="section-entites">
 
         <script id="entite-template" type="text/template">
-          <div class="mc-bar-ui entite tooltip-element disabled" onclick="achatEntite(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
+          <div class="mc-bar-ui entite tooltip-element disabled" onclick="buyEntity(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
               <div class="cout-info">
                 <p class="cout-text entite-txt "><span class="disabled-cost" id="{{nom}}-cout">{{cout_actuel}}</span></p> 
-                <img src="./assets/blocs/pierre.webp" alt="" class="bloc-img-entite" />
+                <img src="./assets/blocks/stone.webp" alt="" class="bloc-img-entite" />
               </div>
             </div>
             <div class="right-section entite-txt disabled"><span id="x-entite">x</span><span id="{{nom}}-quantite">0</span></div>
@@ -70,13 +70,13 @@
         <div id="section-boutique">
 
         <script id="boutique-template" type="text/template">
-          <div class="mc-bar-ui boutique tooltip-element disabled" onclick="achatBoutique(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
+          <div class="mc-bar-ui boutique tooltip-element disabled" onclick="buyUpgrade(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
               <div class="cout-info">
                 <p class="cout-text entite-txt "><span class="disabled-cost" id="{{nom}}-cout">{{cout}}</span></p> 
-                <img src="./assets/blocs/pierre.webp" alt="" class="bloc-img-entite" />
+                <img src="./assets/blocks/stone.webp" alt="" class="bloc-img-entite" />
               </div>
             </div>
             <div></div>
@@ -184,29 +184,27 @@
     <div id="tooltip-rendement-ratio"></div>
   </div>
 
-  <!-- Fenêtre des paramètres ouverte -->
   <div id="parametres-modal" class="modal">
     <div id="parametres-modal-content" class="mc-ui-box">
 
       <div>
-        <span class="close" onclick="fermerModalParametres()">&times;</span>
+        <span class="close" onclick="closeSettingsModal()">&times;</span>
       </div>
 
       <div id="importer-progression" class="mc-ui-button">
-        <div class="title" onclick="importerProgression()">Importer la progression</div>
+        <div class="title" onclick="importProgress()">Importer la progression</div>
       </div>
       <div id="exporter-progression" class="mc-ui-button">
-        <div class="title" onclick="exporterProgression()">Exporter la progression</div>
+        <div class="title" onclick="exportProgress()">Exporter la progression</div>
       </div>
       <div id="supprimer-progression" class="mc-ui-button">
-        <div class="title" onclick="supprimerProgression()">Supprimer la progression</div>
+        <div class="title" onclick="deleteProgress()">Supprimer la progression</div>
       </div>
 
     </div>
   </div>
 
-  <!-- Message des bonus -->
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=4"></script>
+  <script type="module" src="index.js?v=6"></script>
 </html>
