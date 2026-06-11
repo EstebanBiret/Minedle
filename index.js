@@ -98,6 +98,24 @@ musicProgress.addEventListener('change', () => {
 
 applyMusicState();
 
+// dynamic background: the looping video fades in over the drifting image once it can play;
+// if the file is missing (or on small screens / reduced motion), the animated image stays
+const bgVideo = document.getElementById('background-video');
+
+if (window.matchMedia('(max-width: 1200px)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  bgVideo.remove();
+} else {
+  bgVideo.addEventListener('canplay', () => bgVideo.classList.add('ready'));
+  bgVideo.querySelector('source').addEventListener('error', () => bgVideo.remove());
+
+  // save battery: pause the background video while the tab is hidden
+  document.addEventListener('visibilitychange', () => {
+    if (!document.body.contains(bgVideo)) return;
+    if (document.visibilityState === 'hidden') bgVideo.pause();
+    else bgVideo.play().catch(() => {});
+  });
+}
+
 // levels
 let levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];
 let levelIndex = 0;
@@ -287,6 +305,8 @@ function updateBlocksDisplay() {
 }
 
 // format the block count for better readability
+// formats a number for display: spaces between thousands, comma decimals,
+// abbreviated from one million ("2,5 millions")
 function formatNumber(n) {
   n = Number(n);
 
@@ -304,6 +324,7 @@ function formatNumber(n) {
 
   let valeur = n.toFixed(2);
 
+  // rounding can carry over to the next unit (999 999 999.99 -> "1 milliard", not "1000 millions")
   if (parseFloat(valeur) >= 1_000 && index < suffixes.length - 1) {
     valeur = (parseFloat(valeur) / 1_000).toFixed(2);
     index++;
@@ -311,6 +332,7 @@ function formatNumber(n) {
 
   valeur = valeur.replace(/\.?0+$/, "").replace(".", ",");
 
+  // french plural starts at 2 ("1,5 million" but "2 millions")
   let suffixe = suffixes[index];
   if (parseFloat(valeur.replace(",", ".")) < 2) suffixe = suffixe.slice(0, -1);
 

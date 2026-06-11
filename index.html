@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=8" />
+    <link rel="stylesheet" href="style.css?v=9" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -27,6 +27,9 @@
   <body>
 
     <div id="background-blur"></div>
+    <video id="background-video" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1">
+      <source src="./assets/home/bg-video.mp4" type="video/mp4" />
+    </video>
 
     <div id="sections-container">
 
@@ -76,7 +79,7 @@
 
         <div id="blocs-actuels-infos">
           <span id="blocs-actuels" class="bolder green-text">0</span>
-          <span class="bolder">blocs minés</span>
+          <span class="bolder white-text">blocs minés</span>
         </div>
 
         <div id="bloc-img-container">
@@ -260,5 +263,5 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=9"></script>
+  <script type="module" src="index.js?v=10"></script>
 </html>
