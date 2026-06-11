@@ -281,39 +281,40 @@ function updateBlocksDisplay() {
   }
 
   // update the values display
-  currentBlocksText.innerHTML = formatNumber(formatNumberWithoutZeros(data.blocsActuels));
-  blocksPerSecondText.innerHTML = 'par seconde : ' + formatNumber(formatNumberWithoutZeros(bps));
-  blocksPerClickText.innerHTML = 'par clic : ' + formatNumber(formatNumberWithoutZeros(bpc));
+  currentBlocksText.innerHTML = formatNumber(data.blocsActuels);
+  blocksPerSecondText.innerHTML = 'par seconde : ' + formatNumber(bps);
+  blocksPerClickText.innerHTML = 'par clic : ' + formatNumber(bpc);
 }
 
 // format the block count for better readability
 function formatNumber(n) {
-  if (n < 1000) return n;
+  n = Number(n);
+
+  if (n < 1_000_000) {
+    return n.toLocaleString("fr-FR", { maximumFractionDigits: 2 }).replace(/[\u202F\u00A0]/g, " ");
+  }
 
   const suffixes = ["", "millions", "milliards", "billions", "billiards", "trillions", "trilliards", "quadrillions", "quadrilliards"]; // numbers up to 30 digits max
   let index = -1;
 
-  if (n < 1_000_000) {
-      return n.toLocaleString("fr-FR");
-  }
-
   while (n >= 1_000 && index < suffixes.length - 1) {
-      n /= 1_000;
-      index++;
+    n /= 1_000;
+    index++;
   }
 
   let valeur = n.toFixed(2);
-  valeur = valeur.replace(/\.?0+$/, "").replace(".", ",");
-  return valeur + " " + suffixes[index];
-}
 
-function formatNumberWithoutZeros(decimal) {
-  // if the last two decimals are 00, remove them
-  let formatted = parseFloat(decimal).toFixed(2);
-  if (formatted.endsWith(".00")) {
-    return parseInt(formatted).toString(); // if 00, show only the integer part
+  if (parseFloat(valeur) >= 1_000 && index < suffixes.length - 1) {
+    valeur = (parseFloat(valeur) / 1_000).toFixed(2);
+    index++;
   }
-  return formatted; // otherwise keep the two-decimal format
+
+  valeur = valeur.replace(/\.?0+$/, "").replace(".", ",");
+
+  let suffixe = suffixes[index];
+  if (parseFloat(valeur.replace(",", ".")) < 2) suffixe = suffixe.slice(0, -1);
+
+  return valeur + " " + suffixe;
 }
 
 // compute blocks mined per second from entities
@@ -805,7 +806,7 @@ function mineBlock(event) {
       multiplicateur = 7;
   }
 
-  div.innerHTML = `+${formatNumber(formatNumberWithoutZeros(data.bpc * data.coefficientClic * multiplicateur))}`  
+  div.innerHTML = `+${formatNumber(data.bpc * data.coefficientClic * multiplicateur)}`  
   div.style.cssText = `
   color: white; 
   position: absolute; 
@@ -1188,7 +1189,7 @@ function updateBonusDisplay() {
 function gainBlocks(percentage, x, y) {
   let gain = Math.floor(data.blocsActuels * percentage);
   const div = document.createElement('div')
-  div.innerHTML = `+${formatNumber(formatNumberWithoutZeros(gain))}`  
+  div.innerHTML = `+${formatNumber(gain)}`  
   div.style.cssText = `
   color: white; 
   position: absolute; 
