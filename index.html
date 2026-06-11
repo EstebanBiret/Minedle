@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=10" />
+    <link rel="stylesheet" href="style.css?v=11" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -241,6 +241,16 @@
     <div id="tooltip-rendement-ratio"></div>
   </div>
 
+  <div id="hors-ligne" role="alertdialog" aria-label="Gains hors-ligne">
+    <div class="mc-ui-box">
+      <p>Pendant ton absence (<span id="hors-ligne-duree"></span>),<br/>tes entités ont miné :</p>
+      <p id="hors-ligne-gain" class="green-text"></p>
+      <div class="mc-ui-button">
+        <div class="title" role="button" tabindex="0" onclick="closeOfflineModal()">Continuer</div>
+      </div>
+    </div>
+  </div>
+
   <div id="autre-onglet" role="alertdialog" aria-label="Jeu ouvert dans un autre onglet">
     <div class="mc-ui-box">
       <p>Minedle est ouvert dans un autre onglet.</p>
@@ -272,5 +282,5 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=12"></script>
+  <script type="module" src="index.js?v=13"></script>
 </html>

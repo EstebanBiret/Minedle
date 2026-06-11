@@ -1,0 +1,39 @@
+import fs from 'fs';
+const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
+
+const start = src.indexOf('function formatNumber(n) {');
+const end = src.indexOf('\n}', src.indexOf('return valeur + " " + suffixe;')) + 2;
+const formatNumber = new Function(src.slice(start, end) + '\nreturn formatNumber;')();
+
+let pass = 0, fail = 0;
+const test = (input, expected) => {
+  const actual = formatNumber(input);
+  const ok = actual === expected;
+  ok ? pass++ : fail++;
+  console.log(`  ${ok ? '✓' : '✗ ÉCHEC'} ${String(input).padEnd(14)} -> "${actual}"${ok ? '' : ` (attendu "${expected}")`}`);
+};
+
+console.log('--- Petits nombres ---');
+test(0, '0');
+test(7, '7');
+test(0.78, '0,78');
+test(853.4567, '853,46');
+
+console.log('--- Le cas de ta capture (1k -> 1M) ---');
+test(57349.05, '57 349,05');
+test(1234, '1 234');
+test(30000, '30 000');
+test(999999, '999 999');
+test('57349.05', '57 349,05');   // robustesse : entrée chaîne (ancien pipeline)
+
+console.log('--- Abréviations ---');
+test(1_000_000, '1 million');
+test(1_500_000, '1,5 million');
+test(2_500_000, '2,5 millions');
+test(999_995_000, '1 milliard');  // arrondi qui bascule d'unité
+test(1_000_000_000, '1 milliard');
+test(3_140_000_000, '3,14 milliards');
+test(7e12, '7 billions');
+
+console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
+process.exit(fail ? 1 : 0);

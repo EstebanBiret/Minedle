@@ -174,6 +174,7 @@ let bonusEndTime = 0;
 
 // retrieve data from local storage
 const DEFAULT_DATA = {
+  derniere_visite: 0,
   blocsDepuisToujours: 0,
   blocsActuels: 0,
   bpc: 1,
@@ -207,6 +208,44 @@ let appleTimer;
 
 // the sacred call
 init();
+
+// offline gains: production earned while the game was closed
+const OFFLINE_RATE = 0.5;            // fraction of the normal production earned offline
+const OFFLINE_CAP_MS = 12 * 3600000; // gains stop accumulating after 12 hours away
+const OFFLINE_MIN_MS = 60000;        // ignore absences shorter than a minute
+
+function formatDuration(ms) {
+  const minutes = Math.floor(ms / 60000);
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h} h ${String(m).padStart(2, '0')}` : `${m} min`;
+}
+
+function grantOfflineGains() {
+  if (typeof data.derniere_visite !== 'number' || data.derniere_visite <= 0) return; // first visit or older save
+
+  const elapsed = Math.min(Date.now() - data.derniere_visite, OFFLINE_CAP_MS);
+  if (elapsed < OFFLINE_MIN_MS) return;
+
+  const gain = computeGlobalYieldPerSecond() * (elapsed / 1000) * OFFLINE_RATE;
+  if (gain < 1) return;
+
+  data.blocsActuels += gain;
+  data.blocsDepuisToujours += gain;
+  saveProgress();
+
+  document.getElementById('hors-ligne-duree').innerHTML = formatDuration(elapsed);
+  document.getElementById('hors-ligne-gain').innerHTML = `+ ${formatNumber(gain)} blocs`;
+  document.getElementById('hors-ligne').style.display = 'flex';
+}
+
+function closeOfflineModal() {
+  buyEntitySound.play();
+  document.getElementById('hors-ligne').style.display = 'none';
+}
+window.closeOfflineModal = closeOfflineModal;
+
+grantOfflineGains();
 
 function init() {
   // golden apples (init() can run again on import/delete: clear any pending timer to avoid duplicate spawns)
@@ -296,6 +335,7 @@ function updateLevel() {
 // update game data in localStorage
 function saveProgress() {
   if (!tabActive) return; // frozen tab: never overwrite the active tab's save
+  data.derniere_visite = Date.now();
   localStorage.setItem('minedle-data', JSON.stringify(data));
 }
 
@@ -905,25 +945,68 @@ function refreshTooltips() {
   const tooltipYieldRatio = document.getElementById("tooltip-rendement-ratio");
   const padding = 10;
 
+  let suppressNextTap = false;
+
+  document.addEventListener("touchstart", event => {
+    if (!event.target.closest(".tooltip-element")) hideTooltip();
+  }, { passive: true });
+
   document.querySelectorAll(".tooltip-element").forEach(element => {
     element.addEventListener("mouseover", event => {
-      const { tooltipTitle: title, tooltipContent: content, tooltipContentDeux: contentDeux, tooltipYieldRatio: rendementRatio } = event.target.dataset;
-
-      tooltipTitle.innerHTML = title || "";
-      tooltipContent.innerHTML = content || "";
-      tooltipContentDeux.innerHTML = contentDeux || "";
-      tooltipYieldRatio.innerHTML = rendementRatio || "";
-
-      tooltip.classList.add("visible");
+      showTooltipFor(event.target);
       document.addEventListener("mousemove", updateTooltipPosition);
     });
 
     element.addEventListener("mouseout", () => {
-      tooltip.classList.remove("visible");
-      tooltip.classList.add("transparent");
+      hideTooltip();
       document.removeEventListener("mousemove", updateTooltipPosition);
     });
+
+    // touch devices: a long press shows the tooltip, a quick tap keeps its normal action
+    let touchTimer = null;
+
+    element.addEventListener("touchstart", event => {
+      const touch = event.touches[0];
+      const touchPoint = { pageX: touch.clientX, pageY: touch.clientY }; // clientX: the tooltip is position fixed
+      touchTimer = setTimeout(() => {
+        touchTimer = null;
+        suppressNextTap = true;
+        showTooltipFor(event.target);
+        updateTooltipPosition(touchPoint);
+      }, 450);
+    }, { passive: true });
+
+    element.addEventListener("touchmove", () => {
+      clearTimeout(touchTimer);
+      touchTimer = null;
+    }, { passive: true });
+
+    element.addEventListener("touchend", event => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+      } else if (suppressNextTap) {
+        suppressNextTap = false;
+        event.preventDefault(); // long press: block the simulated click (no accidental purchase)
+      }
+    });
   });
+
+  function showTooltipFor(target) {
+    const { tooltipTitle: title, tooltipContent: content, tooltipContentDeux: contentDeux, tooltipYieldRatio: rendementRatio } = target.dataset;
+
+    tooltipTitle.innerHTML = title || "";
+    tooltipContent.innerHTML = content || "";
+    tooltipContentDeux.innerHTML = contentDeux || "";
+    tooltipYieldRatio.innerHTML = rendementRatio || "";
+
+    tooltip.classList.add("visible");
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove("visible");
+    tooltip.classList.add("transparent");
+  }
 
   function updateTooltipPosition(event) {
     const tooltipRect = tooltip.getBoundingClientRect();
@@ -1017,6 +1100,7 @@ function isValidSaveData(fileContent) {
   }
   if (typeof d.delai_pommes_or_ms !== 'number' || d.delai_pommes_or_ms < 1000) return false;
   if (!Number.isInteger(d.niveau) || d.niveau < 0 || d.niveau > MAX_LEVEL) return false;
+  if ('derniere_visite' in d && (typeof d.derniere_visite !== 'number' || !isFinite(d.derniere_visite) || d.derniere_visite < 0)) return false; // optional field (older saves)
 
   if (![d.entites, d.boutique, d.inventaire, d.succes].every(Array.isArray)) return false;
 
@@ -1171,6 +1255,7 @@ document.getElementById('parametres').addEventListener('click', () => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     if (document.getElementById('parametres-modal').style.display === 'block') closeSettingsModal();
+    if (document.getElementById('hors-ligne').style.display === 'flex') closeOfflineModal();
     return;
   }
 
