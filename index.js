@@ -29,6 +29,75 @@ buyUpgradeSound.volume = 0.5;
 achievementUnlockedSound.volume = 0.5;
 goldenAppleSound.volume = 0.5;
 
+// ambient music
+const MUSIC_STORAGE_KEY = 'minedle-music';
+const bgMusic = new Audio('./assets/audio/bg-music.mp3');
+bgMusic.loop = true;
+bgMusic.preload = 'metadata'; // load the track duration for the progress bar
+
+let musicPrefs = JSON.parse(localStorage.getItem(MUSIC_STORAGE_KEY)) || { muted: true, volume: 0.5 };
+let musicAutoplayHooked = false;
+
+const musicSlider = document.getElementById('music-slider');
+const musicIconOn = document.getElementById('music-icon-on');
+const musicIconOff = document.getElementById('music-icon-off');
+
+// apply prefs to the audio element + UI, persist them, and (re)start playback if needed
+function applyMusicState() {
+  const audible = !musicPrefs.muted && musicPrefs.volume > 0;
+
+  bgMusic.volume = musicPrefs.muted ? 0 : musicPrefs.volume;
+  musicIconOn.style.display = audible ? '' : 'none';
+  musicIconOff.style.display = audible ? 'none' : '';
+  musicSlider.value = Math.round(musicPrefs.volume * 100);
+  localStorage.setItem(MUSIC_STORAGE_KEY, JSON.stringify(musicPrefs));
+
+  if (audible && bgMusic.paused) {
+    bgMusic.play().catch(() => {
+      // autoplay blocked by the browser: retry on the next user interaction
+      if (!musicAutoplayHooked) {
+        musicAutoplayHooked = true;
+        document.addEventListener('click', applyMusicState, { once: true });
+      }
+    });
+  }
+}
+
+document.getElementById('music-toggle').addEventListener('click', () => {
+  musicPrefs.muted = !musicPrefs.muted;
+  if (!musicPrefs.muted && musicPrefs.volume === 0) musicPrefs.volume = 0.5; // unmuting at volume 0 would stay silent
+  applyMusicState();
+});
+
+musicSlider.addEventListener('input', () => {
+  musicPrefs.volume = musicSlider.value / 100;
+  musicPrefs.muted = false; // moving the slider means the player wants to hear something
+  applyMusicState();
+});
+
+// progress bar: follows playback, draggable to seek, wraps back to 0 when the track loops
+const musicProgress = document.getElementById('music-progress');
+let isSeekingMusic = false;
+
+bgMusic.addEventListener('loadedmetadata', () => {
+  musicProgress.max = bgMusic.duration;
+});
+
+bgMusic.addEventListener('timeupdate', () => {
+  if (!isSeekingMusic) musicProgress.value = bgMusic.currentTime;
+});
+
+musicProgress.addEventListener('input', () => {
+  isSeekingMusic = true; // while dragging, stop following playback
+});
+
+musicProgress.addEventListener('change', () => {
+  bgMusic.currentTime = Number(musicProgress.value);
+  isSeekingMusic = false;
+});
+
+applyMusicState();
+
 // levels
 let levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];
 let levelIndex = 0;
@@ -722,9 +791,10 @@ function achievementNotification(id) {
 // click on the block
 function mineBlock(event) {
 
-  // click animation
-  const x = event.offsetX
-  const y = event.offsetY
+  // click animation (keyboard activation has no coordinates: use the block center)
+  const fromKeyboard = event.detail === 0;
+  const x = fromKeyboard ? blockImg.clientWidth / 2 : event.offsetX;
+  const y = fromKeyboard ? blockImg.clientHeight / 2 : event.offsetY;
   const div = document.createElement('div')
 
   // check whether a bonus is active
@@ -1028,14 +1098,29 @@ function deleteProgress(){
 function openSettingsModal() {
   buyEntitySound.play();
   document.getElementById('parametres-modal').style.display = 'block';
+  document.querySelector('#parametres-modal .close').focus();
 }
 
 function closeSettingsModal() {
   buyEntitySound.play();
   document.getElementById('parametres-modal').style.display = 'none';
+  document.getElementById('parametres').focus();
 }
 
 document.getElementById('parametres').addEventListener('click', () => {
+
+// keyboard accessibility: Enter / Space activate role="button" elements, Escape closes the settings
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    if (document.getElementById('parametres-modal').style.display === 'block') closeSettingsModal();
+    return;
+  }
+
+  if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('[role="button"]')) {
+    event.preventDefault(); // prevent the page from scrolling on Space
+    event.target.click();
+  }
+});
   openSettingsModal();
 });
 
@@ -1157,6 +1242,9 @@ function goldenAppleClick(apple) {
 function spawnGoldenApple() {
   const apple = document.createElement("div");
   apple.classList.add("pomme-or");
+  apple.setAttribute("role", "button");
+  apple.setAttribute("tabindex", "0");
+  apple.setAttribute("aria-label", "Pomme d'or");
 
   // reset the timer for the next spawn
   clearTimeout(appleTimer);
@@ -1266,6 +1354,7 @@ function pop(apple) {
 }
 
 // game loop, refreshes every hundredth of a second
+// production logic: 100 ticks per second (smooth numbers)
 setInterval(() => {
   let currentProduction = computeGlobalYieldPerSecond() / 100;
 
@@ -1274,16 +1363,26 @@ setInterval(() => {
 
   data.blocsActuels += currentProduction;
   data.blocsDepuisToujours += currentProduction;
+}, 10);
 
+// display & game state checks
+setInterval(() => {
   updateEntities();
   updateShop();
   checkLevelUp();
 
-  if(missingAchievements.length > 0) checkBlockAchievements(); // check block achievements if any remain to unlock across all categories
+  if (missingAchievements.length > 0) checkBlockAchievements(); // check block achievements if any remain to unlock across all categories
 
   updateBlocksDisplay();
-  saveProgress();
-}, 10);
+}, 50);
+
+// persistence: every 5 seconds, plus whenever the tab is hidden or closed
+setInterval(saveProgress, 5000);
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveProgress();
+});
+window.addEventListener('pagehide', saveProgress);
 
 // refresh bonuses every second
 setInterval(() => {

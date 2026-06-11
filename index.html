@@ -4,8 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=6" />
+    <link rel="stylesheet" href="style.css?v=8" />
     <title>Minedle</title>
+    <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Minedle" />
+    <meta property="og:description" content="Mine des blocs, recrute des entités et débloque des succès. Un Cookie Clicker version Minecraft !" />
+    <meta property="og:image" content="https://minedle.biret-toscano.fr/assets/home/logo.png" />
+    <meta property="og:url" content="https://minedle.biret-toscano.fr" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Minedle" />
+    <meta name="twitter:description" content="Mine des blocs, recrute des entités et débloque des succès. Un Cookie Clicker version Minecraft !" />
+    <meta name="twitter:image" content="https://minedle.biret-toscano.fr/assets/home/logo.png" />
+
+    <meta name="google-site-verification" content="eL6xRVrEx6uPTNUV9ssRISFrd_9WMI2C2YmjDni1r54" />
+    <link rel="canonical" href="https://minedle.biret-toscano.fr" />
+    <meta name="theme-color" content="#c6c6c6" />
   </head>
   <body>
 
@@ -15,8 +32,42 @@
 
       <div id="section-main">
 
-        <div id="parametres" class="mc-ui-box">
-          <span>Paramètres</span>
+        <div id="top-controls">
+          <div id="parametres" class="mc-ui-box" role="button" tabindex="0">
+            <span>Paramètres</span>
+          </div>
+
+          <div id="music-control" class="mc-ui-box">
+            <div id="music-volume-row">
+              <button id="music-toggle" type="button" aria-label="Activer ou couper la musique">
+                <svg id="music-icon-on" viewBox="0 0 11 9" shape-rendering="crispEdges" aria-hidden="true" style="display: none;">
+                  <rect x="0" y="3" width="2" height="3"/>
+                  <rect x="2" y="2" width="1" height="5"/>
+                  <rect x="3" y="1" width="1" height="7"/>
+                  <rect x="4" y="0" width="1" height="9"/>
+                  <rect x="6" y="3" width="1" height="3"/>
+                  <rect x="8" y="1" width="1" height="7"/>
+                </svg>
+                <svg id="music-icon-off" viewBox="0 0 11 9" shape-rendering="crispEdges" aria-hidden="true">
+                  <rect x="0" y="3" width="2" height="3"/>
+                  <rect x="2" y="2" width="1" height="5"/>
+                  <rect x="3" y="1" width="1" height="7"/>
+                  <rect x="4" y="0" width="1" height="9"/>
+                  <rect x="6" y="2" width="1" height="1"/>
+                  <rect x="7" y="3" width="1" height="1"/>
+                  <rect x="8" y="4" width="1" height="1"/>
+                  <rect x="9" y="5" width="1" height="1"/>
+                  <rect x="10" y="6" width="1" height="1"/>
+                  <rect x="10" y="2" width="1" height="1"/>
+                  <rect x="9" y="3" width="1" height="1"/>
+                  <rect x="7" y="5" width="1" height="1"/>
+                  <rect x="6" y="6" width="1" height="1"/>
+                </svg>
+              </button>
+              <input type="range" id="music-slider" class="mc-slider" min="0" max="100" value="50" aria-label="Volume de la musique"/>
+            </div>
+            <input type="range" id="music-progress" class="mc-slider" min="0" max="100" value="0" aria-label="Position dans la musique"/>
+          </div>
         </div>
 
         <div id="logo">
@@ -33,6 +84,9 @@
             src="./assets/blocks/stone.webp"
             alt=""
             id="bloc-img"
+            role="button"
+            tabindex="0"
+            aria-label="Miner un bloc"
             draggable="false"
           />
         </div>
@@ -49,7 +103,7 @@
         <div id="section-entites">
 
         <script id="entite-template" type="text/template">
-          <div class="mc-bar-ui entite tooltip-element disabled" onclick="buyEntity(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
+          <div class="mc-bar-ui entite tooltip-element disabled" role="button" tabindex="0" onclick="buyEntity(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
@@ -70,7 +124,7 @@
         <div id="section-boutique">
 
         <script id="boutique-template" type="text/template">
-          <div class="mc-bar-ui boutique tooltip-element disabled" onclick="buyUpgrade(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
+          <div class="mc-bar-ui boutique tooltip-element disabled" role="button" tabindex="0" onclick="buyUpgrade(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
@@ -184,21 +238,21 @@
     <div id="tooltip-rendement-ratio"></div>
   </div>
 
-  <div id="parametres-modal" class="modal">
+  <div id="parametres-modal" class="modal" role="dialog" aria-modal="true" aria-label="Paramètres">
     <div id="parametres-modal-content" class="mc-ui-box">
 
       <div>
-        <span class="close" onclick="closeSettingsModal()">&times;</span>
+        <span class="close" onclick="closeSettingsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
       </div>
 
       <div id="importer-progression" class="mc-ui-button">
-        <div class="title" onclick="importProgress()">Importer la progression</div>
+        <div class="title" onclick="importProgress()" role="button" tabindex="0">Importer la progression</div>
       </div>
       <div id="exporter-progression" class="mc-ui-button">
-        <div class="title" onclick="exportProgress()">Exporter la progression</div>
+        <div class="title" onclick="exportProgress()" role="button" tabindex="0">Exporter la progression</div>
       </div>
       <div id="supprimer-progression" class="mc-ui-button">
-        <div class="title" onclick="deleteProgress()">Supprimer la progression</div>
+        <div class="title" onclick="deleteProgress()" role="button" tabindex="0">Supprimer la progression</div>
       </div>
 
     </div>
@@ -206,5 +260,5 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=6"></script>
+  <script type="module" src="index.js?v=8"></script>
 </html>
