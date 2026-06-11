@@ -29,13 +29,29 @@ buyUpgradeSound.volume = 0.5;
 achievementUnlockedSound.volume = 0.5;
 goldenAppleSound.volume = 0.5;
 
+// single-tab flag (see the BroadcastChannel block further down)
+let tabActive = true;
+
+// safe localStorage read: a corrupted entry must never brick the game
+function readStorageJSON(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch (error) {
+    console.error(`Stored data for "${key}" is corrupted, falling back to defaults.`, error);
+    return fallback;
+  }
+}
+
 // ambient music
 const MUSIC_STORAGE_KEY = 'minedle-music';
 const bgMusic = new Audio('./assets/audio/bg-music.mp3');
 bgMusic.loop = true;
 bgMusic.preload = 'metadata'; // load the track duration for the progress bar
 
-let musicPrefs = JSON.parse(localStorage.getItem(MUSIC_STORAGE_KEY)) || { muted: true, volume: 0.5 };
+let musicPrefs = readStorageJSON(MUSIC_STORAGE_KEY, null);
+if (!musicPrefs || typeof musicPrefs.muted !== 'boolean' || typeof musicPrefs.volume !== 'number' || !(musicPrefs.volume >= 0 && musicPrefs.volume <= 1)) {
+  musicPrefs = { muted: true, volume: 0.5 };
+}
 let musicAutoplayHooked = false;
 
 const musicSlider = document.getElementById('music-slider');
@@ -116,6 +132,20 @@ if (window.matchMedia('(max-width: 1200px)').matches || window.matchMedia('(pref
   });
 }
 
+// single tab at a time: the most recently opened tab wins, older ones freeze
+// (two live tabs would silently overwrite each other's saves)
+if ('BroadcastChannel' in window) {
+  const tabChannel = new BroadcastChannel('minedle-tab');
+  tabChannel.postMessage('claim');
+
+  tabChannel.addEventListener('message', (event) => {
+    if (event.data !== 'claim' || !tabActive) return;
+    tabActive = false;
+    bgMusic.pause();
+    document.getElementById('autre-onglet').style.display = 'flex';
+  });
+}
+
 // levels
 let levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];
 let levelIndex = 0;
@@ -166,7 +196,7 @@ const DEFAULT_DATA = {
   pommes_or: 0,
   delai_pommes_or_ms: 300000 // 5min
 };
-let data = JSON.parse(localStorage.getItem('minedle-data')) || DEFAULT_DATA; // load saved data, otherwise start a new game
+let data = readStorageJSON('minedle-data', DEFAULT_DATA); // load saved data, otherwise start a new game
 if(data == DEFAULT_DATA) localStorage.setItem('minedle-data', JSON.stringify(data)); // first save
 
 let appleTimer;
@@ -261,6 +291,7 @@ function updateLevel() {
 
 // update game data in localStorage
 function saveProgress() {
+  if (!tabActive) return; // frozen tab: never overwrite the active tab's save
   localStorage.setItem('minedle-data', JSON.stringify(data));
 }
 
@@ -1263,6 +1294,9 @@ function goldenAppleClick(apple) {
 }
 
 function spawnGoldenApple() {
+  // never two apples at once: a new spawn replaces any apple still on screen
+  document.querySelectorAll('.pomme-or').forEach(a => a.remove());
+
   const apple = document.createElement("div");
   apple.classList.add("pomme-or");
   apple.setAttribute("role", "button");
@@ -1281,16 +1315,22 @@ function spawnGoldenApple() {
 
   document.body.appendChild(apple);
 
-  let vieTotale = 55 * 60;
-  let debutVie = 20 * 60;
-  let vieAuPrime = 15 * 60;
-  let finVie = 20 * 60;
-  let vie = vieTotale;
+  // lifetime measured in real time: frame counting freezes in background tabs
+  // and varies with the screen refresh rate (constants are 60 fps frame equivalents)
+  const vieTotale = 55 * 60;
+  const debutVie = 20 * 60;
+  const vieAuPrime = 15 * 60;
+  const finVie = 20 * 60;
+  const naissance = performance.now();
 
   let taille = 1.6;
-  let rotationAngle = Math.random() * 360;
+  let rotationInitiale = Math.random() * 360;
 
-  function updateApple() {
+  function updateApple(now) {
+      if (!apple.isConnected) return; // clicked or replaced: stop animating
+
+      const vie = vieTotale - (now - naissance) * 60 / 1000;
+
       if (vie > 0) {
           let courbe;
           if (vie > vieAuPrime + finVie) {
@@ -1306,11 +1346,9 @@ function spawnGoldenApple() {
               apple.style.opacity = progres;
           }
 
-          rotationAngle += .5;
-          let rotation = rotationAngle;
+          let rotation = rotationInitiale + (now - naissance) * 30 / 1000; // 0.5 deg/frame at 60 fps = 30 deg/s
           let echelle = taille * courbe;
           apple.style.transform = `rotate(${rotation}deg) scale(${echelle})`;
-          vie--;
           requestAnimationFrame(updateApple);
       } else {
         apple.remove();
@@ -1319,7 +1357,7 @@ function spawnGoldenApple() {
 
   // so the apple can be clicked boldly, fluidly and assertively
   apple.addEventListener("click", () => goldenAppleClick(apple));
-  updateApple();
+  requestAnimationFrame(updateApple);
 }
 
 function createParticle(x, y) {
