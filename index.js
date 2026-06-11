@@ -121,8 +121,12 @@ const bgVideo = document.getElementById('background-video');
 if (window.matchMedia('(max-width: 1200px)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   bgVideo.remove();
 } else {
-  bgVideo.addEventListener('canplay', () => bgVideo.classList.add('ready'));
+  const markVideoReady = () => bgVideo.classList.add('ready');
+  bgVideo.addEventListener('canplay', markVideoReady);
+  if (bgVideo.readyState >= 3) markVideoReady(); // cached video: canplay may have fired before this script ran
+
   bgVideo.querySelector('source').addEventListener('error', () => bgVideo.remove());
+  if (bgVideo.networkState === 3) bgVideo.remove(); // source selection already failed before this script ran
 
   // save battery: pause the background video while the tab is hidden
   document.addEventListener('visibilitychange', () => {
