@@ -20,7 +20,7 @@ export const succes = [
 
     { id: 17, nom: "Fana des Pioches", description: "Vous avez acheté 50 Pioches.", image: "./assets/success/17.webp", categorie: "Pioche", seuil: 50 },
     { id: 18, nom: "Négociant", description: "Vous avez acheté 50 Villageois.", image: "./assets/success/18.png", categorie: "Villageois", seuil: 50 },
-    { id: 19, nom: "Colonel Poulet", description: "Vous avez acheté 50 Poulets.", image: "./assets/success/19.png", categorie: "Poulet", seuil: 50 },
+    { id: 19, nom: "Colonel Sanders", description: "Vous avez acheté 50 Poulets.", image: "./assets/success/19.png", categorie: "Poulet", seuil: 50 },
     { id: 20, nom: "Apocalypse Zombie", description: "Vous avez acheté 50 Zombies.", image: "./assets/success/20.png", categorie: "Zombie", seuil: 50 },
     { id: 21, nom: "Explorateur de mines", description: "Vous avez acheté 50 Mineshafts.", image: "./assets/success/21.webp", categorie: "Mineshaft", seuil: 50 },
     { id: 22, nom: "Ranch à Champimeuh", description: "Vous avez acheté 50 Champimeuh.", image: "./assets/success/22.png", categorie: "Champimeuh", seuil: 50 },
@@ -34,5 +34,5 @@ export const succes = [
     { id: 28, nom: "Visite à un ami", description: "Vous avez visité le Saint Surtom !", image: "./assets/success/28.png", categorie: "surtom", seuil: 0 },
 
     { id: 29, nom: "Fruits défendus", description: "Vous avez cliqué sur 3 pommes d'or.", image: "./assets/success/29.webp", categorie: "pomme_or", seuil: 3 },
-    { id: 30, nom: "Banquet royal", description: "Vous avez cliqué sur 10 pommes d'or.", image: "./assets/success/30.webp", categorie: "pomme_or", seuil: 10 }
+    { id: 30, nom: "Banquet royal", description: "Vous avez cliqué sur 7 pommes d'or.", image: "./assets/success/30.webp", categorie: "pomme_or", seuil: 7 }
 ];

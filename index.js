@@ -31,6 +31,7 @@ goldenAppleSound.volume = 0.5;
 
 // single-tab flag (see the BroadcastChannel block further down)
 let tabActive = true;
+let lastPlaytimeTick = Date.now(); // session start, used to accumulate playtime
 
 // safe localStorage read: a corrupted entry must never brick the game
 function readStorageJSON(key, fallback) {
@@ -175,6 +176,7 @@ let bonusEndTime = 0;
 // retrieve data from local storage
 const DEFAULT_DATA = {
   derniere_visite: 0,
+  temps_de_jeu_ms: 0,
   blocsDepuisToujours: 0,
   blocsActuels: 0,
   bpc: 1,
@@ -246,6 +248,37 @@ function closeOfflineModal() {
 window.closeOfflineModal = closeOfflineModal;
 
 grantOfflineGains();
+
+// stats modal
+function openStatsModal() {
+  buyEntitySound.play();
+
+  const totalEntities = data.entites.reduce((sum, e) => sum + e.quantite, 0);
+  // adaptive precision: a real but small manual share must not display as "0 %"
+  const share = data.blocsDepuisToujours > 0 ? (100 * data.blocsMinesAvecClics / data.blocsDepuisToujours) : 0;
+  const shareText = share >= 10 ? String(Math.round(share)) : share >= 0.1 ? share.toFixed(1).replace('.', ',') : share > 0 ? '< 0,1' : '0';
+
+  document.getElementById('stat-blocs-total').innerHTML = formatNumber(data.blocsDepuisToujours);
+  document.getElementById('stat-blocs-clics').innerHTML = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
+  document.getElementById('stat-bps').innerHTML = `${formatNumber(computeGlobalYieldPerSecond())} / s`;
+  document.getElementById('stat-pommes').innerHTML = formatNumber(data.pommes_or);
+  document.getElementById('stat-temps').innerHTML = formatDuration(data.temps_de_jeu_ms || 0);
+  document.getElementById('stat-entites').innerHTML = formatNumber(totalEntities);
+  document.getElementById('stat-ameliorations').innerHTML = `${data.inventaire.length} / ${shop.length}`;
+  document.getElementById('stat-succes').innerHTML = `${data.succes.length} / ${succes.length}`;
+
+  document.getElementById('stats-modal').style.display = 'block';
+  document.querySelector('#stats-modal .close').focus();
+}
+
+function closeStatsModal() {
+  buyEntitySound.play();
+  document.getElementById('stats-modal').style.display = 'none';
+  document.getElementById('stats-button').focus();
+}
+
+window.openStatsModal = openStatsModal;
+window.closeStatsModal = closeStatsModal;
 
 function init() {
   // golden apples (init() can run again on import/delete: clear any pending timer to avoid duplicate spawns)
@@ -335,7 +368,10 @@ function updateLevel() {
 // update game data in localStorage
 function saveProgress() {
   if (!tabActive) return; // frozen tab: never overwrite the active tab's save
-  data.derniere_visite = Date.now();
+  const nowTs = Date.now();
+  data.temps_de_jeu_ms = (data.temps_de_jeu_ms || 0) + (nowTs - lastPlaytimeTick); // older saves may lack the field
+  lastPlaytimeTick = nowTs;
+  data.derniere_visite = nowTs;
   localStorage.setItem('minedle-data', JSON.stringify(data));
 }
 
@@ -1101,6 +1137,7 @@ function isValidSaveData(fileContent) {
   if (typeof d.delai_pommes_or_ms !== 'number' || d.delai_pommes_or_ms < 1000) return false;
   if (!Number.isInteger(d.niveau) || d.niveau < 0 || d.niveau > MAX_LEVEL) return false;
   if ('derniere_visite' in d && (typeof d.derniere_visite !== 'number' || !isFinite(d.derniere_visite) || d.derniere_visite < 0)) return false; // optional field (older saves)
+  if ('temps_de_jeu_ms' in d && (typeof d.temps_de_jeu_ms !== 'number' || !isFinite(d.temps_de_jeu_ms) || d.temps_de_jeu_ms < 0)) return false; // optional field (older saves)
 
   if (![d.entites, d.boutique, d.inventaire, d.succes].every(Array.isArray)) return false;
 
@@ -1255,6 +1292,7 @@ document.getElementById('parametres').addEventListener('click', () => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     if (document.getElementById('parametres-modal').style.display === 'block') closeSettingsModal();
+    if (document.getElementById('stats-modal').style.display === 'block') closeStatsModal();
     if (document.getElementById('hors-ligne').style.display === 'flex') closeOfflineModal();
     return;
   }
@@ -1267,12 +1305,9 @@ document.addEventListener('keydown', (event) => {
   openSettingsModal();
 });
 
-document.onkeydown = function(evt) {
-  if (evt.key === "Escape") closeSettingsModal();
-}
-
 window.onclick = function(event) {
   if (event.target === document.getElementById('parametres-modal')) closeSettingsModal();
+  if (event.target === document.getElementById('stats-modal')) closeStatsModal();
 }
 
 /* GOLDEN APPLES */ 

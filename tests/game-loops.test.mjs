@@ -62,13 +62,18 @@ const kStart = src.indexOf('// keyboard accessibility');
 const kEnd = src.indexOf('\n});', kStart) + 4;
 const kbdCode = src.slice(kStart, kEnd);
 
-let kbdHandler, closeCalls = 0;
-const modal = { style: { display: 'none' } };
+let kbdHandler, closeCalls = 0, closeStatsCalls = 0, closeOfflineCalls = 0;
+const modals = {
+  'parametres-modal': { style: { display: 'none' } },
+  'stats-modal': { style: { display: 'none' } },
+  'hors-ligne': { style: { display: 'none' } },
+};
 const docMock2 = {
   addEventListener: (ev, fn) => kbdHandler = fn,
-  getElementById: () => modal,
+  getElementById: id => modals[id],
 };
-new Function('document', 'closeSettingsModal', kbdCode)(docMock2, () => closeCalls++);
+new Function('document', 'closeSettingsModal', 'closeStatsModal', 'closeOfflineModal', kbdCode)(
+  docMock2, () => closeCalls++, () => closeStatsCalls++, () => closeOfflineCalls++);
 
 function fakeEvent(key, isButton) {
   return {
@@ -87,10 +92,14 @@ test('Espace sur role=button : clic déclenché', ev.clicked, 1);
 ev = fakeEvent('Enter', false); ev.target.click = () => ev.clicked++; kbdHandler(ev);
 test('Enter ailleurs : aucun clic', [ev.clicked, ev.prevented], [0, false]);
 ev = fakeEvent('Escape', false); kbdHandler(ev);
-test('Escape modale fermée : closeSettingsModal PAS appelé', closeCalls, 0);
-modal.style.display = 'block';
+test('Escape, tout fermé : aucun close appelé', [closeCalls, closeStatsCalls, closeOfflineCalls], [0, 0, 0]);
+modals['parametres-modal'].style.display = 'block';
 ev = fakeEvent('Escape', false); kbdHandler(ev);
-test('Escape modale ouverte : closeSettingsModal appelé', closeCalls, 1);
+test('Escape, paramètres ouverte : closeSettingsModal seul', [closeCalls, closeStatsCalls], [1, 0]);
+modals['parametres-modal'].style.display = 'none';
+modals['stats-modal'].style.display = 'block';
+ev = fakeEvent('Escape', false); kbdHandler(ev);
+test('Escape, stats ouverte : closeStatsModal appelé', closeStatsCalls, 1);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

@@ -1,6 +1,8 @@
-# 🪨 Minecraft Clicker
+# 🪨 Minedle
 
-Un idle game inspiré de Cookie Clicker, dans l’univers de Minecraft. Clique pour miner, améliore ta production, débloque des succès et attrape des pommes d’or pour des bonus temporaires !
+![Tests](https://github.com/EstebanBiret/Minedle/actions/workflows/tests.yml/badge.svg)
+
+Un idle game inspiré de Cookie Clicker, dans l’univers de Minecraft. Clique pour miner, améliore ta production, débloque des succès et attrape des pommes d’or pour des bonus !
 
 🔗 [Jouer](https://minedle.biret-toscano.fr)
 

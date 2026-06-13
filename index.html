@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=11" />
+    <link rel="stylesheet" href="style.css?v=12" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -70,6 +70,9 @@
               <input type="range" id="music-slider" class="mc-slider" min="0" max="100" value="50" aria-label="Volume de la musique"/>
             </div>
             <input type="range" id="music-progress" class="mc-slider" min="0" max="100" value="0" aria-label="Position dans la musique"/>
+          </div>
+          <div id="stats-button" class="mc-ui-box" role="button" tabindex="0" onclick="openStatsModal()">
+            <span>Stats</span>
           </div>
         </div>
 
@@ -280,7 +283,26 @@
     </div>
   </div>
 
+  <div id="stats-modal" class="modal" role="dialog" aria-modal="true" aria-label="Statistiques">
+    <div id="stats-modal-content" class="mc-ui-box">
+      <span class="close" onclick="closeStatsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <p id="stats-title">Statistiques</p>
+
+      <div id="stats-list">
+        <div class="stat-row"><span class="stat-label">Blocs minés au total</span><span id="stat-blocs-total" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">... dont à la main</span><span id="stat-blocs-clics" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Production actuelle</span><span id="stat-bps" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Pommes d'or attrapées</span><span id="stat-pommes" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Temps de jeu</span><span id="stat-temps" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Entités recrutées</span><span id="stat-entites" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Améliorations achetées</span><span id="stat-ameliorations" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Succès débloqués</span><span id="stat-succes" class="green-text"></span></div>
+      </div>
+
+    </div>
+  </div>
+
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=13"></script>
+  <script type="module" src="index.js?v=14"></script>
 </html>

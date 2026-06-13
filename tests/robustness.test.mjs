@@ -68,8 +68,9 @@ const sStart = src.indexOf('function saveProgress()');
 const sCode = src.slice(sStart, src.indexOf('\n}', sStart) + 2);
 function runSave(active) {
   const writes = [];
-  new Function('tabActive', 'localStorage', 'data', sCode + '\nsaveProgress();')(
-    active, { setItem: (k, v) => writes.push(k) }, { x: 1 });
+  new Function('tabActive', 'localStorage', 'data', 'Date',
+    'let lastPlaytimeTick = 0;\n' + sCode + '\nsaveProgress();')(
+    active, { setItem: (k, v) => writes.push(k) }, { x: 1 }, { now: () => 1000 });
   return writes.length;
 }
 test('onglet actif : écrit', runSave(true), 1);
