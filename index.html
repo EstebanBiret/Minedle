@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=12" />
+    <link rel="stylesheet" href="style.css?v=13" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -36,8 +36,8 @@
       <div id="section-main">
 
         <div id="top-controls">
-          <div id="parametres" class="mc-ui-box" role="button" tabindex="0">
-            <span>Paramètres</span>
+          <div id="parametres" class="mc-ui-box" role="button" tabindex="0" aria-label="Paramètres">
+            <svg id="parametres-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
           </div>
 
           <div id="music-control" class="mc-ui-box">
@@ -143,7 +143,7 @@
           </div>
         </script>
 
-        <p class="mc-label">Boutique</p>
+        <p class="mc-label">Améliorations</p>
         <div id="boutique-container" class="container"></div>
         <p id="boutique-vide" class="boutique-vide-msg">Rien à acheter pour le moment...</p>
 
@@ -265,10 +265,8 @@
 
   <div id="parametres-modal" class="modal" role="dialog" aria-modal="true" aria-label="Paramètres">
     <div id="parametres-modal-content" class="mc-ui-box">
-
-      <div>
-        <span class="close" onclick="closeSettingsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
-      </div>
+      <span class="close" onclick="closeSettingsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <p id="parametres-title">Paramètres</p>
 
       <div id="importer-progression" class="mc-ui-button">
         <div class="title" onclick="importProgress()" role="button" tabindex="0">Importer la progression</div>
@@ -304,5 +302,5 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=14"></script>
+  <script type="module" src="index.js?v=15"></script>
 </html>

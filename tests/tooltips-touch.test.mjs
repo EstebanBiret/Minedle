@@ -1,7 +1,7 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-const start = src.indexOf('function refreshTooltips');
-const code = src.slice(start, src.indexOf('document.addEventListener("DOMContentLoaded"'));
+const src = fs.readFileSync(new URL('../modules/tooltips.js', import.meta.url), 'utf8');
+const start = src.indexOf('export function refreshTooltips');
+const code = src.slice(start).replace(/^export\s+/, ''); // run inside new Function
 
 let pass = 0, fail = 0;
 const test = (name, actual, expected) => {

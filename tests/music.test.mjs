@@ -1,6 +1,9 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-const code = src.slice(src.indexOf('// ambient music'), src.indexOf('// dynamic background'));
+const src = fs.readFileSync(new URL('../modules/music.js', import.meta.url), 'utf8');
+// strip ES import/export so the body can run inside new Function with injected deps
+const code = src
+  .replace(/^import[^\n]*\n/gm, '')
+  .replace(/^export\s+/gm, '');
 
 // ---- Mocks ----
 class MockAudio {

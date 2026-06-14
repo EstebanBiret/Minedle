@@ -40,9 +40,11 @@ test('onglet gelé : rien accumulé, rien écrit', [s.data.temps_de_jeu_ms, s.ge
 
 // ===== Modale stats =====
 console.log('--- Ouverture de la modale ---');
-const stStart = src.indexOf('// stats modal');
-const stEnd = src.indexOf('window.closeStatsModal = closeStatsModal;') + 'window.closeStatsModal = closeStatsModal;'.length;
-const stCode = src.slice(stStart, stEnd);
+const statsSrc = fs.readFileSync(new URL('../modules/stats.js', import.meta.url), 'utf8');
+// run the real stats functions; strip ES import/export + the initStats wiring so they
+// run inside new Function with injected deps
+const stStart = statsSrc.indexOf('export function openStatsModal');
+const stCode = statsSrc.slice(stStart).replace(/^export\s+/gm, '');
 
 function runStats(data) {
   const els = {};
@@ -52,11 +54,12 @@ function runStats(data) {
   const closeBtn = { focusCalls: 0, focus() { this.focusCalls++; } };
   let sounds = 0;
   const w = {};
-  new Function('document', 'window', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'succes',
-    stCode)(
+  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS',
+    stCode + '\nreturn { openStatsModal, closeStatsModal };')(
     { getElementById: id => els[id], querySelector: () => closeBtn },
-    w, data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',
-    new Array(36), new Array(30));
+    data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',
+    new Array(36), 30);
+  Object.assign(w, api); // the window.* bindings now live in index.js, not in stats.js
   return { els, closeBtn, w, getSounds: () => sounds };
 }
 

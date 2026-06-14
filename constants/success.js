@@ -1,4 +1,4 @@
-export const succes = [
+export const achievements = [
     { id: 1, nom: "Ça chauffe", description: "Vous avez atteint la profondeur du charbon.", image: "./assets/success/1.webp", categorie: "profondeur", seuil: 0 },
     { id: 2, nom: "L’âge de fer", description: "Vous avez atteint la profondeur du fer.", image: "./assets/success/2.webp", categorie: "profondeur", seuil: 0 },
     { id: 3, nom: "Ruée vers l’or", description: "Vous avez atteint la profondeur de l’or.", image: "./assets/success/3.webp", categorie: "profondeur", seuil: 0 },
@@ -14,7 +14,7 @@ export const succes = [
     { id: 11, nom: "Efficacité I", description: "Vous avez atteint les 1 000 blocs minés par seconde.", image: "./assets/success/111213.webp", categorie: "bps", seuil: 1000 },
     { id: 12, nom: "Efficacité II", description: "Vous avez atteint les 50 000 blocs minés par seconde.", image: "./assets/success/111213.webp", categorie: "bps", seuil: 50000 },
     { id: 13, nom: "Efficacité III", description: "Vous avez atteint les 10 millions de blocs minés par seconde.", image: "./assets/success/111213.webp", categorie: "bps", seuil: 10000000 },
-    { id: 14, nom: "Petit caillou", description: "Vous avez miné 10 000 blocs depuis le début de votre aventure.", image: "./assets/success/14.webp", categorie: "blocs_totaux", seuil: 10000 },
+    { id: 14, nom: "Petit caillou", description: "Vous avez miné 15 000 blocs depuis le début de votre aventure.", image: "./assets/success/14.webp", categorie: "blocs_totaux", seuil: 15000 },
     { id: 15, nom: "Montagne de blocs", description: "Vous avez miné 2 million de blocs depuis le début de votre aventure.", image: "./assets/success/15.webp", categorie: "blocs_totaux", seuil: 2000000 },
     { id: 16, nom: "Objectif bedrock", description: "Vous avez miné 1 milliard de blocs depuis le début de votre aventure.", image: "./assets/success/16.webp", categorie: "blocs_totaux", seuil: 1000000000 },
 

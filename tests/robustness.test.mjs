@@ -1,5 +1,7 @@
 import fs from 'fs';
 const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
+const stateSrc = fs.readFileSync(new URL('../modules/state.js', import.meta.url), 'utf8');
+const musicSrc = fs.readFileSync(new URL('../modules/music.js', import.meta.url), 'utf8');
 
 let pass = 0, fail = 0;
 const test = (name, actual, expected) => {
@@ -10,8 +12,8 @@ const test = (name, actual, expected) => {
 
 // ===== readStorageJSON =====
 console.log('--- Lecture localStorage blindée ---');
-const rsStart = src.indexOf('function readStorageJSON');
-const rsCode = src.slice(rsStart, src.indexOf('\n}', rsStart) + 2);
+const rsStart = stateSrc.indexOf('function readStorageJSON');
+const rsCode = stateSrc.slice(rsStart, stateSrc.indexOf('\n}', rsStart) + 2).replace(/^export\s+/, '');
 function makeRS(storeValue) {
   const ls = { getItem: () => storeValue };
   return new Function('localStorage', 'console', rsCode + '\nreturn readStorageJSON;')(ls, { error: () => {} });
@@ -22,9 +24,9 @@ test('JSON corrompu -> fallback (pas de crash)', makeRS('{oops')('k', 'FB'), 'FB
 
 // ===== validation de forme des prefs musique =====
 console.log('--- Prefs musique invalides -> défauts ---');
-const mStart = src.indexOf('let musicPrefs');
+const mStart = musicSrc.indexOf('let musicPrefs');
 const mEndAnchor = 'musicPrefs = { muted: true, volume: 0.5 };\n}';
-const mCode = src.slice(mStart, src.indexOf(mEndAnchor) + mEndAnchor.length);
+const mCode = musicSrc.slice(mStart, musicSrc.indexOf(mEndAnchor) + mEndAnchor.length);
 function musicPrefsFrom(stored) {
   return new Function('readStorageJSON', 'MUSIC_STORAGE_KEY', mCode + '\nreturn musicPrefs;')(() => stored, 'x');
 }
@@ -36,7 +38,7 @@ test('null -> défauts', musicPrefsFrom(null), { muted: true, volume: 0.5 });
 // ===== garde multi-onglets =====
 console.log('--- Garde multi-onglets ---');
 const tStart = src.indexOf('// single tab at a time');
-const tCode = src.slice(tStart, src.indexOf("// levels"));
+const tCode = src.slice(tStart, src.indexOf("// mined blocks and per-second info")); // just the single-tab guard block
 function runTab() {
   const state = { posted: [], handler: null };
   class BC {

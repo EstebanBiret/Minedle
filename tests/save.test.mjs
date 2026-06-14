@@ -1,21 +1,21 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
+const src = fs.readFileSync(new URL('../modules/save.js', import.meta.url), 'utf8');
 
-// Extraire les fonctions réelles du fichier (fnv1aHash -> fin de isValidSaveData)
-const start = src.indexOf('function fnv1aHash');
-const end = src.indexOf('// replace the current progress');
-const code = src.slice(start, end);
+// Extraire les fonctions réelles du module save (fnv1aHash + isValidSaveData)
+const start = src.indexOf('export function fnv1aHash');
+const end = src.length;
+const code = src.slice(start, end).replace(/^export\s+/gm, '');
 
 // Mocks des dépendances (ids cohérents avec le jeu : 36 items boutique, 30 succès)
 const MAX_LEVEL = 7;
 const shop = Array.from({length: 36}, (_, i) => ({ id: i + 1 }));
-const succes = Array.from({length: 30}, (_, i) => ({ id: i + 1 }));
+const achievements = Array.from({length: 30}, (_, i) => ({ id: i + 1 }));
 const SAVE_FILE_APP = 'minedle';
 
 const { fnv1aHash, isValidSaveData } = new Function(
-  'MAX_LEVEL', 'shop', 'succes', 'SAVE_FILE_APP',
+  'MAX_LEVEL', 'shop', 'achievements', 'SAVE_FILE_APP',
   code + '\nreturn { fnv1aHash, isValidSaveData };'
-)(MAX_LEVEL, shop, succes, SAVE_FILE_APP); // vrai code du fichier, dépendances injectées
+)(MAX_LEVEL, shop, achievements, SAVE_FILE_APP); // vrai code du fichier, dépendances injectées
 
 // --- Construire un export comme exportProgress le fait ---
 function makeData() {

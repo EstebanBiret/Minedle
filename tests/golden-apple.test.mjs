@@ -1,8 +1,8 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-const start = src.indexOf('function spawnGoldenApple');
-const end = src.indexOf('function createParticle');
-const code = src.slice(start, end);
+const src = fs.readFileSync(new URL('../modules/apples.js', import.meta.url), 'utf8');
+const start = src.indexOf('export function spawnGoldenApple');
+const end = src.indexOf('// (re)start the spawn timer');
+const code = src.slice(start, end).replace(/^export\s+/, ''); // isolate spawnGoldenApple (deps injected below)
 
 let pass = 0, fail = 0;
 const test = (name, actual, expected) => {

@@ -1,9 +1,5 @@
-import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-
-const start = src.indexOf('function formatNumber(n) {');
-const end = src.indexOf('\n}', src.indexOf('return valeur + " " + suffixe;')) + 2;
-const formatNumber = new Function(src.slice(start, end) + '\nreturn formatNumber;')();
+// formatNumber now lives in its own module: import it directly
+const { formatNumber } = await import(new URL('../modules/format.js', import.meta.url));
 
 let pass = 0, fail = 0;
 const test = (input, expected) => {

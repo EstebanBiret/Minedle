@@ -1,6 +1,5 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-const code = src.slice(src.indexOf('// dynamic background'), src.indexOf('// levels'));
+const code = fs.readFileSync(new URL('../modules/background.js', import.meta.url), 'utf8');
 
 let pass = 0, fail = 0;
 const test = (name, actual, expected) => {

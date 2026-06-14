@@ -1,0 +1,41 @@
+// statistics modal. index.js helpers (buyEntitySound, computeGlobalYieldPerSecond)
+// are injected via initStats(); everything else is imported one-directionally.
+
+import { data } from "./state.js?v=3";
+import { formatNumber, formatDuration } from "./format.js?v=1";
+import { shop } from "../constants/shop.js?v=2";
+import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=2";
+
+// injected from index.js
+let buyEntitySound, computeGlobalYieldPerSecond;
+
+export function initStats(deps) {
+  ({ buyEntitySound, computeGlobalYieldPerSecond } = deps);
+}
+
+export function openStatsModal() {
+  buyEntitySound.play();
+
+  const totalEntities = data.entites.reduce((sum, e) => sum + e.quantite, 0);
+  // adaptive precision: a real but small manual share must not display as "0 %"
+  const share = data.blocsDepuisToujours > 0 ? (100 * data.blocsMinesAvecClics / data.blocsDepuisToujours) : 0;
+  const shareText = share >= 10 ? String(Math.round(share)) : share >= 0.1 ? share.toFixed(1).replace('.', ',') : share > 0 ? '< 0,1' : '0';
+
+  document.getElementById('stat-blocs-total').innerHTML = formatNumber(data.blocsDepuisToujours);
+  document.getElementById('stat-blocs-clics').innerHTML = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
+  document.getElementById('stat-bps').innerHTML = `${formatNumber(computeGlobalYieldPerSecond())} / s`;
+  document.getElementById('stat-pommes').innerHTML = formatNumber(data.pommes_or);
+  document.getElementById('stat-temps').innerHTML = formatDuration(data.temps_de_jeu_ms || 0);
+  document.getElementById('stat-entites').innerHTML = formatNumber(totalEntities);
+  document.getElementById('stat-ameliorations').innerHTML = `${data.inventaire.length} / ${shop.length}`;
+  document.getElementById('stat-succes').innerHTML = `${data.succes.length} / ${TOTAL_ACHIEVEMENTS}`;
+
+  document.getElementById('stats-modal').style.display = 'block';
+  document.querySelector('#stats-modal .close').focus();
+}
+
+export function closeStatsModal() {
+  buyEntitySound.play();
+  document.getElementById('stats-modal').style.display = 'none';
+  document.getElementById('stats-button').focus();
+}

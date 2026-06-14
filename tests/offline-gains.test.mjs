@@ -1,7 +1,13 @@
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-const start = src.indexOf('// offline gains');
-const code = src.slice(start, src.indexOf('grantOfflineGains();\n', start) + 'grantOfflineGains();\n'.length);
+const { formatDuration } = await import(new URL('../modules/format.js', import.meta.url));
+// read the real offline module; strip ES import/export + the injected-var declarations so the
+// functions run inside new Function with deps injected as params, then call grantOfflineGains()
+const offlineSrc = fs.readFileSync(new URL('../modules/offline.js', import.meta.url), 'utf8');
+const code = offlineSrc
+  .replace(/^import[^\n]*\n/gm, '')
+  .replace(/^export\s+/gm, '')
+  .replace(/^let computeGlobalYieldPerSecond[^\n]*\n/m, '')
+  + '\ngrantOfflineGains();';
 
 let pass = 0, fail = 0;
 const test = (name, actual, expected) => {
@@ -14,10 +20,10 @@ function run({ lastSeen, bps, now }) {
   const data = { derniere_visite: lastSeen, blocsActuels: 1000, blocsDepuisToujours: 5000 };
   const els = { 'hors-ligne-duree': { innerHTML: '' }, 'hors-ligne-gain': { innerHTML: '' }, 'hors-ligne': { style: { display: 'none' } } };
   let saves = 0;
-  const api = new Function('data', 'computeGlobalYieldPerSecond', 'saveProgress', 'formatNumber', 'document', 'window', 'Date',
-    code + '\nreturn { formatDuration };')(
-    data, () => bps, () => saves++, n => String(Math.round(n)), { getElementById: id => els[id] }, {}, { now: () => now });
-  return { data, els, saves, api };
+  const fn = new Function('data', 'computeGlobalYieldPerSecond', 'saveProgress', 'formatNumber', 'formatDuration', 'document', 'window', 'Date',
+    code)(
+    data, () => bps, () => saves++, n => String(Math.round(n)), formatDuration, { getElementById: id => els[id] }, {}, { now: () => now });
+  return { data, els, saves, api: { formatDuration } };
 }
 
 console.log('--- formatDuration ---');

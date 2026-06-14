@@ -105,12 +105,11 @@ body {
   }
 }
 
-#parametres span { 
-  white-space: normal; 
-  word-break: break-word;
-  overflow-wrap: break-word;
+#parametres-icon {
   display: block;
-  text-align: center;
+  margin: 0 auto;
+  width: clamp(1.1rem, 1.4vw, 1.6rem);
+  height: clamp(1.1rem, 1.4vw, 1.6rem);
 }
 
 #top-controls {
@@ -642,7 +641,6 @@ particle {
 .grille {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 0.4vh;
   width: 95%;
   margin-bottom: 1vh;
   margin-inline: auto;
@@ -955,13 +953,15 @@ particle {
   padding: clamp(1.2rem, 2vw, 2rem);
 }
 
-#stats-modal-content .close {
+#stats-modal-content .close,
+#parametres-modal-content .close {
   position: absolute;
   top: 0.4em;
   right: 0.7em;
 }
 
-#stats-title {
+#stats-title,
+#parametres-title {
   text-align: center;
   font-size: clamp(1.2rem, 1.6vw, 1.7rem);
   margin-bottom: 1em;
