@@ -16,6 +16,45 @@ export function initShop(deps) {
   ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound } = deps);
 }
 
+// dirty-check helpers: the display loop runs ~20x/s, but most of what it writes
+// (cost, quantity, yield ratio, visibility) only changes when the player buys
+// something. these only touch the DOM when a value actually changes, and only
+// re-walk children (the costly querySelectorAll) when affordability/ratio flips.
+const _text = new WeakMap();     // element -> last innerHTML written
+const _afford = new WeakMap();   // element -> last affordability (bool)
+const _bloque = new WeakMap();   // element -> last hidden state (bool)
+const _ratio = new WeakMap();    // element -> last yield-ratio string
+
+function setText(el, value) {
+  if (_text.get(el) !== value) {
+    el.innerHTML = value;
+    _text.set(el, value);
+  }
+}
+
+function setBloque(el, hidden) {
+  if (_bloque.get(el) === hidden) return;
+  _bloque.set(el, hidden);
+  el.classList.toggle('bloque', hidden);
+}
+
+// grey out an element + its children + its cost label, only when affordability flips
+function setAffordable(el, coutEl, affordable) {
+  if (_afford.get(el) === affordable) return;
+  _afford.set(el, affordable);
+  el.classList.toggle('disabled', !affordable);
+  el.querySelectorAll('*').forEach(child => child.classList.toggle('disabled', !affordable));
+  coutEl.classList.toggle('disabled-cost', !affordable);
+  coutEl.classList.toggle('enabled-cost', affordable);
+}
+
+function setRatio(el, ratio) {
+  if (_ratio.get(el) === ratio) return;
+  _ratio.set(el, ratio);
+  el.dataset.tooltipYieldRatio = ratio;
+  el.querySelectorAll('*').forEach(child => { child.dataset.tooltipYieldRatio = ratio; });
+}
+
 export function buyUpgrade(upgradeName) {
   let index = data.boutique.findIndex(a => a.nom === upgradeName);
   const upgrade = data.boutique.find(a => a.nom === upgradeName);
@@ -63,64 +102,31 @@ export function updateShop() {
   // hide already-purchased upgrades
   data.inventaire.forEach(a => {
     const upgrade = shop.find(ame => ame.id === a.id);
-    if (upgrade) {
-      const upgradeElement = document.getElementById(`${upgrade.nom}-amelioration`);
-      upgradeElement.classList.add('bloque');
-    }
+    if (upgrade) setBloque(document.getElementById(`${upgrade.nom}-amelioration`), true);
   });
 
   // update remaining upgrades
   data.boutique.forEach(a => {
     const upgrade = shop.find(ame => ame.id === a.id);
-    if (upgrade) {
-      const upgradeElement = document.getElementById(`${upgrade.nom}-amelioration`);
+    if (!upgrade) return;
+    const upgradeElement = document.getElementById(`${upgrade.nom}-amelioration`);
 
-      // click
-      if (upgrade.categorie === 'clic') {
-        if (data.blocsMinesAvecClics < upgrade.condition) {
-          upgradeElement.classList.add('bloque');
-        } else {
-          upgradeElement.classList.remove('bloque');
-        }
-      }
-      // golden apples
-      else if(upgrade.categorie === 'pomme_or') {
-        if (data.pommes_or < upgrade.condition) {
-          upgradeElement.classList.add('bloque');
-        } else {
-          upgradeElement.classList.remove('bloque');
-        }
-      }
-      // entity upgrade
-      else {
-        const matchingEntity = data.entites.find(ent => ent.nom === upgrade.categorie);
-        if (matchingEntity && matchingEntity.quantite < upgrade.condition) {
-          upgradeElement.classList.add('bloque');
-        } else {
-          upgradeElement.classList.remove('bloque');
-        }
-      }
-      
-      // then, if the entity is shown, check whether it can be bought
-      if (data.blocsActuels >= a.cout) {
-        upgradeElement.classList.remove('disabled');
-        upgradeElement.querySelectorAll('*').forEach(child => {
-          child.classList.remove('disabled');
-        });
-
-        document.getElementById(`${upgrade.nom}-cout`).classList.remove('disabled-cost');
-        document.getElementById(`${upgrade.nom}-cout`).classList.add('enabled-cost');
-      } else {
-        upgradeElement.classList.add('disabled');
-        upgradeElement.querySelectorAll('*').forEach(child => {
-          child.classList.add('disabled');
-        });
-
-        document.getElementById(`${upgrade.nom}-cout`).classList.remove('enabled-cost');
-        document.getElementById(`${upgrade.nom}-cout`).classList.add('disabled-cost');
-      }
-      document.getElementById(`${upgrade.nom}-cout`).innerHTML = formatNumber(Math.round(upgrade.cout));
+    // visibility: each category unlocks at its own condition
+    let locked;
+    if (upgrade.categorie === 'clic') {
+      locked = data.blocsMinesAvecClics < upgrade.condition;
+    } else if (upgrade.categorie === 'pomme_or') {
+      locked = data.pommes_or < upgrade.condition;
+    } else {
+      const matchingEntity = data.entites.find(ent => ent.nom === upgrade.categorie);
+      locked = !!(matchingEntity && matchingEntity.quantite < upgrade.condition);
     }
+    setBloque(upgradeElement, locked);
+
+    // then check whether it can be bought
+    const coutElement = document.getElementById(`${upgrade.nom}-cout`);
+    setAffordable(upgradeElement, coutElement, data.blocsActuels >= a.cout);
+    setText(coutElement, formatNumber(Math.round(upgrade.cout)));
   });
 
   // show a message if no upgrade is available to buy
@@ -185,51 +191,31 @@ export function buyEntity(entityName) {
 }
 
 export function updateEntities() {
+  const totalYield = computeGlobalYieldPerSecond(); // hoisted out of the loop (was recomputed per entity = O(n²))
+
   data.entites.forEach(e => {
     const entity = entities.find(ent => ent.nom === e.nom);
-    if (entity) {
-      const entityElement = document.getElementById(`${entity.nom}-entite`);
-      
-      // decide whether to show the entity, based on its threshold and total blocks ever mined
-      if (data.blocsDepuisToujours < entity.seuil_affichage) {
-        entityElement.classList.add('bloque');
-        return;
-      } else {
-        entityElement.classList.remove('bloque');
-      }
+    if (!entity) return;
+    const entityElement = document.getElementById(`${entity.nom}-entite`);
 
-      // then, if the entity is shown, check whether it can be bought
-      if (data.blocsActuels >= e.cout_actuel) {
-        entityElement.classList.remove('disabled');
-        entityElement.querySelectorAll('*').forEach(child => {
-          child.classList.remove('disabled');
-        });
-
-        document.getElementById(`${entity.nom}-cout`).classList.remove('disabled-cost');
-        document.getElementById(`${entity.nom}-cout`).classList.add('enabled-cost');
-      } else {
-        entityElement.classList.add('disabled');
-        entityElement.querySelectorAll('*').forEach(child => {
-          child.classList.add('disabled');
-        });
-
-        document.getElementById(`${entity.nom}-cout`).classList.remove('enabled-cost');
-        document.getElementById(`${entity.nom}-cout`).classList.add('disabled-cost');
-      }
-
-      document.getElementById(`${entity.nom}-quantite`).innerHTML = formatNumber(e.quantite);
-      document.getElementById(`${entity.nom}-cout`).innerHTML = formatNumber(Math.round(e.cout_actuel));
-
-      if(e.quantite > 0) {
-        const percentage = ((e.rendement_actuel * e.quantite * e.coefficient / computeGlobalYieldPerSecond()) * 100).toFixed(2);
-        entityElement.dataset.tooltipYieldRatio = `${percentage}% du rendement total`;
-        entityElement.querySelectorAll("*").forEach((child) => {
-          child.dataset.tooltipYieldRatio = `${percentage}% du rendement total`;
-        });
-      } else {
-        entityElement.dataset.tooltipYieldRatio = '';
-      } 
+    // decide whether to show the entity, based on its threshold and total blocks ever mined
+    if (data.blocsDepuisToujours < entity.seuil_affichage) {
+      setBloque(entityElement, true);
+      return;
     }
+    setBloque(entityElement, false);
+
+    // then, if the entity is shown, check whether it can be bought
+    const coutElement = document.getElementById(`${entity.nom}-cout`);
+    setAffordable(entityElement, coutElement, data.blocsActuels >= e.cout_actuel);
+
+    setText(document.getElementById(`${entity.nom}-quantite`), formatNumber(e.quantite));
+    setText(coutElement, formatNumber(Math.round(e.cout_actuel)));
+
+    const ratio = e.quantite > 0
+      ? `${((e.rendement_actuel * e.quantite * e.coefficient / totalYield) * 100).toFixed(2)}% du rendement total`
+      : '';
+    setRatio(entityElement, ratio);
   });
 
   // keep the pickaxe entity icon in sync with bought pickaxe upgrades.

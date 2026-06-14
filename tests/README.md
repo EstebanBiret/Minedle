@@ -1,6 +1,20 @@
 # Tests
 
-123 tests automatisés répartis en 9 suites : sauvegarde (export/import/validation), musique d'ambiance, boucles de jeu, formatage des nombres, fond dynamique, pommes d'or, robustesse (localStorage corrompu, multi-onglets), gains hors-ligne et tooltips tactiles.
+224 tests automatisés répartis en 13 suites :
+
+- **save** — export/import/validation des sauvegardes (checksum, schéma)
+- **number-format** — formatage des nombres (espaces, virgules, abréviations)
+- **game-loops** — boucles de jeu et raccourcis clavier
+- **music** — musique d'ambiance (lecture, volume, barre de progression)
+- **background** — fond vidéo dynamique et repli
+- **golden-apple** — apparition et cycle de vie des pommes d'or
+- **offline-gains** — gains de production hors-ligne
+- **robustness** — localStorage corrompu, garde multi-onglets
+- **tooltips-touch** — tooltips au survol et appui long tactile
+- **stats** — page de statistiques et temps de jeu
+- **levels** — passage des paliers de minerai (seuils, succès associés)
+- **achievements** — conditions de déblocage des succès (par catégorie)
+- **shop** — achats (améliorations, entités), effets, et dirty-check du DOM
 
 ## Lancer en local
 
@@ -8,10 +22,14 @@
 node tests/run-all.mjs
 ```
 
-(Node 18 ou plus, aucune dépendance.)
+(Node 18 ou plus, aucune dépendance. `run-all.mjs` exécute automatiquement tous les fichiers `*.test.mjs` du dossier.)
 
 ## Comment ça marche
 
-Chaque suite extrait le **vrai code** de `index.js` en se repérant sur des commentaires-marqueurs (par exemple `// ambient music`, `// offline gains`, `function spawnGoldenApple`), puis l'exécute dans un environnement simulé (DOM, localStorage, Audio, timers, BroadcastChannel...). Aucune copie de code dans les tests : ils valident toujours le fichier réel.
+Les tests valident toujours le **vrai code**, jamais une copie. Deux conventions selon l'organisation du code :
 
-Conséquence : si un commentaire-marqueur est renommé ou supprimé dans `index.js`, la suite correspondante échouera avec un message clair — il suffit alors d'ajuster le marqueur dans le test.
+1. **Code dans `index.js`** — la suite extrait le bloc voulu en se repérant sur des commentaires-marqueurs (par exemple `// ambient music`, `// offline gains`, `function spawnGoldenApple`), puis l'exécute dans un environnement simulé (DOM, localStorage, Audio, timers, BroadcastChannel...).
+
+2. **Code dans un module `modules/*.js`** — la suite lit le fichier du module, retire les lignes `import` et le mot-clé `export`, puis exécute le corps dans un `new Function(...)` en **injectant les dépendances** (les imports deviennent des paramètres ; les helpers injectés via `init*()` sont câblés en appelant cette fonction). C'est ainsi que sont testés `shop.js`, `achievements.js` et `levels.js`.
+
+Conséquence : si un commentaire-marqueur est renommé/supprimé, ou si du code est déplacé vers un module, la suite correspondante échoue avec un message clair — il suffit alors d'ajuster le marqueur ou de repointer l'extraction vers le module.

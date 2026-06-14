@@ -1,4 +1,4 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=2";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=3";
 import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=1";
 import { refreshTooltips } from "./modules/tooltips.js?v=1";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=1";
