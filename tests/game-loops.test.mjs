@@ -22,12 +22,12 @@ const data = { blocsActuels: 0, blocsDepuisToujours: 0 };
 
 new Function('setInterval','document','window','data','activeBonus','missingAchievements',
   'computeGlobalYieldPerSecond','updateEntities','updateShop','checkLevelUp',
-  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay',
+  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER',
   loopsCode)(
   (fn, ms) => intervals.push({ fn, ms }),
   documentMock, windowMock, data, null, [1],
   () => 100, mk('updateEntities'), mk('updateShop'), mk('checkLevelUp'),
-  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay')
+  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7
 );
 
 test('4 intervalles enregistrés', intervals.map(i => i.ms), [10, 50, 5000, 1000]);

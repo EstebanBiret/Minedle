@@ -4,7 +4,7 @@
 // no risk of index.js being instantiated twice under a different URL).
 
 import { formatNumber } from "./format.js?v=1";
-import { pop } from "./particles.js?v=1";
+import { pop } from "./particles.js?v=2";
 import { data, activeBonus, bonusEndTime, setActiveBonus, setBonusEndTime } from "./state.js?v=3";
 
 // filled in by initApples() from index.js
@@ -19,29 +19,37 @@ goldenAppleSound.volume = 0.5;
 
 let appleTimer;
 
+// bonus tuning — single source of truth. the multipliers are also imported by
+// index.js for the click/production maths, so a change here stays consistent everywhere.
+export const MEGA_CLICK_MULTIPLIER = 777;
+export const FULL_MULTIPLIER = 7;
+const INSTANT_GAIN_FRACTION = 0.3;
+const MEGA_CLICK_DURATION_S = 10;
+const FULL_MULTIPLIER_DURATION_S = 45;
+
 // bonus definitions: each grants an effect and (optionally) lasts for a duration
 const bonus = {
     instantGain: {
         duration: 0,
-        message: "Gain immédiat de 30% des blocs actuels",
+        message: `Gain immédiat de ${Math.round(INSTANT_GAIN_FRACTION * 100)}% des blocs actuels`,
         effect: (x, y) => {
-            showBonus("Gain immédiat de 30% des blocs actuels");
-            gainBlocks(0.3, x, y);
+            showBonus(bonus.instantGain.message);
+            gainBlocks(INSTANT_GAIN_FRACTION, x, y);
             setTimeout(removeBonus, 3000);
         }
     },
     megaClick: {
-        duration: 10,
-        message: "Clics x777 pendant 10s",
+        duration: MEGA_CLICK_DURATION_S,
+        message: `Clics x${MEGA_CLICK_MULTIPLIER} pendant ${MEGA_CLICK_DURATION_S}s`,
         effect: () => {
-            showBonus("Clics x777 pendant 10s");
+            showBonus(bonus.megaClick.message);
         }
     },
     fullMultiplier: {
-        duration: 45,
-        message: "Clics et production x7 pendant 45s",
+        duration: FULL_MULTIPLIER_DURATION_S,
+        message: `Clics et production x${FULL_MULTIPLIER} pendant ${FULL_MULTIPLIER_DURATION_S}s`,
         effect: () => {
-            showBonus("Clics et production x7 pendant 45s");
+            showBonus(bonus.fullMultiplier.message);
         }
     }
 };
@@ -52,7 +60,7 @@ function showBonus(text) {
   display.style.display = "block";
 }
 
-export function removeBonus() {
+function removeBonus() {
   setActiveBonus(null);
   setBonusEndTime(0);
   document.getElementById("bonusDisplay").style.display = "none";
@@ -61,7 +69,7 @@ export function removeBonus() {
 export function updateBonusDisplay() {
   if (!activeBonus) return;
 
-  if(activeBonus != "instantGain") {
+  if(activeBonus !== "instantGain") {
 
     let timeRemaining = Math.ceil((bonusEndTime - Date.now()) / 1000); // round up to avoid showing "0s" too early
     if (timeRemaining <= 0) {

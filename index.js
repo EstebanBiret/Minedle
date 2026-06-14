@@ -5,7 +5,7 @@ import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/off
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
 import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime } from "./modules/state.js?v=3";
-import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay } from "./modules/apples.js?v=3";
+import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=4";
 import { fnv1aHash, isValidSaveData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=2";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=2";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
@@ -68,7 +68,7 @@ let blockImg = document.getElementById('bloc-img')
 blockImg.addEventListener('click', mineBlock);
 
 // bonus
-if(data == DEFAULT_DATA) localStorage.setItem('minedle-data', JSON.stringify(data)); // first save
+if(data === DEFAULT_DATA) localStorage.setItem('minedle-data', JSON.stringify(data)); // first save
 
 
 // the sacred call
@@ -127,7 +127,7 @@ function updateBlocksDisplay() {
 
   // if FullMultiplier is active, multiply BPS
   if (activeBonus === "fullMultiplier") {
-    bps *= 7;
+    bps *= FULL_MULTIPLIER;
     blocksPerSecondText.style.color = "#6f6";
     blocksPerSecondText.style.textShadow = "0px 1px 4px black";
     blocksPerSecondText.style.fontWeight = "bold";
@@ -139,12 +139,12 @@ function updateBlocksDisplay() {
 
   // if MegaClick is active, multiply BPC
   if (activeBonus === "megaClick") {
-    bpc *= 777;
+    bpc *= MEGA_CLICK_MULTIPLIER;
     blocksPerClickText.style.color = "#6f6";
     blocksPerClickText.style.textShadow = "0px 1px 4px black";
     blocksPerClickText.style.fontWeight = "bold";
   } else if (activeBonus === "fullMultiplier") {
-    bpc *= 7;
+    bpc *= FULL_MULTIPLIER;
     blocksPerClickText.style.color = "#6f6";
     blocksPerClickText.style.textShadow = "0px 1px 4px black";
     blocksPerClickText.style.fontWeight = "bold";
@@ -181,9 +181,9 @@ function mineBlock(event) {
   // check whether a bonus is active
   let multiplicateur = 1;
   if (activeBonus === "megaClick") {
-      multiplicateur = 777;
+      multiplicateur = MEGA_CLICK_MULTIPLIER;
   } else if (activeBonus === "fullMultiplier") {
-      multiplicateur = 7;
+      multiplicateur = FULL_MULTIPLIER;
   }
 
   div.innerHTML = `+${formatNumber(data.bpc * data.coefficientClic * multiplicateur)}`  
@@ -349,7 +349,7 @@ setInterval(() => {
   let currentProduction = computeGlobalYieldPerSecond() / 100;
 
   // check whether the FullMultiplier bonus is active
-  if (activeBonus === "fullMultiplier") currentProduction *= 7;
+  if (activeBonus === "fullMultiplier") currentProduction *= FULL_MULTIPLIER;
 
   data.blocsActuels += currentProduction;
   data.blocsDepuisToujours += currentProduction;
@@ -376,5 +376,5 @@ window.addEventListener('pagehide', saveProgress);
 
 // refresh bonuses every second
 setInterval(() => {
-  if (activeBonus && activeBonus != "instantGain") updateBonusDisplay();
+  if (activeBonus && activeBonus !== "instantGain") updateBonusDisplay();
 }, 1000);

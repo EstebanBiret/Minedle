@@ -1,6 +1,6 @@
 // golden-apple particle burst effect. pure DOM/animation, no game state.
 
-export function createParticle(x, y) {
+function createParticle(x, y) {
   const particle = document.createElement('particle');
   document.body.appendChild(particle);
 
@@ -37,20 +37,19 @@ export function createParticle(x, y) {
 
 // burst of particles around a clicked golden apple
 export function pop(apple) {
-  let amount = 30;
-  let x, y;
+  const amount = 30;
 
   const rect = apple.getBoundingClientRect();
-  x = rect.left + rect.width / 2;
-  y = rect.top + rect.height / 2;
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
 
   if (x === 0 && y === 0) {
-    for (let i = 0; i < 30; i++) {
-      createParticle(x, y, "pomme");
+    for (let i = 0; i < amount; i++) {
+      createParticle(x, y);
     }
   } else {
     for (let i = 0; i < amount; i++) {
-      createParticle(x, y + window.scrollY, "pomme");
+      createParticle(x, y + window.scrollY);
     }
   }
 }
