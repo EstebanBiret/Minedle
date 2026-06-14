@@ -1,8 +1,14 @@
 // tooltip system: hover tooltips on desktop, long-press tooltips on touch devices.
-// fully self-contained (no game state) — re-run refreshTooltips() after the DOM
-// changes so newly added .tooltip-element nodes get their listeners.
+// fully self-contained (no game state). uses event delegation wired ONCE, so
+// dynamically-added .tooltip-element nodes work without re-binding — calling
+// refreshTooltips() again is a safe no-op (it used to leak a listener per call).
+
+let wired = false;
 
 export function refreshTooltips() {
+  if (wired) return; // delegated listeners already cover current and future nodes
+  wired = true;
+
   const tooltip = document.getElementById("tooltip");
   const tooltipTitle = document.getElementById("tooltip-title");
   const tooltipContent = document.getElementById("tooltip-content");
@@ -11,50 +17,51 @@ export function refreshTooltips() {
   const padding = 10;
 
   let suppressNextTap = false;
+  let touchTimer = null;
+  let visible = false;
 
+  // --- desktop: hover (delegated to document so new nodes are covered) ---
+  document.addEventListener("mouseover", event => {
+    const el = event.target.closest(".tooltip-element");
+    if (el) showTooltipFor(el);
+  });
+
+  document.addEventListener("mouseout", event => {
+    if (event.target.closest(".tooltip-element")) hideTooltip();
+  });
+
+  document.addEventListener("mousemove", event => {
+    if (visible) updateTooltipPosition(event);
+  });
+
+  // --- touch: a long press shows the tooltip, a quick tap keeps its normal action ---
   document.addEventListener("touchstart", event => {
-    if (!event.target.closest(".tooltip-element")) hideTooltip();
+    const el = event.target.closest(".tooltip-element");
+    if (!el) { hideTooltip(); return; }
+
+    const touch = event.touches[0];
+    const touchPoint = { pageX: touch.clientX, pageY: touch.clientY }; // clientX: the tooltip is position fixed
+    touchTimer = setTimeout(() => {
+      touchTimer = null;
+      suppressNextTap = true;
+      showTooltipFor(el);
+      updateTooltipPosition(touchPoint);
+    }, 450);
   }, { passive: true });
 
-  document.querySelectorAll(".tooltip-element").forEach(element => {
-    element.addEventListener("mouseover", event => {
-      showTooltipFor(event.target);
-      document.addEventListener("mousemove", updateTooltipPosition);
-    });
+  document.addEventListener("touchmove", () => {
+    clearTimeout(touchTimer);
+    touchTimer = null;
+  }, { passive: true });
 
-    element.addEventListener("mouseout", () => {
-      hideTooltip();
-      document.removeEventListener("mousemove", updateTooltipPosition);
-    });
-
-    // touch devices: a long press shows the tooltip, a quick tap keeps its normal action
-    let touchTimer = null;
-
-    element.addEventListener("touchstart", event => {
-      const touch = event.touches[0];
-      const touchPoint = { pageX: touch.clientX, pageY: touch.clientY }; // clientX: the tooltip is position fixed
-      touchTimer = setTimeout(() => {
-        touchTimer = null;
-        suppressNextTap = true;
-        showTooltipFor(event.target);
-        updateTooltipPosition(touchPoint);
-      }, 450);
-    }, { passive: true });
-
-    element.addEventListener("touchmove", () => {
+  document.addEventListener("touchend", event => {
+    if (touchTimer) {
       clearTimeout(touchTimer);
       touchTimer = null;
-    }, { passive: true });
-
-    element.addEventListener("touchend", event => {
-      if (touchTimer) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-      } else if (suppressNextTap) {
-        suppressNextTap = false;
-        event.preventDefault(); // long press: block the simulated click (no accidental purchase)
-      }
-    });
+    } else if (suppressNextTap) {
+      suppressNextTap = false;
+      event.preventDefault(); // long press: block the simulated click (no accidental purchase)
+    }
   });
 
   function showTooltipFor(target) {
@@ -66,11 +73,13 @@ export function refreshTooltips() {
     tooltipYieldRatio.innerHTML = rendementRatio || "";
 
     tooltip.classList.add("visible");
+    visible = true;
   }
 
   function hideTooltip() {
     tooltip.classList.remove("visible");
     tooltip.classList.add("transparent");
+    visible = false;
   }
 
   function updateTooltipPosition(event) {

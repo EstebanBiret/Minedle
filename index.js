@@ -1,6 +1,6 @@
 import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=3";
 import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=1";
-import { refreshTooltips } from "./modules/tooltips.js?v=1";
+import { refreshTooltips } from "./modules/tooltips.js?v=2";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=1";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
@@ -320,6 +320,8 @@ function deleteProgress(){
 
 
 document.getElementById('parametres').addEventListener('click', () => {
+  openSettingsModal();
+});
 
 // keyboard accessibility: Enter / Space activate role="button" elements, Escape closes the settings
 document.addEventListener('keydown', (event) => {
@@ -334,8 +336,6 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault(); // prevent the page from scrolling on Space
     event.target.click();
   }
-});
-  openSettingsModal();
 });
 
 window.onclick = function(event) {

@@ -1,6 +1,6 @@
 # Tests
 
-224 tests automatisés répartis en 13 suites :
+228 tests automatisés répartis en 14 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma)
 - **number-format** — formatage des nombres (espaces, virgules, abréviations)
@@ -15,6 +15,7 @@
 - **levels** — passage des paliers de minerai (seuils, succès associés)
 - **achievements** — conditions de déblocage des succès (par catégorie)
 - **shop** — achats (améliorations, entités), effets, et dirty-check du DOM
+- **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 
 ## Lancer en local
 
