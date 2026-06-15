@@ -78,5 +78,23 @@ function runSave(active) {
 test('onglet actif : écrit', runSave(true), 1);
 test('onglet gelé : n\'écrit PAS', runSave(false), 0);
 
+// setItem qui throw (quota plein / stockage indisponible) : saveProgress avale
+// l'erreur (le jeu continue) et n'alerte le joueur qu'une seule fois.
+function runSaveThrowing() {
+  let alerts = 0;
+  const sp = new Function('tabActive', 'localStorage', 'data', 'Date', 'alert',
+    'let lastPlaytimeTick = 0;\nlet saveErrorNotified = false;\n' + sCode + '\nreturn () => saveProgress();')(
+    true,
+    { setItem: () => { throw new Error('QuotaExceededError'); } },
+    { x: 1 }, { now: () => 1000 },
+    () => { alerts++; });
+  let threw = false;
+  try { sp(); sp(); } catch { threw = true; }
+  return { threw, alerts };
+}
+const throwing = runSaveThrowing();
+test('quota plein : saveProgress n\'explose pas', throwing.threw, false);
+test('quota plein : alerte une seule fois (2 sauvegardes)', throwing.alerts, 1);
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

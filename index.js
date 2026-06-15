@@ -111,13 +111,27 @@ function init() {
 }
 
 // update game data in localStorage
+// one-shot guard for the "storage full" notice: saveProgress runs every ~5s and
+// on every click, so we warn the player at most once per session (no alert spam).
+let saveErrorNotified = false;
 function saveProgress() {
   if (!tabActive) return; // frozen tab: never overwrite the active tab's save
   const nowTs = Date.now();
   data.temps_de_jeu_ms = (data.temps_de_jeu_ms || 0) + (nowTs - lastPlaytimeTick); 
   lastPlaytimeTick = nowTs;
   data.derniere_visite = nowTs;
-  localStorage.setItem('minedle-data', JSON.stringify(data));
+  try {
+    localStorage.setItem('minedle-data', JSON.stringify(data));
+  } catch (err) {
+    // storage full or unavailable (quota exceeded, private browsing, etc.):
+    // the in-memory state stays valid so the game keeps running; we just warn
+    // the player once so they can export their save before losing anything.
+    console.warn('Minedle : sauvegarde impossible', err);
+    if (!saveErrorNotified) {
+      saveErrorNotified = true;
+      alert("Impossible de sauvegarder ta progression : l'espace de stockage du navigateur est plein ou indisponible. Pense à exporter ta sauvegarde depuis les paramètres pour ne rien perdre.");
+    }
+  }
 }
 
 // update mined blocks display and per-second info
