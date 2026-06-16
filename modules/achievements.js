@@ -26,7 +26,7 @@ export function clearAchievements() {
   for (let i = 1; i <= achievements.length; i++) {
     let achievementCell = document.getElementById(`succes-${i}`);
     if (achievementCell) {
-      achievementCell.innerHTML = '';
+      achievementCell.textContent = '';
       achievementCell.removeAttribute('data-tooltip-title');
       achievementCell.removeAttribute('data-tooltip-content-deux');
       achievementCell.classList.remove('tooltip-element');
@@ -136,13 +136,13 @@ export function updateAchievements() {
 
   // update the achievements label
   let achievementCount = data.succes.length;
-  document.getElementById('succes-label').innerHTML = `Succès (${achievementCount}/${achievements.length})`;
+  document.getElementById('succes-label').textContent = `Succès (${achievementCount}/${achievements.length})`;
 
   // and update the achievement items
   data.succes.forEach(a => {
     const achievementItem = achievements.find(item => item.id === a.id);
     const td = document.getElementById(`succes-${a.id}`);
-    td.innerHTML = '';
+    td.textContent = '';
     td.appendChild(document.createElement('img')).src = achievementItem.image;
 
     // adjust this image's size
@@ -170,10 +170,22 @@ export function unlockAchievement(id) {
   achievementNotification(id);
 }
 
+// achievement notifications are shown ONE AT A TIME via a small queue, so that
+// several simultaneous unlocks no longer pile up at the same screen position.
+const notificationQueue = [];
+let notificationActive = false;
+
 function achievementNotification(id) {
-  // find the achievement in the list
   const targetAchievement = achievements.find(s => s.id === id);
   if (!targetAchievement) return;
+  notificationQueue.push(targetAchievement);
+  if (!notificationActive) showNextNotification();
+}
+
+function showNextNotification() {
+  const targetAchievement = notificationQueue.shift();
+  if (!targetAchievement) { notificationActive = false; return; }
+  notificationActive = true;
 
   achievementUnlockedSound.play();
 
@@ -192,12 +204,12 @@ function achievementNotification(id) {
   div2.classList.add('txt-notification-succes');
 
   const title = document.createElement('div');
-  title.innerHTML = "Succès obtenu !";
+  title.textContent = "Succès obtenu !";
   title.classList.add('titre-notification-succes');
   div2.appendChild(title);
 
   const achievementName = document.createElement('div');
-  achievementName.innerHTML = targetAchievement.nom;
+  achievementName.textContent = targetAchievement.nom;
   achievementName.classList.add('nom-notification-succes');
   div2.appendChild(achievementName);
 
@@ -211,5 +223,6 @@ function achievementNotification(id) {
   }, 4500);
   setTimeout(() => {
     div.remove();
+    showNextNotification(); // chain to the next queued notification, if any
   }, 5000);
 }

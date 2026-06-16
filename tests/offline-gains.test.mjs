@@ -18,7 +18,7 @@ const test = (name, actual, expected) => {
 
 function run({ lastSeen, bps, now }) {
   const data = { derniere_visite: lastSeen, blocsActuels: 1000, blocsDepuisToujours: 5000 };
-  const els = { 'hors-ligne-duree': { innerHTML: '' }, 'hors-ligne-gain': { innerHTML: '' }, 'hors-ligne': { style: { display: 'none' } } };
+  const els = { 'hors-ligne-duree': { textContent: '' }, 'hors-ligne-gain': { textContent: '' }, 'hors-ligne': { style: { display: 'none' } } };
   let saves = 0;
   const fn = new Function('data', 'computeGlobalYieldPerSecond', 'saveProgress', 'formatNumber', 'formatDuration', 'document', 'window', 'Date',
     code)(
@@ -46,13 +46,13 @@ r = run({ lastSeen: 1e12 - 7200000, bps: 100, now: 1e12 }); // 2h à 100 bps
 test('2h @ 100 bps, taux 50% : +360 000', r.data.blocsActuels, 1000 + 360000);
 test('cumul total aussi crédité', r.data.blocsDepuisToujours, 5000 + 360000);
 test('modale affichée', r.els['hors-ligne'].style.display, 'flex');
-test('durée affichée', r.els['hors-ligne-duree'].innerHTML, '2 h 00');
-test('gain affiché', r.els['hors-ligne-gain'].innerHTML, '+ 360000 blocs');
+test('durée affichée', r.els['hors-ligne-duree'].textContent, '2 h 00');
+test('gain affiché', r.els['hors-ligne-gain'].textContent, '+ 360000 blocs');
 test('sauvegarde immédiate', r.saves, 1);
 
 r = run({ lastSeen: 1e12 - 50 * 3600000, bps: 100, now: 1e12 }); // 50h -> plafond 12h
 test('50h plafonné à 12h : +2 160 000', r.data.blocsActuels, 1000 + 2160000);
-test('durée affichée = plafond', r.els['hors-ligne-duree'].innerHTML, '12 h 00');
+test('durée affichée = plafond', r.els['hors-ligne-duree'].textContent, '12 h 00');
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

@@ -90,7 +90,7 @@ export function updateBonusDisplay() {
 function gainBlocks(percentage, x, y) {
   let gain = Math.floor(data.blocsActuels * percentage);
   const div = document.createElement('div')
-  div.innerHTML = `+${formatNumber(gain)}`
+  div.textContent = `+${formatNumber(gain)}`
   div.style.cssText = `
   color: white; 
   position: absolute; 

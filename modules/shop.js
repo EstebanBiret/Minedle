@@ -7,27 +7,27 @@ import { computeCost, computeYield, entities } from "../constants/entities.js?v=
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=1";
-import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=4";
+import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=5";
 
 // injected from index.js
-let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound;
+let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer;
 
 export function initShop(deps) {
-  ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound } = deps);
+  ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer } = deps);
 }
 
 // dirty-check helpers: the display loop runs ~20x/s, but most of what it writes
 // (cost, quantity, yield ratio, visibility) only changes when the player buys
 // something. these only touch the DOM when a value actually changes, and only
 // re-walk children (the costly querySelectorAll) when affordability/ratio flips.
-const _text = new WeakMap();     // element -> last innerHTML written
+const _text = new WeakMap();     // element -> last textContent written
 const _afford = new WeakMap();   // element -> last affordability (bool)
 const _bloque = new WeakMap();   // element -> last hidden state (bool)
 const _ratio = new WeakMap();    // element -> last yield-ratio string
 
 function setText(el, value) {
   if (_text.get(el) !== value) {
-    el.innerHTML = value;
+    el.textContent = value;
     _text.set(el, value);
   }
 }
@@ -78,6 +78,7 @@ export function buyUpgrade(upgradeName) {
   // golden apples
   else if(upgrade.categorie === 'pomme_or') {
     data.delai_pommes_or_ms *= 0.75; // delay reduced by 25%
+    restartAppleTimer(); // reschedule the pending apple so the shorter delay applies right away
   }
   // entity upgrade
   else {
@@ -228,13 +229,13 @@ export function updateEntities() {
 export function updateInventory() {
   // update the inventory label
   let itemCount = data.inventaire.length;
-  document.getElementById('inventaire-label').innerHTML = `Inventaire (${itemCount}/${shop.length})`;
+  document.getElementById('inventaire-label').textContent = `Inventaire (${itemCount}/${shop.length})`;
 
   // and update the inventory items
   data.inventaire.forEach(a => {
     const inventoryItem = shop.find(item => item.id === a.id);
     const td = document.getElementById(`inventaire-${a.id}`);
-    td.innerHTML = '';
+    td.textContent = '';
     td.appendChild(document.createElement('img')).src = inventoryItem.image;
 
     // adjust this image's size
@@ -259,7 +260,7 @@ export function clearInventory() {
   for (let i = 1; i <= shop.length; i++) {
     let inventoryCell = document.getElementById(`inventaire-${i}`);
     if (inventoryCell) {
-      inventoryCell.innerHTML = '';
+      inventoryCell.textContent = '';
       inventoryCell.removeAttribute('data-tooltip-title');
       inventoryCell.removeAttribute('data-tooltip-content-deux');
       inventoryCell.removeAttribute('data-tooltip-rendement-ratio');

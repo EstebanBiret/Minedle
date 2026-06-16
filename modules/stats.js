@@ -4,7 +4,7 @@
 import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=1";
 import { shop } from "../constants/shop.js?v=2";
-import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=4";
+import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=5";
 
 // injected from index.js
 let buyEntitySound, computeGlobalYieldPerSecond;
@@ -21,14 +21,14 @@ export function openStatsModal() {
   const share = data.blocsDepuisToujours > 0 ? (100 * data.blocsMinesAvecClics / data.blocsDepuisToujours) : 0;
   const shareText = share >= 10 ? String(Math.round(share)) : share >= 0.1 ? share.toFixed(1).replace('.', ',') : share > 0 ? '< 0,1' : '0';
 
-  document.getElementById('stat-blocs-total').innerHTML = formatNumber(data.blocsDepuisToujours);
-  document.getElementById('stat-blocs-clics').innerHTML = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
-  document.getElementById('stat-bps').innerHTML = `${formatNumber(computeGlobalYieldPerSecond())} / s`;
-  document.getElementById('stat-pommes').innerHTML = formatNumber(data.pommes_or);
-  document.getElementById('stat-temps').innerHTML = formatDuration(data.temps_de_jeu_ms || 0);
-  document.getElementById('stat-entites').innerHTML = formatNumber(totalEntities);
-  document.getElementById('stat-ameliorations').innerHTML = `${data.inventaire.length} / ${shop.length}`;
-  document.getElementById('stat-succes').innerHTML = `${data.succes.length} / ${TOTAL_ACHIEVEMENTS}`;
+  document.getElementById('stat-blocs-total').textContent = formatNumber(data.blocsDepuisToujours);
+  document.getElementById('stat-blocs-clics').textContent = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
+  document.getElementById('stat-bps').textContent = `${formatNumber(computeGlobalYieldPerSecond())} / s`;
+  document.getElementById('stat-pommes').textContent = formatNumber(data.pommes_or);
+  document.getElementById('stat-temps').textContent = formatDuration(data.temps_de_jeu_ms || 0);
+  document.getElementById('stat-entites').textContent = formatNumber(totalEntities);
+  document.getElementById('stat-ameliorations').textContent = `${data.inventaire.length} / ${shop.length}`;
+  document.getElementById('stat-succes').textContent = `${data.succes.length} / ${TOTAL_ACHIEVEMENTS}`;
 
   document.getElementById('stats-modal').style.display = 'block';
   document.querySelector('#stats-modal .close').focus();

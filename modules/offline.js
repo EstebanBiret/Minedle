@@ -28,8 +28,8 @@ export function grantOfflineGains() {
   data.blocsDepuisToujours += gain;
   saveProgress();
 
-  document.getElementById('hors-ligne-duree').innerHTML = formatDuration(elapsed);
-  document.getElementById('hors-ligne-gain').innerHTML = `+ ${formatNumber(gain)} blocs`;
+  document.getElementById('hors-ligne-duree').textContent = formatDuration(elapsed);
+  document.getElementById('hors-ligne-gain').textContent = `+ ${formatNumber(gain)} blocs`;
   document.getElementById('hors-ligne').style.display = 'flex';
 }
 

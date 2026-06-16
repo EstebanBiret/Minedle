@@ -12,7 +12,7 @@ const code = src
 // minimal DOM mock: every element supports what updateAchievements/notification touch
 function makeEl() {
   const el = {
-    innerHTML: '', style: {}, clientHeight: 10,
+    textContent: '', style: {}, clientHeight: 10,
     children: [],
     appendChild(c) { this.children.push(c); return c; },
     setAttribute() {}, removeAttribute() {},

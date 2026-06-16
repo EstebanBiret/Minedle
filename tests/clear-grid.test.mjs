@@ -20,7 +20,7 @@ const test = (name, actual, expected) => {
 // one shared, instrumented cell returned for every getElementById call
 function makeCell() {
   const cell = {
-    innerHTML: 'CONTENU',
+    textContent: 'CONTENU',
     removed: [],
     classes: new Set(['tooltip-element', 'autre-classe']),
     cloned: false,
@@ -45,7 +45,7 @@ function runClear(code, fnName, depName, depLen) {
 
 console.log('--- clearInventory réinitialise la cellule (#8) + borne = shop.length (#9) ---');
 let { cell: c, calls } = runClear(clearInventoryCode, 'clearInventory', 'shop', 5);
-test('contenu vidé', c.innerHTML, '');
+test('contenu vidé', c.textContent, '');
 test('classe tooltip-element retirée', c.classList.contains('tooltip-element'), false);
 test('autres classes préservées', c.classList.contains('autre-classe'), true);
 test('attributs tooltip retirés', ['data-tooltip-title', 'data-tooltip-content-deux', 'data-tooltip-rendement-ratio'].every(a => c.removed.includes(a)), true);
@@ -55,7 +55,7 @@ test('la boucle suit shop.length, pas un 36 en dur (#9)', calls, 5);
 
 console.log('--- clearAchievements réinitialise la cellule (#8) + borne = achievements.length (#9) ---');
 ({ cell: c, calls } = runClear(clearAchievementsCode, 'clearAchievements', 'achievements', 8));
-test('contenu vidé', c.innerHTML, '');
+test('contenu vidé', c.textContent, '');
 test('classe tooltip-element retirée', c.classList.contains('tooltip-element'), false);
 test('attributs tooltip retirés', ['data-tooltip-title', 'data-tooltip-content-deux'].every(a => c.removed.includes(a)), true);
 test('AUCUN cloneNode (code mort supprimé)', c.cloned, false);

@@ -1,6 +1,6 @@
 # Tests
 
-279 tests automatisés répartis en 19 suites :
+291 tests automatisés répartis en 21 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -21,6 +21,8 @@
 - **entities-shape** — constante des entités (pas de référence DOM morte, champs statiques conservés)
 - **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué)
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
+- **notification-queue** — file d'attente des notifications de succès (un affichage à la fois, enchaînement à la fin)
+- **hygiene** — garde-fous source : aucun `innerHTML`, fins de ligne LF, `prefers-reduced-motion` couvre float/bounce/fade-up
 
 ## Lancer en local
 

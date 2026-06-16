@@ -67,10 +67,10 @@ export function refreshTooltips() {
   function showTooltipFor(target) {
     const { tooltipTitle: title, tooltipContent: content, tooltipContentDeux: contentDeux, tooltipYieldRatio: rendementRatio } = target.dataset;
 
-    tooltipTitle.innerHTML = title || "";
-    tooltipContent.innerHTML = content || "";
-    tooltipContentDeux.innerHTML = contentDeux || "";
-    tooltipYieldRatio.innerHTML = rendementRatio || "";
+    tooltipTitle.textContent = title || "";
+    tooltipContent.textContent = content || "";
+    tooltipContentDeux.textContent = contentDeux || "";
+    tooltipYieldRatio.textContent = rendementRatio || "";
 
     tooltip.classList.add("visible");
     visible = true;

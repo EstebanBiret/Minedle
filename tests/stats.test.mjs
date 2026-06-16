@@ -48,7 +48,7 @@ const stCode = statsSrc.slice(stStart).replace(/^export\s+/gm, '');
 
 function runStats(data) {
   const els = {};
-  for (const id of ['stat-blocs-total','stat-blocs-clics','stat-bps','stat-pommes','stat-temps','stat-entites','stat-ameliorations','stat-succes']) els[id] = { innerHTML: '' };
+  for (const id of ['stat-blocs-total','stat-blocs-clics','stat-bps','stat-pommes','stat-temps','stat-entites','stat-ameliorations','stat-succes']) els[id] = { textContent: '' };
   els['stats-modal'] = { style: { display: 'none' } };
   els['stats-button'] = { focusCalls: 0, focus() { this.focusCalls++; } };
   const closeBtn = { focusCalls: 0, focus() { this.focusCalls++; } };
@@ -70,14 +70,14 @@ const sample = {
 };
 let r = runStats(sample);
 r.w.openStatsModal();
-test('total', r.els['stat-blocs-total'].innerHTML, '200000');
-test('à la main + pourcentage', r.els['stat-blocs-clics'].innerHTML, '50000 (25 %)');
-test('production /s', r.els['stat-bps'].innerHTML, '123.4 / s');
-test('pommes', r.els['stat-pommes'].innerHTML, '7');
-test('temps de jeu formaté', r.els['stat-temps'].innerHTML, '3 h 07');
-test('entités (somme des quantités)', r.els['stat-entites'].innerHTML, '10');
-test('améliorations x / 36', r.els['stat-ameliorations'].innerHTML, '3 / 36');
-test('succès x / 30', r.els['stat-succes'].innerHTML, '2 / 30');
+test('total', r.els['stat-blocs-total'].textContent, '200000');
+test('à la main + pourcentage', r.els['stat-blocs-clics'].textContent, '50000 (25 %)');
+test('production /s', r.els['stat-bps'].textContent, '123.4 / s');
+test('pommes', r.els['stat-pommes'].textContent, '7');
+test('temps de jeu formaté', r.els['stat-temps'].textContent, '3 h 07');
+test('entités (somme des quantités)', r.els['stat-entites'].textContent, '10');
+test('améliorations x / 36', r.els['stat-ameliorations'].textContent, '3 / 36');
+test('succès x / 30', r.els['stat-succes'].textContent, '2 / 30');
 test('modale stats affichée', r.els['stats-modal'].style.display, 'block');
 test('focus sur la croix', r.closeBtn.focusCalls, 1);
 test('un seul son joué', r.getSounds(), 1);
@@ -87,15 +87,15 @@ test('fermeture : stats masquée + focus bouton Stats', [r.els['stats-modal'].st
 
 r = runStats({ ...sample, blocsDepuisToujours: 0, blocsMinesAvecClics: 0 });
 r.w.openStatsModal();
-test('partie neuve : pas de division par zéro', r.els['stat-blocs-clics'].innerHTML, '0 (0 %)');
+test('partie neuve : pas de division par zéro', r.els['stat-blocs-clics'].textContent, '0 (0 %)');
 
 r = runStats({ ...sample, blocsMinesAvecClics: 5000 }); // 2,5 %
 r.w.openStatsModal();
-test('part faible : une décimale', r.els['stat-blocs-clics'].innerHTML, '5000 (2,5 %)');
+test('part faible : une décimale', r.els['stat-blocs-clics'].textContent, '5000 (2,5 %)');
 
 r = runStats({ ...sample, blocsMinesAvecClics: 160 }); // 0,08 %
 r.w.openStatsModal();
-test('part minuscule : "< 0,1 %" au lieu de 0', r.els['stat-blocs-clics'].innerHTML, '160 (< 0,1 %)');
+test('part minuscule : "< 0,1 %" au lieu de 0', r.els['stat-blocs-clics'].textContent, '160 (< 0,1 %)');
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

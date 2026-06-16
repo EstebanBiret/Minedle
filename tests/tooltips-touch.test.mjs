@@ -15,7 +15,7 @@ const test = (name, actual, expected) => {
 function makeWorld() {
   const w = { timers: [], cleared: [], nextId: 1 };
   const fields = {};
-  for (const id of ['tooltip-title', 'tooltip-content', 'tooltip-content-deux', 'tooltip-rendement-ratio']) fields[id] = { innerHTML: '' };
+  for (const id of ['tooltip-title', 'tooltip-content', 'tooltip-content-deux', 'tooltip-rendement-ratio']) fields[id] = { textContent: '' };
   const tooltip = {
     classes: new Set(), style: {},
     classList: { add(c) { tooltip.classes.add(c); }, remove(c) { tooltip.classes.delete(c); } },
@@ -43,7 +43,7 @@ let { w, el, tooltip, fields, docHandlers } = makeWorld();
 docHandlers['touchstart']({ touches: [{ clientX: 50, clientY: 60 }], target: el });
 test('timer de 450ms armé', [w.timers.length, w.timers[0].ms], [1, 450]);
 w.timers[0].cb(); // l'appui dure
-test('tooltip visible avec le bon contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].innerHTML], [true, 'Pioche en or']);
+test('tooltip visible avec le bon contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].textContent], [true, 'Pioche en or']);
 test('positionné au point de contact (+10px)', [tooltip.style.left, tooltip.style.top], ['60px', '70px']);
 let prevented = 0;
 docHandlers['touchend']({ preventDefault: () => prevented++ });
@@ -74,7 +74,7 @@ test('fermé au toucher hors zone', world.tooltip.classes.has('visible'), false)
 console.log('--- Régression souris ---');
 ({ el, tooltip, fields, docHandlers } = makeWorld());
 docHandlers['mouseover']({ target: el });
-test('mouseover : visible + contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].innerHTML], [true, 'Pioche en or']);
+test('mouseover : visible + contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].textContent], [true, 'Pioche en or']);
 docHandlers['mouseout']({ target: el });
 test('mouseout : caché', tooltip.classes.has('visible'), false);
 

@@ -45,8 +45,8 @@ function makeDoc() {
       const child = makeChild();
       els[id] = {
         id, writes: 0, _html: '', dataset: {}, style: {},
-        get innerHTML() { return this._html; },
-        set innerHTML(v) { this._html = v; this.writes++; },
+        get textContent() { return this._html; },
+        set textContent(v) { this._html = v; this.writes++; },
         classList: mkClassList(classes),
         _child: child,
         querySelectorAll() { return [child]; },
@@ -70,7 +70,7 @@ function build(startData) {
     boutique: [], inventaire: [], entites: [],
   }, startData);
   const doc = makeDoc();
-  let saves = 0, blocksDisp = 0, tooltips = 0, checkEnt = 0, checkMisc = 0;
+  let saves = 0, blocksDisp = 0, tooltips = 0, checkEnt = 0, checkMisc = 0, restarts = 0;
   const mod = new Function('computeCost', 'computeYield', 'entities', 'shop', 'data', 'formatNumber', 'checkEntityAchievements', 'checkMiscAchievements', 'document', 'window', code)(
     computeCost, computeYield, entitiesCat, shopCat, data, n => String(Math.round(n)), () => checkEnt++, () => checkMisc++, doc, { scrollY: 0 }
   );
@@ -79,9 +79,9 @@ function build(startData) {
     refreshTooltips: () => tooltips++, computeGlobalYieldPerSecond: () => {
       let b = 0; data.entites.forEach(e => b += e.rendement_actuel * e.quantite * e.coefficient); return b || 1;
     },
-    buyUpgradeSound: { play() {} }, buyEntitySound: { play() {} },
+    buyUpgradeSound: { play() {} }, buyEntitySound: { play() {} }, restartAppleTimer: () => restarts++,
   });
-  return { mod, data, doc, stats: () => ({ saves, blocksDisp, tooltips, checkEnt, checkMisc }) };
+  return { mod, data, doc, stats: () => ({ saves, blocksDisp, tooltips, checkEnt, checkMisc, restarts }) };
 }
 
 let pass = 0, fail = 0;
@@ -107,6 +107,7 @@ console.log('--- buyUpgrade: effet pomme_or (délai x0.75) ---');
   const b = build({ blocsActuels: 200, delai_pommes_or_ms: 300000, boutique: [{ id: 11, nom: 'PommeUp', cout: 200, categorie: 'pomme_or' }] });
   b.mod.buyUpgrade('PommeUp');
   test('délai réduit de 25%', b.data.delai_pommes_or_ms, 225000);
+  test('pomme en attente reprogrammée (restartAppleTimer) (#15)', b.stats().restarts, 1);
 }
 
 console.log('--- buyUpgrade: effet entité (coefficient x2) ---');
@@ -185,7 +186,7 @@ console.log('--- DIRTY-CHECK: 2e appel identique = aucune réécriture DOM ---')
   const writesAfter1 = cout.writes + qty.writes;
   const opsAfter1 = entEl.classList.ops + cout.classList.ops;
   b.mod.updateEntities(); // 2e rendu : données inchangées -> rien ne doit bouger
-  test('innerHTML non réécrit au 2e appel', cout.writes + qty.writes, writesAfter1);
+  test('textContent non réécrit au 2e appel', cout.writes + qty.writes, writesAfter1);
   test('classes non re-togglées au 2e appel', entEl.classList.ops + cout.classList.ops, opsAfter1);
   test('1er appel a bien écrit quelque chose', writesAfter1 > 0, true);
 }
@@ -194,7 +195,7 @@ console.log('--- updateInventory: remplit le libellé ---');
 {
   const b = build({ inventaire: [{ id: 10 }] });
   b.mod.updateInventory();
-  test('libellé inventaire mis à jour', b.doc.getElementById('inventaire-label').innerHTML.includes('1/'), true);
+  test('libellé inventaire mis à jour', b.doc.getElementById('inventaire-label').textContent.includes('1/'), true);
 }
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
