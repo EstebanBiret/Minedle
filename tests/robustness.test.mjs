@@ -70,31 +70,31 @@ const sStart = src.indexOf('function saveProgress()');
 const sCode = src.slice(sStart, src.indexOf('\n}', sStart) + 2);
 function runSave(active) {
   const writes = [];
-  new Function('tabActive', 'localStorage', 'data', 'Date',
+  new Function('tabActive', 'safeSetItem', 'data', 'Date',
     'let lastPlaytimeTick = 0;\n' + sCode + '\nsaveProgress();')(
-    active, { setItem: (k, v) => writes.push(k) }, { x: 1 }, { now: () => 1000 });
+    active, (k) => { writes.push(k); return true; }, { x: 1 }, { now: () => 1000 });
   return writes.length;
 }
 test('onglet actif : écrit', runSave(true), 1);
 test('onglet gelé : n\'écrit PAS', runSave(false), 0);
 
-// setItem qui throw (quota plein / stockage indisponible) : saveProgress avale
-// l'erreur (le jeu continue) et n'alerte le joueur qu'une seule fois.
-function runSaveThrowing() {
+// écriture refusée (safeSetItem renvoie false : quota plein / stockage indisponible) :
+// saveProgress avale l'échec (le jeu continue) et n'alerte le joueur qu'une seule fois.
+function runSaveFailing() {
   let alerts = 0;
-  const sp = new Function('tabActive', 'localStorage', 'data', 'Date', 'alert',
+  const sp = new Function('tabActive', 'safeSetItem', 'data', 'Date', 'alert',
     'let lastPlaytimeTick = 0;\nlet saveErrorNotified = false;\n' + sCode + '\nreturn () => saveProgress();')(
     true,
-    { setItem: () => { throw new Error('QuotaExceededError'); } },
+    () => false,
     { x: 1 }, { now: () => 1000 },
     () => { alerts++; });
   let threw = false;
   try { sp(); sp(); } catch { threw = true; }
   return { threw, alerts };
 }
-const throwing = runSaveThrowing();
-test('quota plein : saveProgress n\'explose pas', throwing.threw, false);
-test('quota plein : alerte une seule fois (2 sauvegardes)', throwing.alerts, 1);
+const failing = runSaveFailing();
+test('écriture refusée : saveProgress n\'explose pas', failing.threw, false);
+test('écriture refusée : alerte une seule fois (2 sauvegardes)', failing.alerts, 1);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

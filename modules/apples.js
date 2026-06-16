@@ -5,7 +5,7 @@
 
 import { formatNumber } from "./format.js?v=1";
 import { pop } from "./particles.js?v=2";
-import { data, activeBonus, bonusEndTime, setActiveBonus, setBonusEndTime } from "./state.js?v=3";
+import { data, activeBonus, bonusEndTime, setActiveBonus, setBonusEndTime } from "./state.js?v=4";
 
 // filled in by initApples() from index.js
 let timeout, updateBlocksDisplay, saveProgress, checkGoldenAppleAchievements;
@@ -27,6 +27,11 @@ const INSTANT_GAIN_FRACTION = 0.3;
 const MEGA_CLICK_DURATION_S = 10;
 const FULL_MULTIPLIER_DURATION_S = 45;
 
+// id of the instantGain auto-remove timer. tracked so that activating another
+// bonus (or removing this one) can cancel it — otherwise a leftover timer would
+// fire ~3s later and clobber a freshly-activated timed bonus (mega/full).
+let instantGainTimer = null;
+
 // bonus definitions: each grants an effect and (optionally) lasts for a duration
 const bonus = {
     instantGain: {
@@ -35,7 +40,7 @@ const bonus = {
         effect: (x, y) => {
             showBonus(bonus.instantGain.message);
             gainBlocks(INSTANT_GAIN_FRACTION, x, y);
-            setTimeout(removeBonus, 3000);
+            instantGainTimer = setTimeout(removeBonus, 3000);
         }
     },
     megaClick: {
@@ -61,6 +66,8 @@ function showBonus(text) {
 }
 
 function removeBonus() {
+  clearTimeout(instantGainTimer); // cancel a pending instantGain auto-remove so it can't clobber a later bonus
+  instantGainTimer = null;
   setActiveBonus(null);
   setBonusEndTime(0);
   document.getElementById("bonusDisplay").style.display = "none";

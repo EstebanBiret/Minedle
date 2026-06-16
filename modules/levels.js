@@ -2,7 +2,7 @@
 // unlockAchievement is imported from achievements.js (one-directional); saveProgress
 // lives in index.js and is injected via initLevels().
 
-import { data, MAX_LEVEL } from "./state.js?v=3";
+import { data, MAX_LEVEL } from "./state.js?v=4";
 import { unlockAchievement } from "./achievements.js?v=2";
 
 const levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];

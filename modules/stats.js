@@ -1,7 +1,7 @@
 // statistics modal. index.js helpers (buyEntitySound, computeGlobalYieldPerSecond)
 // are injected via initStats(); everything else is imported one-directionally.
 
-import { data } from "./state.js?v=3";
+import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=1";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=2";

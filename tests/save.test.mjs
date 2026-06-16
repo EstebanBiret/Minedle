@@ -12,9 +12,9 @@ const shop = Array.from({length: 36}, (_, i) => ({ id: i + 1 }));
 const achievements = Array.from({length: 30}, (_, i) => ({ id: i + 1 }));
 const SAVE_FILE_APP = 'minedle';
 
-const { fnv1aHash, isValidSaveData } = new Function(
+const { fnv1aHash, isValidSaveData, isValidGameData } = new Function(
   'MAX_LEVEL', 'shop', 'achievements', 'SAVE_FILE_APP',
-  code + '\nreturn { fnv1aHash, isValidSaveData };'
+  code + '\nreturn { fnv1aHash, isValidSaveData, isValidGameData };'
 )(MAX_LEVEL, shop, achievements, SAVE_FILE_APP); // vrai code du fichier, dépendances injectées
 
 // --- Construire un export comme exportProgress le fait ---
@@ -67,6 +67,7 @@ test('objet vide', isValidSaveData({}), false);
 
 // Cas de schéma invalide : reconstruire avec checksum VALIDE pour tester la validation de schéma
 function makeBad(mutator) { const d = makeData(); mutator(d); return makeExport(d); }
+function makeBad2(mutator) { const d = makeData(); mutator(d); return d; } // data NU (sans enveloppe), pour isValidGameData
 test('champ numérique négatif', isValidSaveData(makeBad(d => d.pommes_or = -1)), false);
 test('champ numérique manquant', isValidSaveData(makeBad(d => delete d.bpc)), false);
 test('champ numérique NaN', isValidSaveData(makeBad(d => d.blocsActuels = NaN)), false);
@@ -83,6 +84,18 @@ test('id succès inconnu', isValidSaveData(makeBad(d => d.succes.push({ id: 31 }
 console.log('--- Cas limites valides ---');
 test('inventaire/succes vides (nouvelle partie)', isValidSaveData(makeExport({ ...makeData(), inventaire: [], succes: [], boutique: [] })), true);
 test('niveau 0 et MAX_LEVEL acceptés', isValidSaveData(makeExport({ ...makeData(), niveau: 0 })) && isValidSaveData(makeExport({ ...makeData(), niveau: 7 })), true);
+
+console.log('--- isValidGameData (validation du state nu : chemin de chargement localStorage) ---');
+// makeData() renvoie un objet data SANS enveloppe -> directement validable
+test('données de jeu valides (sans wrapper)', isValidGameData(makeData()), true);
+test('null rejeté', isValidGameData(null), false);
+test('objet vide rejeté', isValidGameData({}), false);
+test('entites manquant rejeté', isValidGameData(makeBad2(d => delete d.entites)), false);
+test('boutique pas un array rejetée', isValidGameData(makeBad2(d => d.boutique = null)), false);
+test('delai < 1000 rejeté', isValidGameData(makeBad2(d => d.delai_pommes_or_ms = 500)), false);
+test('niveau hors bornes rejeté', isValidGameData(makeBad2(d => d.niveau = 99)), false);
+test('id succès inconnu rejeté', isValidGameData(makeBad2(d => d.succes.push({ id: 31 }))), false);
+test('nouvelle partie nue (listes vides) acceptée', isValidGameData({ ...makeData(), inventaire: [], succes: [], boutique: [] }), true);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

@@ -3,7 +3,7 @@
 
 import { shop } from "../constants/shop.js?v=2";
 import { achievements } from "../constants/success.js?v=2";
-import { MAX_LEVEL } from "./state.js?v=3";
+import { MAX_LEVEL } from "./state.js?v=4";
 
 export const SAVE_FILE_APP = 'minedle';
 export const SAVE_FILE_VERSION = 1;
@@ -18,15 +18,11 @@ export function fnv1aHash(str) {
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
-// structural + integrity validation of an imported save file
-export function isValidSaveData(fileContent) {
-  if (!fileContent || typeof fileContent !== 'object') return false;
-  if (fileContent.app !== SAVE_FILE_APP) return false;
-  if (typeof fileContent.checksum !== 'string') return false;
-  if (!fileContent.payload || typeof fileContent.payload !== 'object') return false;
-  if (fnv1aHash(JSON.stringify(fileContent.payload)) !== fileContent.checksum) return false;
-
-  const d = fileContent.payload.data;
+// structural validation of the bare game-state object (the `data` payload, with
+// NO file wrapper). shared by the import path (isValidSaveData below) and the
+// localStorage load path (index.js), so a corrupted in-memory save is rejected
+// with the same rigor as a bad imported file.
+export function isValidGameData(d) {
   if (!d || typeof d !== 'object') return false;
 
   const numericFields = ['blocsDepuisToujours', 'blocsActuels', 'bpc', 'coefficientClic', 'blocsMinesAvecClics', 'pommes_or'];
@@ -58,4 +54,16 @@ export function isValidSaveData(fileContent) {
   }
 
   return true;
+}
+
+// structural + integrity validation of an imported save FILE (with wrapper):
+// checks the envelope and checksum, then delegates the state shape to isValidGameData.
+export function isValidSaveData(fileContent) {
+  if (!fileContent || typeof fileContent !== 'object') return false;
+  if (fileContent.app !== SAVE_FILE_APP) return false;
+  if (typeof fileContent.checksum !== 'string') return false;
+  if (!fileContent.payload || typeof fileContent.payload !== 'object') return false;
+  if (fnv1aHash(JSON.stringify(fileContent.payload)) !== fileContent.checksum) return false;
+
+  return isValidGameData(fileContent.payload.data);
 }

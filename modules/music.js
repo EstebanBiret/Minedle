@@ -1,7 +1,7 @@
 // ambient music: playback, mute/volume UI, and a draggable progress bar.
 // bgMusic is exported so other modules (e.g. the single-tab guard) can pause it.
 
-import { readStorageJSON } from "./state.js?v=3";
+import { readStorageJSON, safeSetItem } from "./state.js?v=4";
 
 const MUSIC_STORAGE_KEY = 'minedle-music';
 export const bgMusic = new Audio('./assets/audio/bg-music.mp3');
@@ -26,7 +26,7 @@ function applyMusicState() {
   musicIconOn.style.display = audible ? '' : 'none';
   musicIconOff.style.display = audible ? 'none' : '';
   musicSlider.value = Math.round(musicPrefs.volume * 100);
-  localStorage.setItem(MUSIC_STORAGE_KEY, JSON.stringify(musicPrefs));
+  safeSetItem(MUSIC_STORAGE_KEY, JSON.stringify(musicPrefs));
 
   if (audible && bgMusic.paused) {
     bgMusic.play().catch(() => {

@@ -1,7 +1,7 @@
 // offline production gains: production earned while the game was closed, shown in a modal.
 // computeGlobalYieldPerSecond, saveProgress and buyEntitySound live in index.js and are injected.
 
-import { data } from "./state.js?v=3";
+import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=1";
 
 const OFFLINE_RATE = 0.5;            // fraction of the normal production earned offline

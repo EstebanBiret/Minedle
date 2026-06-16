@@ -1,13 +1,15 @@
 # Tests
 
-228 tests automatisés répartis en 14 suites :
+253 tests automatisés répartis en 16 suites :
 
-- **save** — export/import/validation des sauvegardes (checksum, schéma)
+- **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
+- **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
 - **number-format** — formatage des nombres (espaces, virgules, abréviations)
 - **game-loops** — boucles de jeu et raccourcis clavier
 - **music** — musique d'ambiance (lecture, volume, barre de progression)
 - **background** — fond vidéo dynamique et repli
 - **golden-apple** — apparition et cycle de vie des pommes d'or
+- **bonus** — bonus des pommes d'or (activation, expiration, anti-clobber du timer instantGain)
 - **offline-gains** — gains de production hors-ligne
 - **robustness** — localStorage corrompu, garde multi-onglets
 - **tooltips-touch** — tooltips au survol et appui long tactile

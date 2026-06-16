@@ -5,7 +5,7 @@
 
 import { computeCost, computeYield, entities } from "../constants/entities.js?v=2";
 import { shop } from "../constants/shop.js?v=2";
-import { data } from "./state.js?v=3";
+import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=1";
 import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=2";
 

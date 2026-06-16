@@ -24,7 +24,7 @@ const els = { 'music-slider': makeEl(), 'music-toggle': makeEl(), 'music-icon-on
 els['music-slider'].value = '50';
 const documentMock = { getElementById: id => els[id], _clickHooks: [], addEventListener(ev, fn) { this._clickHooks.push(fn); } };
 
-const bgMusic = new Function('Audio', 'localStorage', 'document', 'readStorageJSON', code + '\nreturn bgMusic;')(MockAudio, localStorage, documentMock, (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } });
+const bgMusic = new Function('Audio', 'localStorage', 'document', 'readStorageJSON', 'safeSetItem', code + '\nreturn bgMusic;')(MockAudio, localStorage, documentMock, (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } }, (k, v) => { localStorage.setItem(k, v); return true; });
 const progress = els['music-progress'];
 
 let pass = 0, fail = 0;

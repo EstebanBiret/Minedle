@@ -17,9 +17,9 @@ function makeSaver({ active = true, startData } = {}) {
   let t = 1000000;
   const data = startData ?? { temps_de_jeu_ms: 0 };
   let writes = 0;
-  const sp = new Function('data', 'localStorage', 'Date', 'tabActive', 'lastPlaytimeTickInit',
+  const sp = new Function('data', 'safeSetItem', 'Date', 'tabActive', 'lastPlaytimeTickInit',
     'let lastPlaytimeTick = lastPlaytimeTickInit;\n' + spCode + '\nreturn () => saveProgress();')(
-    data, { setItem: () => writes++ }, { now: () => t }, active, 1000000);
+    data, () => { writes++; return true; }, { now: () => t }, active, 1000000);
   return { data, sp, advance: ms => { t += ms; }, getWrites: () => writes };
 }
 

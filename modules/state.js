@@ -14,6 +14,19 @@ export function readStorageJSON(key, fallback) {
   }
 }
 
+// safe localStorage write: storage may be full or unavailable (quota exceeded,
+// private browsing). returns true on success, false otherwise — callers decide
+// how to surface the failure (e.g. a one-shot notice). never throws.
+export function safeSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    console.warn(`Minedle : écriture impossible pour "${key}" (stockage plein ou indisponible).`, error);
+    return false;
+  }
+}
+
 // shape of a brand-new game
 // highest mining tier (stone -> ... -> diamond)
 export const MAX_LEVEL = 7;
@@ -51,7 +64,11 @@ export const DEFAULT_DATA = {
 // the live game state, loaded from storage (or a fresh game).
 // importers read `data` directly; ES live bindings mean they always see the
 // latest object, including after setData() reassigns it.
-export let data = readStorageJSON('minedle-data', DEFAULT_DATA);
+// a brand-new game (or a corrupted/unreadable entry) gets a DEEP CLONE of
+// DEFAULT_DATA, never the template itself — otherwise gameplay mutations would
+// pollute DEFAULT_DATA and a later reset would no longer be pristine.
+// structural validation of a parseable-but-malformed entry happens in index.js.
+export let data = readStorageJSON('minedle-data', null) ?? structuredClone(DEFAULT_DATA);
 
 // active golden-apple bonus (read across the game loops; written via the setters)
 export let activeBonus = null;

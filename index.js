@@ -4,12 +4,12 @@ import { refreshTooltips } from "./modules/tooltips.js?v=2";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=1";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
-import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime } from "./modules/state.js?v=3";
-import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=4";
-import { fnv1aHash, isValidSaveData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=2";
+import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime, safeSetItem } from "./modules/state.js?v=4";
+import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=5";
+import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=2";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
-import { bgMusic } from "./modules/music.js?v=1";
+import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
 
 window.buyEntity = buyEntity 
@@ -67,8 +67,13 @@ let blockImg = document.getElementById('bloc-img')
 
 blockImg.addEventListener('click', mineBlock);
 
-// bonus
-if(data === DEFAULT_DATA) localStorage.setItem('minedle-data', JSON.stringify(data)); // first save
+// a corrupted or tampered localStorage entry must never reach the game loops:
+// validate the loaded save with the same rules as an imported file, else reset
+// to a fresh (cloned) default state.
+if (!isValidGameData(data)) setData(structuredClone(DEFAULT_DATA));
+
+// first save: persist the fresh state so a brand-new game survives a reload
+if (!localStorage.getItem('minedle-data')) safeSetItem('minedle-data', JSON.stringify(data));
 
 
 // the sacred call
@@ -110,7 +115,7 @@ function init() {
   updatePickaxeEntityImage();
 }
 
-// update game data in localStorage
+// update game data in localStorage (via safeSetItem, which never throws).
 // one-shot guard for the "storage full" notice: saveProgress runs every ~5s and
 // on every click, so we warn the player at most once per session (no alert spam).
 let saveErrorNotified = false;
@@ -120,17 +125,11 @@ function saveProgress() {
   data.temps_de_jeu_ms = (data.temps_de_jeu_ms || 0) + (nowTs - lastPlaytimeTick); 
   lastPlaytimeTick = nowTs;
   data.derniere_visite = nowTs;
-  try {
-    localStorage.setItem('minedle-data', JSON.stringify(data));
-  } catch (err) {
-    // storage full or unavailable (quota exceeded, private browsing, etc.):
-    // the in-memory state stays valid so the game keeps running; we just warn
-    // the player once so they can export their save before losing anything.
-    console.warn('Minedle : sauvegarde impossible', err);
-    if (!saveErrorNotified) {
-      saveErrorNotified = true;
-      alert("Impossible de sauvegarder ta progression : l'espace de stockage du navigateur est plein ou indisponible. Pense à exporter ta sauvegarde depuis les paramètres pour ne rien perdre.");
-    }
+  // safeSetItem returns false on quota/unavailable storage; the in-memory state
+  // stays valid so the game keeps running — we just warn the player once.
+  if (!safeSetItem('minedle-data', JSON.stringify(data)) && !saveErrorNotified) {
+    saveErrorNotified = true;
+    alert("Impossible de sauvegarder ta progression : l'espace de stockage du navigateur est plein ou indisponible. Pense à exporter ta sauvegarde depuis les paramètres pour ne rien perdre.");
   }
 }
 

@@ -4,7 +4,7 @@
 // (refreshTooltips, computeGlobalYieldPerSecond) are injected via initAchievements().
 
 import { achievements } from "../constants/success.js?v=2";
-import { data } from "./state.js?v=3";
+import { data } from "./state.js?v=4";
 
 const achievementUnlockedSound = new Audio('./assets/audio/success.mp3');
 achievementUnlockedSound.volume = 0.5;
