@@ -4,7 +4,7 @@
 // no risk of index.js being instantiated twice under a different URL).
 
 import { formatNumber } from "./format.js?v=1";
-import { pop } from "./particles.js?v=2";
+import { pop } from "./particles.js?v=3";
 import { data, activeBonus, bonusEndTime, setActiveBonus, setBonusEndTime } from "./state.js?v=4";
 
 // filled in by initApples() from index.js
@@ -205,7 +205,16 @@ export function spawnGoldenApple() {
 
   // so the apple can be clicked boldly, fluidly and assertively
   apple.addEventListener("click", () => goldenAppleClick(apple));
-  requestAnimationFrame(updateApple);
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // reduced motion: no spin/scale/fade — show the apple static (full size and
+    // opacity) but keep it clickable, and remove it after the same lifetime
+    apple.style.opacity = '1';
+    apple.style.transform = `scale(${taille})`;
+    setTimeout(() => apple.remove(), vieTotale * 1000 / 60);
+  } else {
+    requestAnimationFrame(updateApple);
+  }
 }
 
 // (re)start the spawn timer — called by init() in index.js

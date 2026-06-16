@@ -37,6 +37,10 @@ function createParticle(x, y) {
 
 // burst of particles around a clicked golden apple
 export function pop(apple) {
+  // decorative burst only: skip entirely under reduced motion (the apple's
+  // bonus is granted separately by the caller, so nothing functional is lost)
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
   const amount = 30;
 
   const rect = apple.getBoundingClientRect();

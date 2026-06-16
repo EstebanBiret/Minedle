@@ -21,7 +21,7 @@ function makeWorld() {
     classList: { add(c) { tooltip.classes.add(c); }, remove(c) { tooltip.classes.delete(c); } },
     getBoundingClientRect: () => ({ width: 100, height: 50 }),
   };
-  const el = { dataset: { tooltipTitle: 'Pioche en or', tooltipContentDeux: 'Mine plus vite' }, closest: () => el };
+  const el = { dataset: { tooltipTitle: 'Pioche en or', tooltipContentDeux: 'Mine plus vite' }, closest: () => el, getBoundingClientRect: () => ({ left: 10, right: 60, top: 20, bottom: 40, width: 50, height: 20 }) };
   const elsewhere = { closest: () => null }; // a target outside any tooltip element
   const docHandlers = {};
   const documentMock = {
@@ -77,6 +77,17 @@ docHandlers['mouseover']({ target: el });
 test('mouseover : visible + contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].textContent], [true, 'Pioche en or']);
 docHandlers['mouseout']({ target: el });
 test('mouseout : caché', tooltip.classes.has('visible'), false);
+
+console.log('--- Focus clavier : tooltip affiché puis masqué (Tab) ---');
+({ el, tooltip, fields, docHandlers } = makeWorld());
+docHandlers['focusin']({ target: el });
+test('focusin : visible + bon contenu', [tooltip.classes.has('visible'), fields['tooltip-title'].textContent], [true, 'Pioche en or']);
+test('positionné selon le rectangle de l\'élément (+10px)', [tooltip.style.left, tooltip.style.top], ['70px', '30px']);
+docHandlers['focusout']({ target: el });
+test('focusout : masqué', tooltip.classes.has('visible'), false);
+let fw = makeWorld();
+fw.docHandlers['focusin']({ target: fw.elsewhere });
+test('focus hors zone tooltip : ignoré', fw.tooltip.classes.has('visible'), false);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

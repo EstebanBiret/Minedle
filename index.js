@@ -1,12 +1,12 @@
 import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=7";
 import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=3";
-import { refreshTooltips } from "./modules/tooltips.js?v=3";
+import { refreshTooltips } from "./modules/tooltips.js?v=4";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=3";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
 import { trapFocus } from "./modules/focus-trap.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
 import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime, safeSetItem } from "./modules/state.js?v=4";
-import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=6";
+import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=7";
 import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=6";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";

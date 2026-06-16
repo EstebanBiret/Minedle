@@ -11,7 +11,7 @@ const test = (name, actual, expected) => {
   console.log(`  ${ok ? '✓' : '✗ ÉCHEC'} ${name}${ok ? '' : ` (attendu ${JSON.stringify(expected)}, obtenu ${JSON.stringify(actual)})`}`);
 };
 
-function makeWorld(t0, existingApples = []) {
+function makeWorld(t0, existingApples = [], reducedMotion = false) {
   const w = { now: t0, raf: [], timeouts: [], existing: existingApples };
   const node = {
     style: {}, isConnected: true, removeCalls: 0, _h: {},
@@ -27,7 +27,7 @@ function makeWorld(t0, existingApples = []) {
   const spawn = new Function('document','window','performance','requestAnimationFrame',
     'clearTimeout','setTimeout','appleTimer','data','goldenAppleClick',
     code + '\nreturn spawnGoldenApple;')(
-    documentMock, { innerWidth: 1920, innerHeight: 1080 }, { now: () => w.now },
+    documentMock, { innerWidth: 1920, innerHeight: 1080, matchMedia: () => ({ matches: reducedMotion }) }, { now: () => w.now },
     cb => w.raf.push(cb), () => {}, (fn, ms) => { w.timeouts.push(ms); return 1; },
     null, { delai_pommes_or_ms: 168750 }, () => {});
   w.tick = t => { w.now = t; const cbs = w.raf.splice(0); cbs.forEach(cb => cb(t)); };
@@ -70,6 +70,14 @@ const opacityBefore = node.style.opacity;
 w.tick(2000);
 test('après clic : aucune mise à jour de style', node.style.opacity, opacityBefore);
 test('après clic : boucle rAF stoppée', w.raf.length, 0);
+
+console.log('--- prefers-reduced-motion : pomme statique mais cliquable ---');
+({ w, node, spawn } = makeWorld(1000, [], true));
+spawn();
+test('opacité pleine (pas de fondu)', node.style.opacity, '1');
+test('échelle pleine, sans rotation', node.style.transform, 'scale(1.6)');
+test('aucune frame rAF planifiée', w.raf.length, 0);
+test('retrait planifié après la durée de vie (55s)', w.timeouts.includes(55000), true);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

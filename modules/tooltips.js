@@ -34,6 +34,19 @@ export function refreshTooltips() {
     if (visible) updateTooltipPosition(event);
   });
 
+  // --- keyboard: focusing a tooltip element shows its tooltip (Tab navigation) ---
+  document.addEventListener("focusin", event => {
+    const el = event.target.closest(".tooltip-element");
+    if (!el) return;
+    showTooltipFor(el);
+    const rect = el.getBoundingClientRect(); // no mouse coords on focus: anchor to the element
+    updateTooltipPosition({ pageX: rect.right, pageY: rect.top });
+  });
+
+  document.addEventListener("focusout", event => {
+    if (event.target.closest(".tooltip-element")) hideTooltip();
+  });
+
   // --- touch: a long press shows the tooltip, a quick tap keeps its normal action ---
   document.addEventListener("touchstart", event => {
     const el = event.target.closest(".tooltip-element");

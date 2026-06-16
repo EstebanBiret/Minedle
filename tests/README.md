@@ -1,6 +1,6 @@
 # Tests
 
-337 tests automatisés répartis en 25 suites :
+347 tests automatisés répartis en 26 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -9,7 +9,8 @@
 - **save-throttle** — coalescence des sauvegardes au clic (~1/s : écriture immédiate puis une écriture de rattrapage)
 - **music** — musique d'ambiance (lecture, volume, barre de progression)
 - **background** — fond vidéo dynamique et repli
-- **golden-apple** — apparition et cycle de vie des pommes d'or
+- **golden-apple** — apparition et cycle de vie des pommes d'or (animée, ou statique sous reduced-motion)
+- **particles** — éclat de particules de la pomme d'or conditionné par prefers-reduced-motion
 - **bonus** — bonus des pommes d'or (activation, expiration, anti-clobber du timer instantGain)
 - **offline-gains** — gains de production hors-ligne
 - **robustness** — localStorage corrompu, garde multi-onglets
