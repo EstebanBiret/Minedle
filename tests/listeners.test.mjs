@@ -17,9 +17,9 @@ const test = (name, actual, expected) => {
 console.log('--- keydown : enregistré 1x au chargement, jamais par clic ---');
 {
   const src = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
-  // slice from the settings click registration to window.onclick (covers the keydown registration)
+  // slice from the settings click registration to the delegated click handler (covers the keydown registration)
   const start = src.indexOf("document.getElementById('parametres').addEventListener('click'");
-  const end = src.indexOf('window.onclick');
+  const end = src.indexOf('// delegated click handling');
   const code = src.slice(start, end);
 
   let keydownCount = 0;

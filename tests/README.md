@@ -1,6 +1,6 @@
 # Tests
 
-306 tests automatisés répartis en 22 suites :
+325 tests automatisés répartis en 23 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -22,8 +22,9 @@
 - **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué)
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 - **notification-queue** — file d'attente des notifications de succès (un affichage à la fois, enchaînement à la fin)
-- **hygiene** — garde-fous source : aucun `innerHTML`, fins de ligne LF, `prefers-reduced-motion` couvre float/bounce/fade-up
+- **hygiene** — garde-fous source : aucun `innerHTML`, fins de ligne LF, `prefers-reduced-motion` couvre float/bounce/fade-up, aucun `onclick` inline, CSP présente, globals `window.*` supprimés
 - **focus-trap** — piège de focus des modales : focus initial, cycle `Tab`/`Shift+Tab`, restauration du focus à la fermeture
+- **click-actions** — écouteur de clic délégué : routage de chaque `data-action` vers la bonne fonction + fermeture des modales au clic sur le fond
 
 ## Lancer en local
 

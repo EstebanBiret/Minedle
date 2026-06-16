@@ -30,5 +30,18 @@ test('cible #bloc-img (float)', block.includes('#bloc-img'), true);
 test('cible .bloc-img-entite:hover (bounce)', block.includes('.bloc-img-entite:hover'), true);
 test('cible .fade-up', block.includes('.fade-up'), true);
 
+// #7 : plus de handler onclick inline, CSP présente, globals window.* supprimés
+console.log('--- #7 : onclick inline supprimés + CSP ---');
+const html = read('index.html');
+test('aucun onclick inline dans index.html', /\bonclick=/.test(html), false);
+const csp = read('index.html');
+test('balise CSP présente', csp.includes('http-equiv="Content-Security-Policy"'), true);
+test("CSP : script-src 'self'", /script-src[^;]*'self'/.test(csp), true);
+const indexJs = read('index.js');
+const removedGlobals = ['buyEntity', 'buyUpgrade', 'openStatsModal', 'closeStatsModal', 'closeSettingsModal',
+  'closeOfflineModal', 'importProgress', 'exportProgress', 'deleteProgress'];
+const leaked = removedGlobals.filter(g => indexJs.includes(`window.${g}`));
+test('aucun global window.* d\'action restant', leaked, []);
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

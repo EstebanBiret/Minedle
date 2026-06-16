@@ -13,16 +13,7 @@ import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
 
-window.buyEntity = buyEntity 
-window.buyUpgrade = buyUpgrade 
-window.openStatsModal = openStatsModal
-window.closeStatsModal = closeStatsModal
-window.closeSettingsModal = closeSettingsModal 
-window.closeOfflineModal = closeOfflineModal
 
-window.importProgress = importProgress 
-window.exportProgress = exportProgress 
-window.deleteProgress = deleteProgress 
 
 console.log('Bienvenue jeune explorateur !');
 
@@ -353,10 +344,27 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-window.onclick = function(event) {
-  if (event.target === document.getElementById('parametres-modal')) closeSettingsModal();
-  if (event.target === document.getElementById('stats-modal')) closeStatsModal();
-}
+// delegated click handling: data-action buttons (replaces the old inline onclick
+// attributes and window.* globals) plus closing a modal by clicking its backdrop.
+document.addEventListener('click', (event) => {
+  if (event.target === document.getElementById('parametres-modal')) { closeSettingsModal(); return; }
+  if (event.target === document.getElementById('stats-modal')) { closeStatsModal(); return; }
+
+  const trigger = event.target.closest('[data-action]');
+  if (!trigger) return;
+  switch (trigger.dataset.action) {
+    case 'buy-entity':     buyEntity(trigger.dataset.nom); break;
+    case 'buy-upgrade':    buyUpgrade(trigger.dataset.nom); break;
+    case 'open-stats':     openStatsModal(); break;
+    case 'close-stats':    closeStatsModal(); break;
+    case 'close-settings': closeSettingsModal(); break;
+    case 'close-offline':  closeOfflineModal(); break;
+    case 'import':         importProgress(); break;
+    case 'export':         exportProgress(); break;
+    case 'delete':         deleteProgress(); break;
+    case 'reload':         location.reload(); break;
+  }
+});
 
 // game loop, refreshes every hundredth of a second
 // production logic: 100 ticks per second (smooth numbers)

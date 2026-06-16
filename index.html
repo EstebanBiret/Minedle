@@ -2,6 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://i.ibb.co; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
     <link rel="stylesheet" href="style.css?v=14" />
@@ -71,7 +72,7 @@
             </div>
             <input type="range" id="music-progress" class="mc-slider" min="0" max="100" value="0" aria-label="Position dans la musique"/>
           </div>
-          <div id="stats-button" class="mc-ui-box" role="button" tabindex="0" onclick="openStatsModal()">
+          <div id="stats-button" class="mc-ui-box" role="button" tabindex="0" data-action="open-stats">
             <span>Stats</span>
           </div>
         </div>
@@ -109,7 +110,7 @@
         <div id="section-entites">
 
         <script id="entite-template" type="text/template">
-          <div class="mc-bar-ui entite tooltip-element disabled" role="button" tabindex="0" onclick="buyEntity(&quot;{{nom}}&quot;)" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
+          <div class="mc-bar-ui entite tooltip-element disabled" role="button" tabindex="0" data-action="buy-entity" data-nom="{{nom}}" id="{{nom}}-entite" data-tooltip-title="{{nom}}" data-tooltip-content='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
@@ -130,7 +131,7 @@
         <div id="section-boutique">
 
         <script id="boutique-template" type="text/template">
-          <div class="mc-bar-ui boutique tooltip-element disabled" role="button" tabindex="0" onclick="buyUpgrade(&quot;{{nom}}&quot;)" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
+          <div class="mc-bar-ui boutique tooltip-element disabled" role="button" tabindex="0" data-action="buy-upgrade" data-nom="{{nom}}" id="{{nom}}-amelioration" data-tooltip-title="{{nom}}" data-tooltip-content-deux='{{description}}'>
               <img src="{{image}}" alt="Image de {{nom}}" class="entite-img disabled"/>
             <div class="mid-section">
               <p class="entite-txt">{{nom}}</p>
@@ -247,7 +248,7 @@
       <p>Pendant ton absence (<span id="hors-ligne-duree"></span>),<br/>tes entités ont miné :</p>
       <p id="hors-ligne-gain" class="green-text"></p>
       <div class="mc-ui-button">
-        <div class="title" role="button" tabindex="0" onclick="closeOfflineModal()">Continuer</div>
+        <div class="title" role="button" tabindex="0" data-action="close-offline">Continuer</div>
       </div>
     </div>
   </div>
@@ -256,24 +257,24 @@
     <div class="mc-ui-box">
       <p>Minedle est ouvert dans un autre onglet.</p>
       <div class="mc-ui-button">
-        <div class="title" role="button" tabindex="0" onclick="location.reload()">Jouer ici</div>
+        <div class="title" role="button" tabindex="0" data-action="reload">Jouer ici</div>
       </div>
     </div>
   </div>
 
   <div id="parametres-modal" class="modal" role="dialog" aria-modal="true" aria-label="Paramètres">
     <div id="parametres-modal-content" class="mc-ui-box">
-      <span class="close" onclick="closeSettingsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <span class="close" data-action="close-settings" role="button" tabindex="0" aria-label="Fermer">&times;</span>
       <p id="parametres-title">Paramètres</p>
 
       <div id="importer-progression" class="mc-ui-button">
-        <div class="title" onclick="importProgress()" role="button" tabindex="0">Importer la progression</div>
+        <div class="title" data-action="import" role="button" tabindex="0">Importer la progression</div>
       </div>
       <div id="exporter-progression" class="mc-ui-button">
-        <div class="title" onclick="exportProgress()" role="button" tabindex="0">Exporter la progression</div>
+        <div class="title" data-action="export" role="button" tabindex="0">Exporter la progression</div>
       </div>
       <div id="supprimer-progression" class="mc-ui-button">
-        <div class="title" onclick="deleteProgress()" role="button" tabindex="0">Supprimer la progression</div>
+        <div class="title" data-action="delete" role="button" tabindex="0">Supprimer la progression</div>
       </div>
 
     </div>
@@ -281,7 +282,7 @@
 
   <div id="stats-modal" class="modal" role="dialog" aria-modal="true" aria-label="Statistiques">
     <div id="stats-modal-content" class="mc-ui-box">
-      <span class="close" onclick="closeStatsModal()" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <span class="close" data-action="close-stats" role="button" tabindex="0" aria-label="Fermer">&times;</span>
       <p id="stats-title">Statistiques</p>
 
       <div id="stats-list">
@@ -300,6 +301,6 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=24"></script>
+  <script type="module" src="index.js?v=25"></script>
   </body>
 </html>
