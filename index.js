@@ -1,8 +1,9 @@
 import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=6";
-import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=2";
+import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=3";
 import { refreshTooltips } from "./modules/tooltips.js?v=3";
-import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=2";
-import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=1";
+import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=3";
+import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
+import { trapFocus } from "./modules/focus-trap.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
 import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime, safeSetItem } from "./modules/state.js?v=4";
 import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=6";
@@ -53,6 +54,7 @@ if ('BroadcastChannel' in window) {
     tabActive = false;
     bgMusic.pause();
     document.getElementById('autre-onglet').style.display = 'flex';
+    trapFocus(document.getElementById('autre-onglet')); // confine focus to the reload button
   });
 }
 

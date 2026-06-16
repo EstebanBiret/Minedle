@@ -53,14 +53,15 @@ function runStats(data) {
   els['stats-button'] = { focusCalls: 0, focus() { this.focusCalls++; } };
   const closeBtn = { focusCalls: 0, focus() { this.focusCalls++; } };
   let sounds = 0;
+  let trapCalls = [], releaseCalls = [];
   const w = {};
-  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS',
+  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus',
     stCode + '\nreturn { openStatsModal, closeStatsModal };')(
     { getElementById: id => els[id], querySelector: () => closeBtn },
     data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',
-    new Array(36), 30);
+    new Array(36), 30, m => trapCalls.push(m), m => releaseCalls.push(m));
   Object.assign(w, api); // the window.* bindings now live in index.js, not in stats.js
-  return { els, closeBtn, w, getSounds: () => sounds };
+  return { els, closeBtn, w, getSounds: () => sounds, trapCalls, releaseCalls };
 }
 
 const sample = {
@@ -79,11 +80,11 @@ test('entités (somme des quantités)', r.els['stat-entites'].textContent, '10')
 test('améliorations x / 36', r.els['stat-ameliorations'].textContent, '3 / 36');
 test('succès x / 30', r.els['stat-succes'].textContent, '2 / 30');
 test('modale stats affichée', r.els['stats-modal'].style.display, 'block');
-test('focus sur la croix', r.closeBtn.focusCalls, 1);
+test('trapFocus armé sur la modale stats', r.trapCalls[0] === r.els['stats-modal'], true);
 test('un seul son joué', r.getSounds(), 1);
 
 r.w.closeStatsModal();
-test('fermeture : stats masquée + focus bouton Stats', [r.els['stats-modal'].style.display, r.els['stats-button'].focusCalls], ['none', 1]);
+test('fermeture : stats masquée + releaseFocus appelé', [r.els['stats-modal'].style.display, r.releaseCalls.length], ['none', 1]);
 
 r = runStats({ ...sample, blocsDepuisToujours: 0, blocsMinesAvecClics: 0 });
 r.w.openStatsModal();

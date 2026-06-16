@@ -3,6 +3,7 @@
 
 import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=1";
+import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
 
 const OFFLINE_RATE = 0.5;            // fraction of the normal production earned offline
 const OFFLINE_CAP_MS = 12 * 3600000; // gains stop accumulating after 12 hours away
@@ -31,9 +32,11 @@ export function grantOfflineGains() {
   document.getElementById('hors-ligne-duree').textContent = formatDuration(elapsed);
   document.getElementById('hors-ligne-gain').textContent = `+ ${formatNumber(gain)} blocs`;
   document.getElementById('hors-ligne').style.display = 'flex';
+  trapFocus(document.getElementById('hors-ligne')); // focus the "Continuer" button + confine Tab
 }
 
 export function closeOfflineModal() {
   buyEntitySound.play();
   document.getElementById('hors-ligne').style.display = 'none';
+  releaseFocus(document.getElementById('hors-ligne')); // remove the trap + restore focus
 }

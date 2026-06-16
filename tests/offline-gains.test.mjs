@@ -20,9 +20,9 @@ function run({ lastSeen, bps, now }) {
   const data = { derniere_visite: lastSeen, blocsActuels: 1000, blocsDepuisToujours: 5000 };
   const els = { 'hors-ligne-duree': { textContent: '' }, 'hors-ligne-gain': { textContent: '' }, 'hors-ligne': { style: { display: 'none' } } };
   let saves = 0;
-  const fn = new Function('data', 'computeGlobalYieldPerSecond', 'saveProgress', 'formatNumber', 'formatDuration', 'document', 'window', 'Date',
+  const fn = new Function('data', 'computeGlobalYieldPerSecond', 'saveProgress', 'formatNumber', 'formatDuration', 'document', 'window', 'Date', 'trapFocus', 'releaseFocus',
     code)(
-    data, () => bps, () => saves++, n => String(Math.round(n)), formatDuration, { getElementById: id => els[id] }, {}, { now: () => now });
+    data, () => bps, () => saves++, n => String(Math.round(n)), formatDuration, { getElementById: id => els[id] }, {}, { now: () => now }, () => {}, () => {});
   return { data, els, saves, api: { formatDuration } };
 }
 

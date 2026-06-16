@@ -5,6 +5,7 @@ import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=1";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=5";
+import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
 
 // injected from index.js
 let buyEntitySound, computeGlobalYieldPerSecond;
@@ -31,11 +32,11 @@ export function openStatsModal() {
   document.getElementById('stat-succes').textContent = `${data.succes.length} / ${TOTAL_ACHIEVEMENTS}`;
 
   document.getElementById('stats-modal').style.display = 'block';
-  document.querySelector('#stats-modal .close').focus();
+  trapFocus(document.getElementById('stats-modal')); // focus into the modal + confine Tab
 }
 
 export function closeStatsModal() {
   buyEntitySound.play();
   document.getElementById('stats-modal').style.display = 'none';
-  document.getElementById('stats-button').focus();
+  releaseFocus(document.getElementById('stats-modal')); // remove the trap + restore focus to the trigger
 }

@@ -49,9 +49,9 @@ function runTab() {
   const bgMusic = { pauseCalls: 0, pause() { this.pauseCalls++; } };
   const overlay = { style: { display: 'none' } };
   const documentMock = { getElementById: () => overlay };
-  const api = new Function('window', 'document', 'bgMusic', 'BroadcastChannel',
+  const api = new Function('window', 'document', 'bgMusic', 'BroadcastChannel', 'trapFocus',
     'let tabActive = true;\n' + tCode + '\nreturn { isActive: () => tabActive };')(
-    { BroadcastChannel: BC }, documentMock, bgMusic, BC);
+    { BroadcastChannel: BC }, documentMock, bgMusic, BC, () => {});
   return { state, bgMusic, overlay, api };
 }
 let { state, bgMusic, overlay, api } = runTab();

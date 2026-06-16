@@ -1,6 +1,6 @@
 # Tests
 
-291 tests automatisés répartis en 21 suites :
+306 tests automatisés répartis en 22 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -23,6 +23,7 @@
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 - **notification-queue** — file d'attente des notifications de succès (un affichage à la fois, enchaînement à la fin)
 - **hygiene** — garde-fous source : aucun `innerHTML`, fins de ligne LF, `prefers-reduced-motion` couvre float/bounce/fade-up
+- **focus-trap** — piège de focus des modales : focus initial, cycle `Tab`/`Shift+Tab`, restauration du focus à la fermeture
 
 ## Lancer en local
 

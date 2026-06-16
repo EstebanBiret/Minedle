@@ -1,4 +1,5 @@
 // settings modal. buyEntitySound lives in index.js and is injected.
+import { trapFocus, releaseFocus } from './focus-trap.js?v=1';
 
 // injected from index.js
 let buyEntitySound;
@@ -9,12 +10,14 @@ export function initSettings(deps) {
 
 export function openSettingsModal() {
   buyEntitySound.play();
-  document.getElementById('parametres-modal').style.display = 'block';
-  document.querySelector('#parametres-modal .close').focus();
+  const modal = document.getElementById('parametres-modal');
+  modal.style.display = 'block';
+  trapFocus(modal); // focus into the modal + confine Tab
 }
 
 export function closeSettingsModal() {
   buyEntitySound.play();
-  document.getElementById('parametres-modal').style.display = 'none';
-  document.getElementById('parametres').focus();
+  const modal = document.getElementById('parametres-modal');
+  modal.style.display = 'none';
+  releaseFocus(modal); // remove the trap + restore focus to the trigger
 }
