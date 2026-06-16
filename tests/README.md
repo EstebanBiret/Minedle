@@ -1,6 +1,6 @@
 # Tests
 
-333 tests automatisés répartis en 24 suites :
+337 tests automatisés répartis en 25 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -21,6 +21,7 @@
 - **clear-grid** — réinitialisation des grilles inventaire/succès (sans cloneNode, bornes = .length)
 - **entities-shape** — constante des entités (pas de référence DOM morte, champs statiques conservés)
 - **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué)
+- **grids** — génération des grilles inventaire/succès depuis le catalogue (une case par id, conteneur absent toléré)
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 - **notification-queue** — file d'attente des notifications de succès (un affichage à la fois, enchaînement à la fin)
 - **hygiene** — garde-fous source : aucun `innerHTML`, fins de ligne LF, `prefers-reduced-motion` couvre float/bounce/fade-up, aucun `onclick` inline, CSP présente, globals `window.*` supprimés

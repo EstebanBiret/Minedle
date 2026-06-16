@@ -142,6 +142,7 @@ export function updateAchievements() {
   data.succes.forEach(a => {
     const achievementItem = achievements.find(item => item.id === a.id);
     const td = document.getElementById(`succes-${a.id}`);
+    if (!achievementItem || !td) return; // unknown id or missing cell: skip (must never throw)
     td.textContent = '';
     td.appendChild(document.createElement('img')).src = achievementItem.image;
 

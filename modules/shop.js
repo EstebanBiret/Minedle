@@ -7,7 +7,7 @@ import { computeCost, computeYield, entities } from "../constants/entities.js?v=
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=1";
-import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=5";
+import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=6";
 
 // injected from index.js
 let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer;
@@ -235,6 +235,7 @@ export function updateInventory() {
   data.inventaire.forEach(a => {
     const inventoryItem = shop.find(item => item.id === a.id);
     const td = document.getElementById(`inventaire-${a.id}`);
+    if (!inventoryItem || !td) return; // unknown id or missing cell: skip (must never throw)
     td.textContent = '';
     td.appendChild(document.createElement('img')).src = inventoryItem.image;
 
