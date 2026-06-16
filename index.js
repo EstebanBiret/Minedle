@@ -126,41 +126,56 @@ function saveProgress() {
   }
 }
 
+// clicks can fire very fast (held key, autoclicker), and each saveProgress() is a
+// synchronous full-state localStorage write. this coalesces click-driven saves to
+// at most one per second: the first call writes immediately, calls within the
+// window are folded into a single trailing write. all other save paths (purchases,
+// level-ups, the 5 s interval, tab hide/close) keep calling saveProgress() directly.
+let clickSaveTimer = null;
+let clickSavePending = false;
+function saveProgressThrottled() {
+  if (clickSaveTimer) { clickSavePending = true; return; }
+  saveProgress();
+  clickSaveTimer = setTimeout(() => {
+    clickSaveTimer = null;
+    if (clickSavePending) { clickSavePending = false; saveProgressThrottled(); }
+  }, 1000);
+}
+
+// remember the last applied highlight state so the ~20x/s display loop only
+// rewrites the bonus styling when it actually changes, not on every tick.
+let lastBpsBoosted = null;
+let lastBpcBoosted = null;
+
+function setBoostStyle(el, boosted) {
+  el.style.color = boosted ? "#6f6" : "";
+  el.style.textShadow = boosted ? "0px 1px 4px black" : "none";
+  el.style.fontWeight = boosted ? "bold" : "normal";
+}
+
 // update mined blocks display and per-second info
 function updateBlocksDisplay() {
   let bps = computeGlobalYieldPerSecond();
   let bpc = data.bpc * data.coefficientClic;
 
-  // if FullMultiplier is active, multiply BPS
-  if (activeBonus === "fullMultiplier") {
-    bps *= FULL_MULTIPLIER;
-    blocksPerSecondText.style.color = "#6f6";
-    blocksPerSecondText.style.textShadow = "0px 1px 4px black";
-    blocksPerSecondText.style.fontWeight = "bold";
-  } else {
-    blocksPerSecondText.style.color = "";
-    blocksPerSecondText.style.textShadow = "none";
-    blocksPerSecondText.style.fontWeight = "normal";
+  // BPS is boosted only by FullMultiplier
+  const bpsBoosted = activeBonus === "fullMultiplier";
+  if (bpsBoosted) bps *= FULL_MULTIPLIER;
+  if (bpsBoosted !== lastBpsBoosted) {
+    lastBpsBoosted = bpsBoosted;
+    setBoostStyle(blocksPerSecondText, bpsBoosted);
   }
 
-  // if MegaClick is active, multiply BPC
-  if (activeBonus === "megaClick") {
-    bpc *= MEGA_CLICK_MULTIPLIER;
-    blocksPerClickText.style.color = "#6f6";
-    blocksPerClickText.style.textShadow = "0px 1px 4px black";
-    blocksPerClickText.style.fontWeight = "bold";
-  } else if (activeBonus === "fullMultiplier") {
-    bpc *= FULL_MULTIPLIER;
-    blocksPerClickText.style.color = "#6f6";
-    blocksPerClickText.style.textShadow = "0px 1px 4px black";
-    blocksPerClickText.style.fontWeight = "bold";
-  } else {
-    blocksPerClickText.style.color = "";
-    blocksPerClickText.style.textShadow = "none";
-    blocksPerClickText.style.fontWeight = "normal";
+  // BPC is boosted by MegaClick or FullMultiplier
+  const bpcBoosted = activeBonus === "megaClick" || activeBonus === "fullMultiplier";
+  if (activeBonus === "megaClick") bpc *= MEGA_CLICK_MULTIPLIER;
+  else if (activeBonus === "fullMultiplier") bpc *= FULL_MULTIPLIER;
+  if (bpcBoosted !== lastBpcBoosted) {
+    lastBpcBoosted = bpcBoosted;
+    setBoostStyle(blocksPerClickText, bpcBoosted);
   }
 
-  // update the values display
+  // values change continuously, so these always update
   currentBlocksText.textContent = formatNumber(data.blocsActuels);
   blocksPerSecondText.textContent = 'par seconde : ' + formatNumber(bps);
   blocksPerClickText.textContent = 'par clic : ' + formatNumber(bpc);
@@ -217,10 +232,10 @@ function mineBlock(event) {
 
   checkLevelUp();
   checkClickAchievements();
-  updateEntities();
-  updateShop();
+  // entity/shop cost & affordability are refreshed by the 50 ms display loop;
+  // on click we only need the immediate block-count feedback.
   updateBlocksDisplay();
-  saveProgress();
+  saveProgressThrottled(); // coalesced so rapid clicking won't hammer localStorage
 }
 
 // tooltips
@@ -366,16 +381,22 @@ document.addEventListener('click', (event) => {
   }
 });
 
-// game loop, refreshes every hundredth of a second
-// production logic: 100 ticks per second (smooth numbers)
+// game loop: production accrues on REAL elapsed time (delta-time), not a fixed
+// amount per tick. browsers throttle a backgrounded tab's setInterval to ~1 s
+// instead of 10 ms, so fixed-amount ticking would lose ~99% of background
+// production; measuring elapsed time keeps it accurate whatever the tick rate.
+// production logic: real-time accrual
+let lastProductionTick = performance.now();
 setInterval(() => {
-  let currentProduction = computeGlobalYieldPerSecond() / 100;
+  const now = performance.now();
+  const elapsedSeconds = (now - lastProductionTick) / 1000;
+  lastProductionTick = now;
 
-  // check whether the FullMultiplier bonus is active
-  if (activeBonus === "fullMultiplier") currentProduction *= FULL_MULTIPLIER;
+  let production = computeGlobalYieldPerSecond() * elapsedSeconds;
+  if (activeBonus === "fullMultiplier") production *= FULL_MULTIPLIER;
 
-  data.blocsActuels += currentProduction;
-  data.blocsDepuisToujours += currentProduction;
+  data.blocsActuels += production;
+  data.blocsDepuisToujours += production;
 }, 10);
 
 // display & game state checks

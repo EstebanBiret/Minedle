@@ -1,11 +1,12 @@
 # Tests
 
-325 tests automatisés répartis en 23 suites :
+333 tests automatisés répartis en 24 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
 - **number-format** — formatage des nombres (espaces, virgules, abréviations)
-- **game-loops** — boucles de jeu et raccourcis clavier
+- **game-loops** — boucles de jeu (production en temps réel) et raccourcis clavier
+- **save-throttle** — coalescence des sauvegardes au clic (~1/s : écriture immédiate puis une écriture de rattrapage)
 - **music** — musique d'ambiance (lecture, volume, barre de progression)
 - **background** — fond vidéo dynamique et repli
 - **golden-apple** — apparition et cycle de vie des pommes d'or

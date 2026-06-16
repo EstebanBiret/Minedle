@@ -19,22 +19,27 @@ const docListeners = {}, winListeners = {};
 const documentMock = { addEventListener: (ev, fn) => docListeners[ev] = fn, visibilityState: 'visible' };
 const windowMock = { addEventListener: (ev, fn) => winListeners[ev] = fn };
 const data = { blocsActuels: 0, blocsDepuisToujours: 0 };
+let nowMs = 1000; // controllable clock injected as performance.now() for the delta-time loop
 
 new Function('setInterval','document','window','data','activeBonus','missingAchievements',
   'computeGlobalYieldPerSecond','updateEntities','updateShop','checkLevelUp',
-  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER',
+  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER','performance',
   loopsCode)(
   (fn, ms) => intervals.push({ fn, ms }),
   documentMock, windowMock, data, null, [1],
   () => 100, mk('updateEntities'), mk('updateShop'), mk('checkLevelUp'),
-  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7
+  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7, { now: () => nowMs }
 );
 
 test('4 intervalles enregistrés', intervals.map(i => i.ms), [10, 50, 5000, 1000]);
 
 const logic = intervals.find(i => i.ms === 10).fn;
-logic(); logic();
-test('tick logique : production ajoutée (2 ticks de 1 bloc)', [data.blocsActuels, data.blocsDepuisToujours], [2, 2]);
+// the loop captured lastProductionTick at nowMs = 1000; production is now
+// proportional to REAL elapsed time, so a tick adds rate × elapsed.
+nowMs = 2000; logic(); // 1 s elapsed at 100/s -> +100
+test('tick logique : production proportionnelle au temps (1 s -> 100)', [data.blocsActuels, data.blocsDepuisToujours], [100, 100]);
+nowMs = 4000; logic(); // 2 s in a single (throttled) tick -> +200, nothing lost
+test('tick logique espacé de 2 s : +200 (pas de perte en arrière-plan)', [data.blocsActuels, data.blocsDepuisToujours], [300, 300]);
 test('tick logique : AUCUN appel DOM ni sauvegarde', Object.values(calls).every(v => v === 0), true);
 
 const display = intervals.find(i => i.ms === 50).fn;
