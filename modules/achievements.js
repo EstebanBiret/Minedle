@@ -30,9 +30,6 @@ export function clearAchievements() {
       achievementCell.removeAttribute('data-tooltip-title');
       achievementCell.removeAttribute('data-tooltip-content-deux');
       achievementCell.classList.remove('tooltip-element');
-
-      let newElement = achievementCell.cloneNode(true); // clone to remove the attached tooltip event
-      achievementCell.parentNode.replaceChild(newElement, achievementCell);
     }
   }
 }

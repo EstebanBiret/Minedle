@@ -7,7 +7,7 @@ import { computeCost, computeYield, entities } from "../constants/entities.js?v=
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=1";
-import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=2";
+import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=3";
 
 // injected from index.js
 let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound;
@@ -264,9 +264,6 @@ export function clearInventory() {
       inventoryCell.removeAttribute('data-tooltip-content-deux');
       inventoryCell.removeAttribute('data-tooltip-rendement-ratio');
       inventoryCell.classList.remove('tooltip-element');
-
-      let newElement = inventoryCell.cloneNode(true); // clone to remove the attached tooltip event
-      inventoryCell.parentNode.replaceChild(newElement, inventoryCell);
     }
   }
 }

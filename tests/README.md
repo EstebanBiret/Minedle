@@ -1,6 +1,6 @@
 # Tests
 
-253 tests automatisés répartis en 16 suites :
+270 tests automatisés répartis en 18 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -17,6 +17,8 @@
 - **levels** — passage des paliers de minerai (seuils, succès associés)
 - **achievements** — conditions de déblocage des succès (par catégorie)
 - **shop** — achats (améliorations, entités), effets, et dirty-check du DOM
+- **clear-grid** — réinitialisation des grilles inventaire/succès (sans cloneNode, tooltips délégués)
+- **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué)
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 
 ## Lancer en local
