@@ -1,6 +1,6 @@
 # Tests
 
-350 tests automatisés répartis en 26 suites :
+353 tests automatisés répartis en 26 suites :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
@@ -21,7 +21,7 @@
 - **shop** — achats (améliorations, entités), effets, et dirty-check du DOM
 - **clear-grid** — réinitialisation des grilles inventaire/succès (sans cloneNode, bornes = .length)
 - **entities-shape** — constante des entités (pas de référence DOM morte, champs statiques conservés)
-- **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué)
+- **html-structure** — hygiène HTML (rien après la fermeture du body, script dans le body, pas d'id dupliqué, ids de coût entité/amélioration namespacés)
 - **grids** — génération des grilles inventaire/succès depuis le catalogue (une case par id, conteneur absent toléré)
 - **listeners** — enregistrement correct des écouteurs (keydown au top level, tooltips câblés une seule fois)
 - **notification-queue** — file d'attente des notifications de succès (un affichage à la fois, enchaînement à la fin, annonce SR via aria-live)

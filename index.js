@@ -1,4 +1,4 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=7";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=8";
 import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=3";
 import { refreshTooltips } from "./modules/tooltips.js?v=4";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=3";
@@ -9,7 +9,7 @@ import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, b
 import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=8";
 import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=7";
-import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
+import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=2";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
 import "./modules/grids.js?v=1"; // builds the inventory + achievement grid cells from the catalogue

@@ -125,7 +125,7 @@ export function updateShop() {
     setBloque(upgradeElement, locked);
 
     // then check whether it can be bought
-    const coutElement = document.getElementById(`${upgrade.nom}-cout`);
+    const coutElement = document.getElementById(`${upgrade.nom}-amelioration-cout`);
     setAffordable(upgradeElement, coutElement, data.blocsActuels >= a.cout);
     setText(coutElement, formatNumber(Math.round(upgrade.cout)));
   });
@@ -207,7 +207,7 @@ export function updateEntities() {
     setBloque(entityElement, false);
 
     // then, if the entity is shown, check whether it can be bought
-    const coutElement = document.getElementById(`${entity.nom}-cout`);
+    const coutElement = document.getElementById(`${entity.nom}-entite-cout`);
     setAffordable(entityElement, coutElement, data.blocsActuels >= e.cout_actuel);
 
     setText(document.getElementById(`${entity.nom}-quantite`), formatNumber(e.quantite));

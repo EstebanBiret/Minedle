@@ -180,7 +180,7 @@ console.log('--- DIRTY-CHECK: 2e appel identique = aucune réécriture DOM ---')
 {
   const b = build({ blocsActuels: 1000, blocsDepuisToujours: 150, entites: [{ nom: 'Villageois', quantite: 3, cout_actuel: 50, rendement_actuel: 2, coefficient: 1 }] });
   b.mod.updateEntities(); // 1er rendu : écrit
-  const cout = b.doc.getElementById('Villageois-cout');
+  const cout = b.doc.getElementById('Villageois-entite-cout');
   const qty = b.doc.getElementById('Villageois-quantite');
   const entEl = b.doc.getElementById('Villageois-entite');
   const writesAfter1 = cout.writes + qty.writes;

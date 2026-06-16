@@ -6,6 +6,19 @@ import { data, MAX_LEVEL } from "./state.js?v=4";
 import { unlockAchievement } from "./achievements.js?v=7";
 
 const levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];
+
+// blocks needed to advance FROM each tier (index = current level) and the achievement granted on arrival;
+// indexed parallel to `levels`, so the last tier (diamond) has no entry.
+const levelUps = [
+  { threshold: 1000, achievement: 1 },       // stone -> coal
+  { threshold: 10000, achievement: 2 },      // coal -> iron
+  { threshold: 100000, achievement: 3 },     // iron -> gold
+  { threshold: 1000000, achievement: 4 },    // gold -> redstone
+  { threshold: 10000000, achievement: 5 },   // redstone -> lapis
+  { threshold: 100000000, achievement: 6 },  // lapis -> emerald
+  { threshold: 2000000000, achievement: 7 }, // emerald -> diamond
+];
+
 let levelIndex = 0;
 
 // injected from index.js
@@ -16,59 +29,24 @@ export function initLevels(deps) {
 }
 
 export function checkLevelUp() {
-  if(levelIndex == MAX_LEVEL) return;
-  const currentLevel = levels[levelIndex];
-  switch (currentLevel) {
-    case 'stone':
-      if (data.blocsDepuisToujours >= 1000) {
-        increaseLevel();
-        unlockAchievement(1);
-      }
-      break;
-    case 'coal':
-      if (data.blocsDepuisToujours >= 10000) {
-        increaseLevel();
-        unlockAchievement(2);
-      }
-      break;
-    case 'iron':
-      if (data.blocsDepuisToujours >= 100000) {
-        increaseLevel();
-        unlockAchievement(3);
-      }
-      break;
-    case 'gold':
-      if (data.blocsDepuisToujours >= 1000000) {
-        increaseLevel();
-        unlockAchievement(4);
-      }
-      break;
-    case 'redstone':
-      if (data.blocsDepuisToujours >= 10000000) {
-        increaseLevel();
-        unlockAchievement(5);
-      }
-      break;
-    case 'lapis':
-      if (data.blocsDepuisToujours >= 100000000) {
-        increaseLevel();
-        unlockAchievement(6);
-      }
-      break;
-    case 'emerald':
-      if (data.blocsDepuisToujours >= 2000000000) {
-        increaseLevel();
-        unlockAchievement(7);
-      }
-      break;
+  if (levelIndex >= MAX_LEVEL) return;
+  const step = levelUps[levelIndex]; // captured before increaseLevel() advances the index
+  if (data.blocsDepuisToujours >= step.threshold) {
+    increaseLevel();
+    unlockAchievement(step.achievement);
   }
+}
+
+// point the main block and every entity's block icon at the current tier's texture
+function setBlockImage(level) {
+  const src = `assets/blocks/${level}.webp`;
+  document.getElementById('bloc-img').src = src;
+  document.querySelectorAll('.bloc-img-entite').forEach(e => e.src = src);
 }
 
 function increaseLevel() {
   levelIndex++;
-  let newBlock = levels[levelIndex];
-  document.getElementById('bloc-img').src = `assets/blocks/${newBlock}.webp`;
-  document.querySelectorAll('.bloc-img-entite').forEach(e => e.src = `assets/blocks/${newBlock}.webp`);
+  setBlockImage(levels[levelIndex]);
   data.niveau = levelIndex;
   saveProgress();
 }
@@ -76,7 +54,5 @@ function increaseLevel() {
 // when returning to the game, restore the current level
 export function updateLevel() {
   levelIndex = data.niveau;
-  let newBlock = levels[levelIndex];
-  document.getElementById('bloc-img').src = `assets/blocks/${newBlock}.webp`;
-  document.querySelectorAll('.bloc-img-entite').forEach(e => e.src = `assets/blocks/${newBlock}.webp`);
+  setBlockImage(levels[levelIndex]);
 }

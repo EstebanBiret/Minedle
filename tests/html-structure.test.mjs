@@ -23,5 +23,10 @@ test('script module avant </body>', scriptPos < bodyClose, true);
 console.log('--- #12 : plus d\'id dupliqué x-entite ---');
 test('aucun id="x-entite" (le template en générait 10)', html.includes('id="x-entite"'), false);
 
+console.log('--- #6 : ids de coût namespacés (entité ≠ amélioration, pas de collision) ---');
+test('template entité : id de coût en -entite-cout', html.includes('id="{{nom}}-entite-cout"'), true);
+test('template amélioration : id de coût en -amelioration-cout', html.includes('id="{{nom}}-amelioration-cout"'), true);
+test('plus aucun id="{{nom}}-cout" nu (collision potentielle entité/amélioration)', html.includes('id="{{nom}}-cout"'), false);
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);
