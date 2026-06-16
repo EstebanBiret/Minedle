@@ -3,11 +3,11 @@
 // saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond)
 // are injected via initShop() to avoid importing the entry point.
 
-import { computeCost, computeYield, entities } from "../constants/entities.js?v=2";
+import { computeCost, computeYield, entities } from "../constants/entities.js?v=3";
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=1";
-import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=3";
+import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=4";
 
 // injected from index.js
 let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound;
@@ -56,8 +56,8 @@ function setRatio(el, ratio) {
 }
 
 export function buyUpgrade(upgradeName) {
-  let index = data.boutique.findIndex(a => a.nom === upgradeName);
-  const upgrade = data.boutique.find(a => a.nom === upgradeName);
+  const index = data.boutique.findIndex(a => a.nom === upgradeName);
+  const upgrade = data.boutique[index];
   if (!upgrade || data.blocsActuels < upgrade.cout) return;
   buyUpgradeSound.play();
   // remove from the shop
@@ -256,7 +256,7 @@ export function updateInventory() {
 
 // remove all inventory elements from the DOM
 export function clearInventory() {
-  for (let i = 1; i <= 36; i++) {
+  for (let i = 1; i <= shop.length; i++) {
     let inventoryCell = document.getElementById(`inventaire-${i}`);
     if (inventoryCell) {
       inventoryCell.innerHTML = '';

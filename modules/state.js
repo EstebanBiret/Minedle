@@ -1,7 +1,7 @@
 // central game state: the saved data object lives here so that any module can
 // read it via the live import binding, and reassign it through setData().
 
-import { entities } from "../constants/entities.js?v=2";
+import { entities } from "../constants/entities.js?v=3";
 import { shop } from "../constants/shop.js?v=2";
 
 // safe localStorage read: a corrupted entry must never brick the game

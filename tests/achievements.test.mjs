@@ -121,6 +121,14 @@ console.log('--- checkMiscAchievements (25 de chaque) ---');
   test('toutes >= 25 : succès #27', ids(b.data), [27]);
 }
 
+console.log('--- #10 : data.succes ne stocke que l\'id (pas l\'objet complet) ---');
+{
+  const b = build({ pommes_or: 3 });
+  b.mod.checkGoldenAppleAchievements(); // débloque le succès 5
+  test('l\'entrée débloquée est exactement { id }', b.data.succes, [{ id: 5 }]);
+  test('aucune donnée d\'affichage stockée (nom/image/categorie)', b.data.succes.every(s => Object.keys(s).join() === 'id'), true);
+}
+
 console.log('--- unlockAchievement: idempotence + robustesse ---');
 {
   const b = build({ pommes_or: 3 });

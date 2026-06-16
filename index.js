@@ -1,4 +1,4 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=4";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=5";
 import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=1";
 import { refreshTooltips } from "./modules/tooltips.js?v=2";
 import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=1";
@@ -7,7 +7,7 @@ import { formatNumber, formatDuration } from "./modules/format.js?v=1";
 import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime, safeSetItem } from "./modules/state.js?v=4";
 import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=5";
 import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
-import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=3";
+import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=4";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";

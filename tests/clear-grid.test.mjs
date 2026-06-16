@@ -35,28 +35,32 @@ function makeCell() {
   return cell;
 }
 
-function runClear(code, fnName) {
+function runClear(code, fnName, depName, depLen) {
   const cell = makeCell();
-  new Function('document', `${code}\n${fnName}();`)({ getElementById: () => cell });
-  return cell;
+  let calls = 0;
+  const doc = { getElementById: () => { calls++; return cell; } };
+  new Function('document', depName, `${code}\n${fnName}();`)(doc, { length: depLen });
+  return { cell, calls };
 }
 
-console.log('--- clearInventory réinitialise la cellule (#8) ---');
-let c = runClear(clearInventoryCode, 'clearInventory');
+console.log('--- clearInventory réinitialise la cellule (#8) + borne = shop.length (#9) ---');
+let { cell: c, calls } = runClear(clearInventoryCode, 'clearInventory', 'shop', 5);
 test('contenu vidé', c.innerHTML, '');
 test('classe tooltip-element retirée', c.classList.contains('tooltip-element'), false);
 test('autres classes préservées', c.classList.contains('autre-classe'), true);
 test('attributs tooltip retirés', ['data-tooltip-title', 'data-tooltip-content-deux', 'data-tooltip-rendement-ratio'].every(a => c.removed.includes(a)), true);
 test('AUCUN cloneNode (code mort supprimé)', c.cloned, false);
 test('AUCUN replaceChild (le nœud n\'est plus échangé)', c.parentNode.replaced, false);
+test('la boucle suit shop.length, pas un 36 en dur (#9)', calls, 5);
 
-console.log('--- clearAchievements réinitialise la cellule (#8) ---');
-c = runClear(clearAchievementsCode, 'clearAchievements');
+console.log('--- clearAchievements réinitialise la cellule (#8) + borne = achievements.length (#9) ---');
+({ cell: c, calls } = runClear(clearAchievementsCode, 'clearAchievements', 'achievements', 8));
 test('contenu vidé', c.innerHTML, '');
 test('classe tooltip-element retirée', c.classList.contains('tooltip-element'), false);
 test('attributs tooltip retirés', ['data-tooltip-title', 'data-tooltip-content-deux'].every(a => c.removed.includes(a)), true);
 test('AUCUN cloneNode (code mort supprimé)', c.cloned, false);
 test('AUCUN replaceChild', c.parentNode.replaced, false);
+test('la boucle suit achievements.length, pas un 30 en dur (#9)', calls, 8);
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

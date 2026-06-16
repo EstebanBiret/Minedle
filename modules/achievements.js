@@ -23,7 +23,7 @@ export function initAchievements(deps) {
 }
 
 export function clearAchievements() {
-  for (let i = 1; i <= 30; i++) {
+  for (let i = 1; i <= achievements.length; i++) {
     let achievementCell = document.getElementById(`succes-${i}`);
     if (achievementCell) {
       achievementCell.innerHTML = '';
@@ -164,7 +164,7 @@ export function unlockAchievement(id) {
   // find the achievement in the missing list
   const achievementToUnlock = missingAchievements.find(s => s.id === id);
   if (!achievementToUnlock) return; // achievement already unlocked or nonexistent
-  data.succes.push(achievementToUnlock);
+  data.succes.push({ id: achievementToUnlock.id }); // store only the id (display data comes from the catalogue) — smaller saves, no aliasing
   updateAchievements();
   refreshTooltips();
   achievementNotification(id);
