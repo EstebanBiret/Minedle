@@ -61,8 +61,11 @@ const bonus = {
 
 function showBonus(text) {
   const display = document.getElementById("bonusDisplay");
-  display.innerText = text;
+  display.textContent = text;
   display.style.display = "block";
+  // screen-reader announcement (the per-second visual countdown stays silent to avoid spamming)
+  const announce = document.getElementById("sr-announce");
+  if (announce) announce.textContent = text;
 }
 
 function removeBonus() {
@@ -83,7 +86,7 @@ export function updateBonusDisplay() {
       removeBonus();
       return;
     }
-    document.getElementById("bonusDisplay").innerText = `${bonus[activeBonus].message} (${timeRemaining}s)`;
+    document.getElementById("bonusDisplay").textContent = `${bonus[activeBonus].message} (${timeRemaining}s)`;
   }
 }
 
@@ -112,13 +115,13 @@ function gainBlocks(percentage, x, y) {
 function activateBonus(type, x, y) {
   if (activeBonus) removeBonus();
 
-  const b0nus = bonus[type];
-  if (!b0nus) return;
+  const bonusDef = bonus[type];
+  if (!bonusDef) return;
 
   setActiveBonus(type);
-  setBonusEndTime(Date.now() + b0nus.duration * 1000);
+  setBonusEndTime(Date.now() + bonusDef.duration * 1000);
 
-  b0nus.effect(x, y);
+  bonusDef.effect(x, y);
   updateBonusDisplay();
 }
 

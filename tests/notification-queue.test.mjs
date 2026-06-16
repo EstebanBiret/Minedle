@@ -31,8 +31,9 @@ const catalogue = [
 function setup() {
   const bodyAppends = [];          // notification divs appended to <body>
   const timers = [];               // captured setTimeout callbacks
+  const announce = makeEl();
   const doc = {
-    getElementById: () => makeEl(),
+    getElementById: (id) => id === 'sr-announce' ? announce : makeEl(),
     createElement: () => makeEl(),
     body: { appendChild: (c) => { bodyAppends.push(c); return c; } },
   };
@@ -41,7 +42,7 @@ function setup() {
     catalogue, data, doc, class { play() {} }, (fn, ms) => { timers.push({ fn, ms }); return timers.length; }
   );
   mod.initAchievements({ refreshTooltips: () => {}, computeGlobalYieldPerSecond: () => 0 });
-  return { mod, bodyAppends, timers, data };
+  return { mod, bodyAppends, timers, data, announce };
 }
 
 // fire the completion (5000ms) timer of the notification currently on screen
@@ -57,10 +58,12 @@ s.mod.unlockAchievement(2);
 s.mod.unlockAchievement(3);
 test('les 3 succès sont bien débloqués', s.data.succes.map(x => x.id), [1, 2, 3]);
 test('une seule notification affichée (les 2 autres en file)', s.bodyAppends.length, 1);
+test('#11 : annonce SR du 1er succès affiché', s.announce.textContent, 'Succès obtenu : A1');
 
 console.log('--- la file enchaîne à la fin de chaque notification ---');
 fireCompletion(s.timers);
 test('2e notification après la fin de la 1re', s.bodyAppends.length, 2);
+test('#11 : annonce SR mise à jour pour le 2e succès', s.announce.textContent, 'Succès obtenu : A2');
 fireCompletion(s.timers);
 test('3e notification après la fin de la 2e', s.bodyAppends.length, 3);
 fireCompletion(s.timers);

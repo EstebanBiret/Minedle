@@ -4,6 +4,7 @@
 // (refreshTooltips, computeGlobalYieldPerSecond) are injected via initAchievements().
 
 import { achievements } from "../constants/success.js?v=2";
+import { entities } from "../constants/entities.js?v=3";
 import { data } from "./state.js?v=4";
 
 const achievementUnlockedSound = new Audio('./assets/audio/success.mp3');
@@ -98,8 +99,9 @@ export function checkEntityAchievements() {
   // first check whether all achievements are done
   if(missingAchievements.length === 0) return;
 
-  // get all missing entity achievements
-  const entityAchievements = missingAchievements.filter(s => s.categorie === 'Pioche' || s.categorie === 'Villageois' || s.categorie === 'Poulet' || s.categorie === 'Zombie' || s.categorie === 'Mineshaft' || s.categorie === 'Champimeuh' || s.categorie === 'Araignée' || s.categorie === 'Golem de neige' || s.categorie === 'Wither' || s.categorie === 'Portail de l’End');
+  // entity achievements: those whose category matches an entity name (derived from the catalogue, so adding an entity needs no edit here)
+  const entityCategories = new Set(entities.map(e => e.nom));
+  const entityAchievements = missingAchievements.filter(s => entityCategories.has(s.categorie));
 
   // all achievements unlocked for this type
   if(entityAchievements.length === 0) return;
@@ -123,11 +125,11 @@ export function checkMiscAchievements() {
   if(miscAchievements.length === 0) return;
 
   // check whether we have at least 25 of each entity
-  let tenOfEach = true;
+  let twentyFiveOfEach = true;
   data.entites.forEach(e => {
-    if(e.quantite < 25) tenOfEach = false;
+    if(e.quantite < 25) twentyFiveOfEach = false;
   });
-  if(tenOfEach) unlockAchievement(27);
+  if(twentyFiveOfEach) unlockAchievement(27);
 }
 
 export function updateAchievements() {
@@ -187,6 +189,10 @@ function showNextNotification() {
   const targetAchievement = notificationQueue.shift();
   if (!targetAchievement) { notificationActive = false; return; }
   notificationActive = true;
+
+  // screen-reader announcement of the unlocked achievement
+  const announce = document.getElementById("sr-announce");
+  if (announce) announce.textContent = `Succès obtenu : ${targetAchievement.nom}`;
 
   achievementUnlockedSound.play();
 

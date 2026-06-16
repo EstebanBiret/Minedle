@@ -15,6 +15,10 @@ const sources = ['index.js', 'modules/apples.js', 'modules/tooltips.js', 'module
 const withInner = sources.filter(f => read(f).includes('innerHTML'));
 test("aucun fichier source n'utilise innerHTML", withInner, []);
 
+// #15 : idem pour innerText (textContent partout — évite un reflow inutile et reste cohérent)
+const withInnerText = sources.filter(f => read(f).includes('innerText'));
+test("aucun fichier source n'utilise innerText", withInnerText, []);
+
 // #17 : fins de ligne normalisées en LF (aucun CR)
 console.log('--- #17 : fins de ligne LF ---');
 for (const f of ['constants/shop.js', 'constants/success.js']) {

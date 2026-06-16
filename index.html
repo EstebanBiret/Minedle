@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=15" />
+    <link rel="stylesheet" href="style.css?v=16" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -166,8 +166,8 @@
 
     <div id="credits" class="mc-ui-box">
       <span>Crédits : 
-        <span id="surtom" class="tooltip-element" data-tooltip-title="Design" data-tooltip-content-deux="Tooltips & interfaces de coffre dans le style de Minecraft">Surtom, </span>
-        <span id="cookie" class="tooltip-element" data-tooltip-title="Gameplay" data-tooltip-content-deux="Mécanique du site inspiré du célèbre jeu 'Cookie Clicker'">Cookie Clicker</span>
+        <span id="surtom" class="tooltip-element" tabindex="0" aria-label="Surtom — Design : tooltips et interfaces de coffre dans le style de Minecraft" data-tooltip-title="Design" data-tooltip-content-deux="Tooltips & interfaces de coffre dans le style de Minecraft">Surtom, </span>
+        <span id="cookie" class="tooltip-element" tabindex="0" aria-label="Cookie Clicker — Gameplay : mécanique du site inspirée du célèbre jeu Cookie Clicker" data-tooltip-title="Gameplay" data-tooltip-content-deux="Mécanique du site inspiré du célèbre jeu 'Cookie Clicker'">Cookie Clicker</span>
       </span>
     </div>
   <div id="tooltip" class="transparent">
@@ -235,6 +235,8 @@
 
   <div id="bonusDisplay"></div>
 
-  <script type="module" src="index.js?v=28"></script>
+  <div id="sr-announce" role="status" aria-live="polite" class="sr-only"></div>
+
+  <script type="module" src="index.js?v=29"></script>
   </body>
 </html>

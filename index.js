@@ -6,9 +6,9 @@ import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/s
 import { trapFocus } from "./modules/focus-trap.js?v=1";
 import { formatNumber, formatDuration } from "./modules/format.js?v=1";
 import { readStorageJSON, DEFAULT_DATA, MAX_LEVEL, data, setData, activeBonus, bonusEndTime, safeSetItem } from "./modules/state.js?v=4";
-import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=7";
+import { initApples, spawnGoldenApple, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=8";
 import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
-import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=6";
+import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=7";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=1";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
@@ -182,7 +182,7 @@ function updateBlocksDisplay() {
   blocksPerClickText.textContent = 'par clic : ' + formatNumber(bpc);
 }
 
-// format the block count for better readability
+// sum the per-second yield across all owned entities
 function computeGlobalYieldPerSecond() {
   let bps = 0;
   data.entites.forEach(e => {

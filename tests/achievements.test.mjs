@@ -41,14 +41,17 @@ const catalogue = [
   { id: 27, categorie: 'divers', nom: '25 de chaque', description: '', image: '' },
 ];
 
+// entities catalogue mock: checkEntityAchievements derives its category set from entity names
+const entitiesMock = [{ nom: 'Villageois' }];
+
 function build(startData, bps = 0) {
   const data = Object.assign({
     succes: [], pommes_or: 0, blocsMinesAvecClics: 0, blocsDepuisToujours: 0,
     entites: [{ nom: 'Villageois', quantite: 0 }],
   }, startData);
   let tooltipRefreshes = 0;
-  const mod = new Function('achievements', 'data', 'document', 'Audio', 'setTimeout', code)(
-    catalogue, data, doc, class { play() {} constructor() {} }, () => {}
+  const mod = new Function('achievements', 'entities', 'data', 'document', 'Audio', 'setTimeout', code)(
+    catalogue, entitiesMock, data, doc, class { play() {} constructor() {} }, () => {}
   );
   mod.initAchievements({ refreshTooltips: () => tooltipRefreshes++, computeGlobalYieldPerSecond: () => bps });
   return { mod, data, getRefreshes: () => tooltipRefreshes };
