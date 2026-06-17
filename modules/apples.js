@@ -134,7 +134,7 @@ function goldenAppleClick(apple) {
 
   pop(apple);
   apple.remove();
-  goldenAppleSound.play();
+  goldenAppleSound.play()?.catch(() => {});
   data.pommes_or++;
   checkGoldenAppleAchievements();
 

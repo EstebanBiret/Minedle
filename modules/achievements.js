@@ -194,7 +194,7 @@ function showNextNotification() {
   const announce = document.getElementById("sr-announce");
   if (announce) announce.textContent = `Succès obtenu : ${targetAchievement.nom}`;
 
-  achievementUnlockedSound.play();
+  achievementUnlockedSound.play()?.catch(() => {});
 
   const div = document.createElement('div');
   div.classList.add('notification-succes');

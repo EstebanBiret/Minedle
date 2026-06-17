@@ -6,9 +6,9 @@ import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/s
 import { trapFocus } from "./modules/focus-trap.js?v=1";
 import { formatNumber } from "./modules/format.js?v=2";
 import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem } from "./modules/state.js?v=4";
-import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=9";
-import { fnv1aHash, isValidSaveData, isValidGameData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=3";
-import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=7";
+import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=10";
+import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=4";
+import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=8";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=2";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
@@ -25,11 +25,15 @@ const timeout = (div) => {
   }, 400)
 }
 
-// sounds
-const buyEntitySound = new Audio('./assets/audio/entity.mp3');
-const buyUpgradeSound = new Audio('./assets/audio/shop.mp3');
-buyEntitySound.volume = 0.5;
-buyUpgradeSound.volume = 0.5;
+// sounds. wrap each so a rejected play() (rapid replay, not-yet-loaded audio,
+// autoplay restrictions) never leaves an unhandled promise rejection.
+function makeSound(src, volume = 0.5) {
+  const audio = new Audio(src);
+  audio.volume = volume;
+  return { play: () => audio.play().catch(() => {}) };
+}
+const buyEntitySound = makeSound('./assets/audio/entity.mp3');
+const buyUpgradeSound = makeSound('./assets/audio/shop.mp3');
 
 // single-tab flag (see the BroadcastChannel block further down)
 let tabActive = true;
@@ -61,6 +65,10 @@ let blockImg = document.getElementById('bloc-img')
 
 blockImg.addEventListener('click', mineBlock);
 
+// reconcile the loaded save with the current catalogue (added/removed entities,
+// upgrades, achievements) BEFORE validating, so a content update never freezes
+// or wipes existing progress.
+setData(migrateData(data));
 // a corrupted or tampered localStorage entry must never reach the game loops:
 // validate the loaded save with the same rules as an imported file, else reset
 // to a fresh (cloned) default state.
@@ -284,7 +292,7 @@ function exportProgress() {
 
 // replace the current progress with an imported one (already validated)
 function applyImportedData(importedData) {
-  setData(importedData);
+  setData(migrateData(importedData)); // reconcile with the current catalogue (new/removed content)
   saveProgress();
   clearInventory();
   clearAchievements();

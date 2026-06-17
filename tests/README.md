@@ -1,8 +1,9 @@
 # Tests
 
-362 tests automatisés répartis en 26 suites (lancés via `npm test` ; lint via `npm run lint`) :
+377 tests automatisés répartis en 27 suites (lancés via `npm test` ; lint via `npm run lint`) :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
+- **save-migration** — réconciliation d'une sauvegarde avec le catalogue courant (ajout de contenu neuf, conservation de la progression, suppression des ids disparus)
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
 - **number-format** — formatage des nombres (espaces, virgules, abréviations, notation scientifique au-delà des quadrilliards, garde valeur non finie)
 - **game-loops** — boucles de jeu (production en temps réel) et raccourcis clavier

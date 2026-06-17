@@ -3,7 +3,8 @@
 
 import { shop } from "../constants/shop.js?v=2";
 import { achievements } from "../constants/success.js?v=2";
-import { MAX_LEVEL } from "./state.js?v=4";
+import { entities } from "../constants/entities.js?v=3";
+import { MAX_LEVEL, DEFAULT_DATA } from "./state.js?v=4";
 
 export const SAVE_FILE_APP = 'minedle';
 export const SAVE_FILE_VERSION = 1;
@@ -66,4 +67,51 @@ export function isValidSaveData(fileContent) {
   if (fnv1aHash(JSON.stringify(fileContent.payload)) !== fileContent.checksum) return false;
 
   return isValidGameData(fileContent.payload.data);
+}
+
+// reconcile a loaded/imported save with the CURRENT catalogue so a content update
+// (new or removed entities, upgrades, achievements) never freezes or wipes progress:
+// existing progress is kept, brand-new content is added, removed ids are dropped.
+// returns a fresh, fully-shaped state object (validated afterwards by the caller).
+export function migrateData(saved) {
+  const base = structuredClone(DEFAULT_DATA);
+  if (!saved || typeof saved !== 'object') return base;
+  const migrated = { ...base, ...saved }; // saved scalars win; any new default field is filled in
+
+  // entities: keep each saved entity (matched by name, missing fields backfilled from the
+  // catalogue), add brand-new entities at quantite 0, and drop entities no longer in the game.
+  const savedEntities = new Map(
+    (Array.isArray(saved.entites) ? saved.entites : [])
+      .filter(e => e && typeof e === 'object' && typeof e.nom === 'string')
+      .map(e => [e.nom, e])
+  );
+  migrated.entites = entities.map(def => {
+    const fresh = {
+      nom: def.nom, quantite: 0,
+      cout_initial: def.cout_initial, cout_actuel: def.cout_initial,
+      rendement_initial: def.rendement_initial, rendement_actuel: 0,
+      coefficient: def.coefficient,
+    };
+    const prev = savedEntities.get(def.nom);
+    return prev ? { ...fresh, ...prev, nom: def.nom } : fresh;
+  });
+
+  // upgrades: an id is either bought (inventaire) or available (boutique). drop unknown ids,
+  // and put every catalogue id the player hasn't bought back into the shop (new ones included).
+  const toItem = u => ({ id: u.id, nom: u.nom, cout: u.cout, categorie: u.categorie });
+  const boughtIds = new Set(
+    (Array.isArray(saved.inventaire) ? saved.inventaire : [])
+      .filter(u => u && typeof u === 'object')
+      .map(u => u.id)
+  );
+  migrated.inventaire = shop.filter(u => boughtIds.has(u.id)).map(toItem);
+  migrated.boutique = shop.filter(u => !boughtIds.has(u.id)).map(toItem);
+
+  // achievements: keep only the unlocked ones that still exist (drop removed ids)
+  const achievementIds = new Set(achievements.map(s => s.id));
+  migrated.succes = (Array.isArray(saved.succes) ? saved.succes : [])
+    .filter(s => s && typeof s === 'object' && achievementIds.has(s.id))
+    .map(s => ({ id: s.id }));
+
+  return migrated;
 }

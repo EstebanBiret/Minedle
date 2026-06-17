@@ -3,7 +3,7 @@
 // lives in index.js and is injected via initLevels().
 
 import { data, MAX_LEVEL } from "./state.js?v=4";
-import { unlockAchievement } from "./achievements.js?v=7";
+import { unlockAchievement } from "./achievements.js?v=8";
 
 const levels = ['stone', 'coal', 'iron', 'gold', 'redstone', 'lapis', 'emerald', 'diamond'];
 
