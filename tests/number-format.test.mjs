@@ -31,5 +31,14 @@ test(1_000_000_000, '1 milliard');
 test(3_140_000_000, '3,14 milliards');
 test(7e12, '7 billions');
 
+console.log('--- #19 : très grands nombres (notation scientifique au-delà des quadrilliards) ---');
+test(2e27, '2 quadrilliards');      // dernier palier nommé
+test(9.99e29, '999 quadrilliards'); // juste sous la bascule
+test(1e30, '1e30');                 // bascule en notation scientifique
+test(1.23e33, '1,23e33');
+test(5e45, '5e45');
+test(Infinity, '∞');                // garde valeur non finie
+test(NaN, '∞');
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

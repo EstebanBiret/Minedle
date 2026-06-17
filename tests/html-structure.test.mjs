@@ -28,5 +28,12 @@ test('template entité : id de coût en -entite-cout', html.includes('id="{{nom}
 test('template amélioration : id de coût en -amelioration-cout', html.includes('id="{{nom}}-amelioration-cout"'), true);
 test('plus aucun id="{{nom}}-cout" nu (collision potentielle entité/amélioration)', html.includes('id="{{nom}}-cout"'), false);
 
+console.log('--- #20 : JSON-LD VideoGame (SEO) ---');
+const ldMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+test('bloc JSON-LD présent dans le head', !!ldMatch, true);
+let ldType = null;
+try { ldType = JSON.parse(ldMatch[1])['@type']; } catch { /* JSON invalide */ }
+test('JSON-LD valide, @type = VideoGame', ldType, 'VideoGame');
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

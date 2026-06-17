@@ -5,11 +5,22 @@
 export function formatNumber(n) {
   n = Number(n);
 
+  if (!Number.isFinite(n)) return "∞"; // Infinity / NaN at the extreme top end
+
   if (n < 1_000_000) {
     return n.toLocaleString("fr-FR", { maximumFractionDigits: 2 }).replace(/[\u202F\u00A0]/g, " ");
   }
 
   const suffixes = ["", "millions", "milliards", "billions", "billiards", "trillions", "trilliards", "quadrillions", "quadrilliards"]; // numbers up to 30 digits max
+
+  // past the largest suffix (quadrilliards = 1e27), switch to scientific notation so the display
+  // stays compact (e.g. "1,23e30"). NB: integer precision is already lost above 2^53 (Number limit);
+  // this only fixes the display, not the underlying arithmetic.
+  if (n >= 1e30) {
+    const [mantissa, exponent] = n.toExponential(2).split("e");
+    return `${parseFloat(mantissa).toString().replace(".", ",")}e${parseInt(exponent, 10)}`;
+  }
+
   let index = -1;
 
   while (n >= 1_000 && index < suffixes.length - 1) {

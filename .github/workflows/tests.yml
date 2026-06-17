@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -6,11 +6,14 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node tests/run-all.mjs
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test

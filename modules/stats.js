@@ -2,7 +2,7 @@
 // are injected via initStats(); everything else is imported one-directionally.
 
 import { data } from "./state.js?v=4";
-import { formatNumber, formatDuration } from "./format.js?v=1";
+import { formatNumber, formatDuration } from "./format.js?v=2";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=7";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";

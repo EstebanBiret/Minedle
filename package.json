@@ -1,0 +1,16 @@
+{
+  "name": "minedle",
+  "version": "1.0.0",
+  "description": "Idle game dans l'univers de Minecraft, inspiré de Cookie Clicker (HTML/CSS/JS vanilla, modules ES).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run-all.mjs",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0"
+  }
+}
