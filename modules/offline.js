@@ -4,7 +4,7 @@
 import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=2";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
-import { prestigeMultiplier } from "./prestige.js?v=1";
+import { prestigeMultiplier } from "./prestige.js?v=2";
 
 const OFFLINE_RATE = 0.5;            // fraction of the normal production earned offline
 const OFFLINE_CAP_MS = 12 * 3600000; // gains stop accumulating after 12 hours away

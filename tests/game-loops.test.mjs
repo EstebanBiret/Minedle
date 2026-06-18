@@ -13,7 +13,7 @@ console.log('--- Boucles : séparation logique / affichage / sauvegarde ---');
 const loopsCode = src.slice(src.indexOf('// production logic'));
 
 const intervals = [];
-const calls = { updateEntities:0, updateShop:0, checkLevelUp:0, checkBlockAchievements:0, updateBlocksDisplay:0, saveProgress:0, updateBonusDisplay:0 };
+const calls = { updateEntities:0, updateShop:0, checkLevelUp:0, checkBlockAchievements:0, checkPrestigeAchievements:0, updateBlocksDisplay:0, saveProgress:0, updateBonusDisplay:0 };
 const mk = name => () => calls[name]++;
 const docListeners = {}, winListeners = {};
 const documentMock = { addEventListener: (ev, fn) => docListeners[ev] = fn, visibilityState: 'visible' };
@@ -23,12 +23,12 @@ let nowMs = 1000; // controllable clock injected as performance.now() for the de
 
 new Function('setInterval','document','window','data','activeBonus','missingAchievements',
   'computeGlobalYieldPerSecond','updateEntities','updateShop','checkLevelUp',
-  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER','prestigeMultiplier','performance',
+  'checkBlockAchievements','checkPrestigeAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER','prestigeMultiplier','performance',
   loopsCode)(
   (fn, ms) => intervals.push({ fn, ms }),
   documentMock, windowMock, data, null, [1],
   () => 100, mk('updateEntities'), mk('updateShop'), mk('checkLevelUp'),
-  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7, () => 1, { now: () => nowMs }
+  mk('checkBlockAchievements'), mk('checkPrestigeAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7, () => 1, { now: () => nowMs }
 );
 
 test('4 intervalles enregistrés', intervals.map(i => i.ms), [10, 50, 5000, 1000]);
@@ -45,8 +45,8 @@ test('tick logique : AUCUN appel DOM ni sauvegarde', Object.values(calls).every(
 const display = intervals.find(i => i.ms === 50).fn;
 display();
 test('tick affichage : updates DOM appelés', 
-  [calls.updateEntities, calls.updateShop, calls.checkLevelUp, calls.checkBlockAchievements, calls.updateBlocksDisplay],
-  [1, 1, 1, 1, 1]);
+  [calls.updateEntities, calls.updateShop, calls.checkLevelUp, calls.checkBlockAchievements, calls.checkPrestigeAchievements, calls.updateBlocksDisplay],
+  [1, 1, 1, 1, 1, 1]);
 test('tick affichage : pas de sauvegarde', calls.saveProgress, 0);
 
 intervals.find(i => i.ms === 5000).fn();

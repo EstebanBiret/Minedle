@@ -4,7 +4,7 @@
 // updateAchievements throw). one empty <div> per catalogue id, keyed by that id.
 
 import { shop } from "../constants/shop.js?v=2";
-import { achievements } from "../constants/success.js?v=2";
+import { achievements } from "../constants/success.js?v=3";
 
 function buildGrid(containerId, prefix, items) {
   const container = document.getElementById(containerId);

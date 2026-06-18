@@ -7,7 +7,7 @@ import { computeCost, computeYield, entities } from "../constants/entities.js?v=
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=2";
-import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=8";
+import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=9";
 
 // injected from index.js
 let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer;

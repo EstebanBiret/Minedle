@@ -1,6 +1,6 @@
 # Tests
 
-404 tests automatisés répartis en 28 suites (lancés via `npm test` ; lint via `npm run lint`) :
+408 tests automatisés répartis en 28 suites (lancés via `npm test` ; lint via `npm run lint`) :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **save-migration** — réconciliation d'une sauvegarde avec le catalogue courant (ajout de contenu neuf, conservation de la progression, suppression des ids disparus)

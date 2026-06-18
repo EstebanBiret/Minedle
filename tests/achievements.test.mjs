@@ -7,7 +7,7 @@ const src = fs.readFileSync(new URL('../modules/achievements.js', import.meta.ur
 const code = src
   .replace(/^import[^\n]*\n/gm, '')
   .replace(/^export\s+/gm, '')
-  + '\nreturn { initAchievements, TOTAL_ACHIEVEMENTS, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, updateAchievements, unlockAchievement, clearAchievements };';
+  + '\nreturn { initAchievements, TOTAL_ACHIEVEMENTS, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkEntityAchievements, checkMiscAchievements, checkPrestigeAchievements, updateAchievements, unlockAchievement, clearAchievements };';
 
 // minimal DOM mock: every element supports what updateAchievements/notification touch
 function makeEl() {
@@ -39,6 +39,8 @@ const catalogue = [
   { id: 4, categorie: 'Villageois', seuil: 5, nom: 'Villageois 5', description: '', image: '' },
   { id: 5, categorie: 'pomme_or', seuil: 3, nom: 'Pommes 3', description: '', image: '' },
   { id: 27, categorie: 'divers', nom: '25 de chaque', description: '', image: '' },
+  { id: 6, categorie: 'ascensions', seuil: 1, nom: 'Ascension 1', description: '', image: '' },
+  { id: 7, categorie: 'etoiles_nether', seuil: 10, nom: 'Étoiles 10', description: '', image: '' },
 ];
 
 // entities catalogue mock: checkEntityAchievements derives its category set from entity names
@@ -47,6 +49,7 @@ const entitiesMock = [{ nom: 'Villageois' }];
 function build(startData, bps = 0) {
   const data = Object.assign({
     succes: [], pommes_or: 0, blocsMinesAvecClics: 0, blocsDepuisToujours: 0,
+    ascensions: 0, etoiles_nether: 0,
     entites: [{ nom: 'Villageois', quantite: 0 }],
   }, startData);
   let tooltipRefreshes = 0;
@@ -122,6 +125,22 @@ console.log('--- checkMiscAchievements (25 de chaque) ---');
   b = build({ entites: [{ nom: 'Villageois', quantite: 25 }] });
   b.mod.checkMiscAchievements();
   test('toutes >= 25 : succès #27', ids(b.data), [27]);
+}
+
+console.log('--- checkPrestigeAchievements (ascensions + étoiles du Nether) ---');
+{
+  let b = build({ ascensions: 0, etoiles_nether: 0 });
+  b.mod.checkPrestigeAchievements();
+  test('aucune ascension/étoile : rien', ids(b.data), []);
+  b = build({ ascensions: 1, etoiles_nether: 0 });
+  b.mod.checkPrestigeAchievements();
+  test('1 ascension : succès ascension débloqué', ids(b.data), [6]);
+  b = build({ ascensions: 0, etoiles_nether: 10 });
+  b.mod.checkPrestigeAchievements();
+  test('10 étoiles : succès étoiles débloqué', ids(b.data), [7]);
+  b = build({ ascensions: 1, etoiles_nether: 10 });
+  b.mod.checkPrestigeAchievements();
+  test('les deux seuils atteints : 6 et 7', ids(b.data), [6, 7]);
 }
 
 console.log('--- #10 : data.succes ne stocke que l\'id (pas l\'objet complet) ---');

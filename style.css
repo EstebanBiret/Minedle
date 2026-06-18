@@ -6,7 +6,7 @@
 
 :root {
   --box-size: 1vh;
-  --layout-pad-x: clamp(0.8rem, 1.5vw, 1.8rem);
+  --layout-pad-x: clamp(0.8rem, 1.5vw, 1.8rem);  
   --layout-gap: clamp(1.5rem, 3.5vw, 4.5rem);
 }
 
@@ -651,6 +651,17 @@ particle {
   width: 95%;
   margin-bottom: 1vh;
   margin-inline: auto;
+  gap: 2px;
+}
+
+.grille.succes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grille.succes > div {
+  width: calc((100% - 10px) / 6);
 }
 
 .mc-label {

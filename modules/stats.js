@@ -4,9 +4,9 @@
 import { data } from "./state.js?v=4";
 import { formatNumber, formatDuration } from "./format.js?v=2";
 import { shop } from "../constants/shop.js?v=2";
-import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=8";
+import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=9";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
-import { prestigeMultiplier } from "./prestige.js?v=1";
+import { prestigeMultiplier } from "./prestige.js?v=2";
 
 // injected from index.js
 let buyEntitySound, computeGlobalYieldPerSecond;

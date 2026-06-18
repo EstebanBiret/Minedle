@@ -2,7 +2,7 @@
 // the import/export/reset orchestration stays in index.js (it drives game resets).
 
 import { shop } from "../constants/shop.js?v=2";
-import { achievements } from "../constants/success.js?v=2";
+import { achievements } from "../constants/success.js?v=3";
 import { entities } from "../constants/entities.js?v=3";
 import { MAX_LEVEL, DEFAULT_DATA } from "./state.js?v=4";
 

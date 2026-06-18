@@ -3,7 +3,7 @@
 // `achievements` here is the catalogue constant. index.js helpers it needs
 // (refreshTooltips, computeGlobalYieldPerSecond) are injected via initAchievements().
 
-import { achievements } from "../constants/success.js?v=2";
+import { achievements } from "../constants/success.js?v=3";
 import { entities } from "../constants/entities.js?v=3";
 import { data } from "./state.js?v=4";
 
@@ -130,6 +130,17 @@ export function checkMiscAchievements() {
     if(e.quantite < 25) twentyFiveOfEach = false;
   });
   if(twentyFiveOfEach) unlockAchievement(27);
+}
+
+// check whether a new ascension / Nether-star achievement is unlocked
+export function checkPrestigeAchievements() {
+  if (missingAchievements.length === 0) return;
+  const prestigeAchievements = missingAchievements.filter(s => s.categorie === 'ascensions' || s.categorie === 'etoiles_nether');
+  if (prestigeAchievements.length === 0) return;
+  prestigeAchievements.forEach(s => {
+    const value = s.categorie === 'ascensions' ? (data.ascensions || 0) : (data.etoiles_nether || 0);
+    if (value >= s.seuil) unlockAchievement(s.id);
+  });
 }
 
 export function updateAchievements() {

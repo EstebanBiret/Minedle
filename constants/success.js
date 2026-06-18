@@ -34,5 +34,11 @@ export const achievements = [
     { id: 28, nom: "Visite à un ami", description: "Vous avez visité le Saint Surtom !", image: "./assets/success/28.png", categorie: "surtom", seuil: 0 },
 
     { id: 29, nom: "Fruits défendus", description: "Vous avez cliqué sur 3 pommes d'or.", image: "./assets/success/29.webp", categorie: "pomme_or", seuil: 3 },
-    { id: 30, nom: "Banquet royal", description: "Vous avez cliqué sur 7 pommes d'or.", image: "./assets/success/30.webp", categorie: "pomme_or", seuil: 7 }
+    { id: 30, nom: "Banquet royal", description: "Vous avez cliqué sur 7 pommes d'or.", image: "./assets/success/30.webp", categorie: "pomme_or", seuil: 7 },
+
+    { id: 31, nom: "Renaissance", description: "Vous avez fait votre première ascension.", image: "./assets/success/31.webp", categorie: "ascensions", seuil: 1 },
+    { id: 32, nom: "Éternel recommencement", description: "Vous avez fait 5 ascensions.", image: "./assets/success/32.webp", categorie: "ascensions", seuil: 5 },
+
+    { id: 33, nom: "Poussière d'étoile", description: "Vous possédez votre première Étoile du Nether.", image: "./assets/success/33.webp", categorie: "etoiles_nether", seuil: 1 },
+    { id: 34, nom: "Constellation", description: "Vous possédez 100 Étoiles du Nether.", image: "./assets/success/34.webp", categorie: "etoiles_nether", seuil: 100 }
 ];

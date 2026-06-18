@@ -1,19 +1,19 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=9";
-import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=5";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=10";
+import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=6";
 import { refreshTooltips } from "./modules/tooltips.js?v=4";
-import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=5";
+import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=6";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
 import { trapFocus, releaseFocus } from "./modules/focus-trap.js?v=1";
 import { prestigeMultiplier, starsToGain, performAscension, nextStarProgress } from "./modules/prestige.js?v=2";
 import { formatNumber } from "./modules/format.js?v=2";
 import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem } from "./modules/state.js?v=4";
 import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=10";
-import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=5";
-import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=8";
-import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=2";
+import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=6";
+import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkPrestigeAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=9";
+import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=3";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
-import "./modules/grids.js?v=1"; // builds the inventory + achievement grid cells from the catalogue
+import "./modules/grids.js?v=2"; // builds the inventory + achievement grid cells from the catalogue
 
 
 
@@ -491,6 +491,7 @@ setInterval(() => {
   checkLevelUp();
 
   checkBlockAchievements();
+  checkPrestigeAchievements();
 
   updateBlocksDisplay();
 }, 50);
