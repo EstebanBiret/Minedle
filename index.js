@@ -1,13 +1,14 @@
 import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=9";
-import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=4";
+import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=5";
 import { refreshTooltips } from "./modules/tooltips.js?v=4";
-import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=4";
+import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=5";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
-import { trapFocus } from "./modules/focus-trap.js?v=1";
+import { trapFocus, releaseFocus } from "./modules/focus-trap.js?v=1";
+import { prestigeMultiplier, starsToGain, performAscension, nextStarProgress } from "./modules/prestige.js?v=2";
 import { formatNumber } from "./modules/format.js?v=2";
 import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem } from "./modules/state.js?v=4";
 import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=10";
-import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=4";
+import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=5";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=8";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=2";
 import { bgMusic } from "./modules/music.js?v=2";
@@ -59,6 +60,8 @@ if ('BroadcastChannel' in window) {
 let currentBlocksText = document.getElementById("blocs-actuels");
 let blocksPerSecondText = document.getElementById("bps-label");
 let blocksPerClickText = document.getElementById("bpc-label");
+let ascensionButtonGain = document.getElementById("ascension-button-gain");
+let ascensionButtonCount = document.getElementById("ascension-button-count");
 
 let blockImgContainer = document.getElementById('bloc-img-container')
 let blockImg = document.getElementById('bloc-img')
@@ -155,6 +158,7 @@ function saveProgressThrottled() {
 // rewrites the bonus styling when it actually changes, not on every tick.
 let lastBpsBoosted = null;
 let lastBpcBoosted = null;
+let lastAscensionGain = null;
 
 function setBoostStyle(el, boosted) {
   el.style.color = boosted ? "#6f6" : "";
@@ -164,8 +168,8 @@ function setBoostStyle(el, boosted) {
 
 // update mined blocks display and per-second info
 function updateBlocksDisplay() {
-  let bps = computeGlobalYieldPerSecond();
-  let bpc = data.bpc * data.coefficientClic;
+  let bps = computeGlobalYieldPerSecond() * prestigeMultiplier();
+  let bpc = data.bpc * data.coefficientClic * prestigeMultiplier();
 
   // BPS is boosted only by FullMultiplier
   const bpsBoosted = activeBonus === "fullMultiplier";
@@ -188,6 +192,15 @@ function updateBlocksDisplay() {
   currentBlocksText.textContent = formatNumber(data.blocsActuels);
   blocksPerSecondText.textContent = 'par seconde : ' + formatNumber(bps);
   blocksPerClickText.textContent = 'par clic : ' + formatNumber(bpc);
+
+  // ascension button: how many Nether stars an ascension would grant right now
+  // (red at 0, green otherwise). only touch the DOM when the count actually changes.
+  const ascGain = starsToGain();
+  if (ascGain !== lastAscensionGain) {
+    lastAscensionGain = ascGain;
+    ascensionButtonCount.textContent = formatNumber(ascGain);
+    ascensionButtonGain.classList.toggle('zero', ascGain < 1);
+  }
 }
 
 // sum the per-second yield across all owned entities
@@ -216,7 +229,7 @@ function mineBlock(event) {
       multiplicateur = FULL_MULTIPLIER;
   }
 
-  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * multiplicateur)}`  
+  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * prestigeMultiplier() * multiplicateur)}`  
   div.style.cssText = `
   color: white; 
   position: absolute; 
@@ -230,7 +243,7 @@ function mineBlock(event) {
   timeout(div)
 
   // if a click-multiplier bonus is active
-  const baseGain = data.bpc * data.coefficientClic;
+  const baseGain = data.bpc * data.coefficientClic * prestigeMultiplier();
 
   // compute total gain
   let totalGain = baseGain * multiplicateur;
@@ -348,6 +361,64 @@ function deleteProgress(){
   init();
 }
 
+function openAscensionModal() {
+  const stars = data.etoiles_nether || 0;
+  const gain = starsToGain();
+  document.getElementById('ascension-etoiles').textContent = formatNumber(stars);
+  document.getElementById('ascension-bonus').textContent = `+${Math.round((prestigeMultiplier() - 1) * 100)} %`;
+  document.getElementById('ascension-gain').textContent = formatNumber(gain);
+
+  // the "owned" + "bonus" rows are only meaningful once you've ascended at least once
+  const ascended = (data.ascensions || 0) >= 1;
+  document.getElementById('ascension-row-etoiles').style.display = ascended ? '' : 'none';
+  document.getElementById('ascension-row-bonus').style.display = ascended ? '' : 'none';
+
+  // progress toward the next star: a filled bar + the blocks still needed, so the player
+  // can see exactly how far the 1st / 2nd / ... star is
+  const np = nextStarProgress();
+  const pct = Math.floor(np.fraction * 100);
+  document.getElementById('ascension-progress-fill').style.width = `${np.fraction * 100}%`;
+  document.getElementById('ascension-progress-pct').textContent = `${pct} %`;
+  document.getElementById('ascension-next-caption').textContent =
+    `Encore ${formatNumber(np.remaining)} blocs (palier : ${formatNumber(np.bracketTarget)})`;
+  document.getElementById('ascension-progress').setAttribute('aria-valuenow', String(pct));
+
+  // only offer the button when at least one star would be earned
+  document.getElementById('ascension-confirm').style.display = gain >= 1 ? '' : 'none';
+
+  const modal = document.getElementById('ascension-modal');
+  modal.style.display = 'block';
+  trapFocus(modal);
+}
+
+function closeAscensionModal() {
+  const modal = document.getElementById('ascension-modal');
+  modal.style.display = 'none';
+  releaseFocus(modal);
+}
+
+function ascend() {
+  const gain = starsToGain();
+  if (gain < 1) return;
+  if (!confirm(`Tu vas convertir ta partie en ${gain} étoile(s) du Nether (+${gain * 5} % de production permanents). Toute ta progression actuelle sera remise à zéro. Continuer ?`)) return;
+
+  buyEntitySound.play();
+  performAscension(); // resets the run; stars, achievements and total playtime are kept
+
+  // rebuild the fresh run UI (block tier, pickaxe, entities, shop, inventory)
+  document.getElementById('Pioche-entite').querySelector('img').src = 'assets/entities/wooden-pickaxe.webp';
+  clearInventory();
+  updateLevel();
+  updateEntities();
+  updateShop();
+  updateInventory();
+  restartAppleTimer();
+  refreshTooltips();
+  updateBlocksDisplay();
+  saveProgress();
+  closeAscensionModal();
+}
+
 
 document.getElementById('parametres').addEventListener('click', () => {
   openSettingsModal();
@@ -358,6 +429,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     if (document.getElementById('parametres-modal').style.display === 'block') closeSettingsModal();
     if (document.getElementById('stats-modal').style.display === 'block') closeStatsModal();
+    if (document.getElementById('ascension-modal').style.display === 'block') closeAscensionModal();
     if (document.getElementById('hors-ligne').style.display === 'flex') closeOfflineModal();
     return;
   }
@@ -373,6 +445,7 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('click', (event) => {
   if (event.target === document.getElementById('parametres-modal')) { closeSettingsModal(); return; }
   if (event.target === document.getElementById('stats-modal')) { closeStatsModal(); return; }
+  if (event.target === document.getElementById('ascension-modal')) { closeAscensionModal(); return; }
 
   const trigger = event.target.closest('[data-action]');
   if (!trigger) return;
@@ -381,6 +454,9 @@ document.addEventListener('click', (event) => {
     case 'buy-upgrade':    buyUpgrade(trigger.dataset.nom); break;
     case 'open-stats':     openStatsModal(); break;
     case 'close-stats':    closeStatsModal(); break;
+    case 'open-ascension': openAscensionModal(); break;
+    case 'close-ascension':closeAscensionModal(); break;
+    case 'ascend':         ascend(); break;
     case 'close-settings': closeSettingsModal(); break;
     case 'close-offline':  closeOfflineModal(); break;
     case 'import':         importProgress(); break;
@@ -401,7 +477,7 @@ setInterval(() => {
   const elapsedSeconds = (now - lastProductionTick) / 1000;
   lastProductionTick = now;
 
-  let production = computeGlobalYieldPerSecond() * elapsedSeconds;
+  let production = computeGlobalYieldPerSecond() * prestigeMultiplier() * elapsedSeconds;
   if (activeBonus === "fullMultiplier") production *= FULL_MULTIPLIER;
 
   data.blocsActuels += production;

@@ -1,9 +1,10 @@
 # Tests
 
-377 tests automatisés répartis en 27 suites (lancés via `npm test` ; lint via `npm run lint`) :
+404 tests automatisés répartis en 28 suites (lancés via `npm test` ; lint via `npm run lint`) :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **save-migration** — réconciliation d'une sauvegarde avec le catalogue courant (ajout de contenu neuf, conservation de la progression, suppression des ids disparus)
+- **prestige** — ascension / Étoiles du Nether : multiplicateur permanent (+5 %/étoile), calcul des étoiles gagnées, progression vers la prochaine étoile (blocs restants + fraction du palier), remise à zéro conservant étoiles / succès / temps de jeu
 - **state-load** — validation au chargement et clonage (jamais d'alias de `DEFAULT_DATA`, repli si corrompu)
 - **number-format** — formatage des nombres (espaces, virgules, abréviations, notation scientifique au-delà des quadrilliards, garde valeur non finie)
 - **game-loops** — boucles de jeu (production en temps réel) et raccourcis clavier

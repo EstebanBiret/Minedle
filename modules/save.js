@@ -34,6 +34,8 @@ export function isValidGameData(d) {
   if (!Number.isInteger(d.niveau) || d.niveau < 0 || d.niveau > MAX_LEVEL) return false;
   if ('derniere_visite' in d && (typeof d.derniere_visite !== 'number' || !isFinite(d.derniere_visite) || d.derniere_visite < 0)) return false; // optional field (older saves)
   if ('temps_de_jeu_ms' in d && (typeof d.temps_de_jeu_ms !== 'number' || !isFinite(d.temps_de_jeu_ms) || d.temps_de_jeu_ms < 0)) return false; // optional field (older saves)
+  if ('etoiles_nether' in d && (!Number.isInteger(d.etoiles_nether) || d.etoiles_nether < 0)) return false; // optional field (prestige)
+  if ('ascensions' in d && (!Number.isInteger(d.ascensions) || d.ascensions < 0)) return false; // optional field (prestige)
 
   if (![d.entites, d.boutique, d.inventaire, d.succes].every(Array.isArray)) return false;
 
@@ -112,6 +114,11 @@ export function migrateData(saved) {
   migrated.succes = (Array.isArray(saved.succes) ? saved.succes : [])
     .filter(s => s && typeof s === 'object' && achievementIds.has(s.id))
     .map(s => ({ id: s.id }));
+
+  // prestige fields, defaulted here (not in state.js, which is imported almost everywhere):
+  // this is what adds them to every existing save and to a brand-new game on load.
+  migrated.etoiles_nether = (typeof saved.etoiles_nether === 'number' && saved.etoiles_nether >= 0) ? Math.floor(saved.etoiles_nether) : 0;
+  migrated.ascensions = (typeof saved.ascensions === 'number' && saved.ascensions >= 0) ? Math.floor(saved.ascensions) : 0;
 
   return migrated;
 }

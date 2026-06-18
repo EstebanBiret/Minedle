@@ -340,7 +340,7 @@ export const shop = [
     nom: 'Verger interdit',	
     image: './assets/shop/golden-apple/golden-apple_1.webp',
     description: 'Les pommes dorées apparaissent plus souvent.',
-    cout: 77777,
+    cout: 777777,
     categorie: 'pomme_or',
     condition: 1
   },
@@ -349,7 +349,7 @@ export const shop = [
     nom: 'Le festin de Notch',	
     image: './assets/shop/golden-apple/golden-apple_2.webp',
     description: 'Les pommes dorées apparaissent plus souvent.',
-    cout: 777777,
+    cout: 7777777,
     categorie: 'pomme_or',
     condition: 3
   }

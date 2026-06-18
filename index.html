@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=16" />
+    <link rel="stylesheet" href="style.css?v=17" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -92,6 +92,10 @@
           </div>
           <div id="stats-button" class="mc-ui-box" role="button" tabindex="0" data-action="open-stats">
             <span>Stats</span>
+          </div>
+          <div id="ascension-button" class="mc-ui-box" role="button" tabindex="0" data-action="open-ascension">
+            <span>Ascension</span>
+            <span id="ascension-button-gain" class="zero"><img src="assets/shop/wither/wither_3.webp" alt="" aria-hidden="true"> <span id="ascension-button-count">0</span></span>
           </div>
         </div>
 
@@ -246,8 +250,38 @@
         <div class="stat-row"><span class="stat-label">Entités recrutées</span><span id="stat-entites" class="green-text"></span></div>
         <div class="stat-row"><span class="stat-label">Améliorations achetées</span><span id="stat-ameliorations" class="green-text"></span></div>
         <div class="stat-row"><span class="stat-label">Succès débloqués</span><span id="stat-succes" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Étoiles du Nether</span><span id="stat-etoiles" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Ascensions</span><span id="stat-ascensions" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Bonus de production</span><span id="stat-prestige-bonus" class="green-text"></span></div>
       </div>
 
+    </div>
+  </div>
+
+  <div id="ascension-modal" class="modal" role="dialog" aria-modal="true" aria-label="Ascension">
+    <div id="ascension-modal-content" class="mc-ui-box">
+      <span class="close" data-action="close-ascension" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <p id="ascension-title">Ascension</p>
+      <p id="ascension-desc">Convertis ta partie en Étoiles du Nether : chaque étoile donne <strong>+5 % de production et de clic</strong>, pour toujours. Tout le reste (blocs, entités, améliorations, niveau) repart de zéro — tes succès et ton temps de jeu sont conservés.</p>
+
+      <div id="ascension-list">
+        <div class="stat-row" id="ascension-row-etoiles"><span class="stat-label">Étoiles du Nether possédées</span><span id="ascension-etoiles" class="green-text"></span></div>
+        <div class="stat-row" id="ascension-row-bonus"><span class="stat-label">Bonus de production actuel</span><span id="ascension-bonus" class="green-text"></span></div>
+        <div class="stat-row"><span class="stat-label">Étoiles gagnées en ascensionnant</span><span id="ascension-gain" class="green-text"></span></div>
+      </div>
+
+      <div id="ascension-next">
+        <p id="ascension-next-head">Prochaine étoile</p>
+        <div id="ascension-progress" class="mc-progress" role="progressbar" aria-label="Progression vers la prochaine étoile" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="ascension-progress-fill"></div>
+          <span id="ascension-progress-pct"></span>
+        </div>
+        <p id="ascension-next-caption"></p>
+      </div>
+
+      <div id="ascension-confirm" class="mc-ui-button">
+        <div class="title" data-action="ascend" role="button" tabindex="0">Ascensionner</div>
+      </div>
     </div>
   </div>
 
@@ -255,6 +289,6 @@
 
   <div id="sr-announce" role="status" aria-live="polite" class="sr-only"></div>
 
-  <script type="module" src="index.js?v=32"></script>
+  <script type="module" src="index.js?v=33"></script>
   </body>
 </html>

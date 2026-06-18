@@ -72,6 +72,10 @@ body {
   .fade-up {
     animation: none;
   }
+  #ascension-progress-fill {
+    transition: none;
+    animation: none;
+  }
 }
 
 #sections-container {
@@ -98,7 +102,8 @@ body {
 }
 
 #parametres,
-#stats-button {
+#stats-button,
+#ascension-button {
   padding: clamp(0.4rem, 0.6vw, 0.8rem);
   font-size: clamp(0.75rem, 0.85vw, 1.1rem);
   text-align: center;
@@ -265,7 +270,6 @@ button:focus-visible,
 }
 
 .mc-ui-button .title {
-  padding: 0 1vw 1vw 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -851,7 +855,7 @@ particle {
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1400px) {
 
   body {
     overflow-x: hidden;
@@ -945,7 +949,8 @@ particle {
   font-size: clamp(1.1rem, 1.6vw, 1.6rem);
 }
 
-#stats-modal-content {
+#stats-modal-content,
+#ascension-modal-content {
   position: relative;
   top: 50%;
   left: 50%;
@@ -957,6 +962,7 @@ particle {
 }
 
 #stats-modal-content .close,
+#ascension-modal-content .close,
 #parametres-modal-content .close {
   position: absolute;
   top: 0.4em;
@@ -964,6 +970,7 @@ particle {
 }
 
 #stats-title,
+#ascension-title,
 #parametres-title {
   text-align: center;
   font-size: clamp(1.2rem, 1.6vw, 1.7rem);
@@ -980,21 +987,23 @@ particle {
   display: flex;
   align-items: baseline;
   gap: 3em;
-  padding: 0.5em 0.9em;
-  background-color: rgba(0, 0, 0, 0.4);
-  border: 2px solid #2b2b2b;
+  padding: 1em 1em;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
 }
 
 .stat-label {
   flex: 1;
   color: #fff;
+  text-shadow: 0.15vh 0.15vh #000a;
 }
 
 .stat-row .green-text {
   text-shadow: 0px 1px 3px black;
 }
 
-/* visually-hidden helper: kept readable by screen readers (used by #sr-announce) */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1005,4 +1014,111 @@ particle {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+#ascension-desc {
+  max-width: 34em;
+  margin: 0 auto 1.2em;
+  padding: 0.7em 1em;
+  text-align: center;
+  line-height: 1.5em;
+  color: #e8e8e8;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
+}
+#ascension-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  margin-bottom: 1.2em;
+}
+#ascension-confirm {
+  margin: 0 auto;
+}
+#ascension-next {
+  width: 100%;
+  max-width: 34em;
+  margin: 0 auto 1.2em;
+  padding: 0.8em 1em;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
+}
+#ascension-next-head {
+  color: #ffce5a;
+  text-shadow: 0.15vh 0.15vh #000a;
+}
+.mc-progress {
+  position: relative;
+  width: 100%;
+  height: 1.6em;
+  background: #2b2b2b;
+  border: 0.2vh solid #000;
+  box-shadow: inset 0.2vh 0.2vh #0008;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+#ascension-progress-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #5fbf2e;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.14) 100%),
+    linear-gradient(110deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0) 70%);
+  background-size: 100% 100%, 1.6em 100%;
+  background-repeat: no-repeat, repeat;
+  box-shadow: inset -0.2vh -0.3vh #0004, inset 0.2vh 0.2vh #fff4;
+  transition: width 0.25s ease;
+  animation: liquid-flow 1.3s linear infinite;
+}
+
+/* the lighter band layer scrolls one tile (1.6em) per cycle, so it loops seamlessly;
+   the depth gradient (first layer) stays put -> a gentle "flowing liquid" shimmer */
+@keyframes liquid-flow {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 0, 1.6em 0; }
+}
+#ascension-progress-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-shadow: 0.15vh 0.15vh #000c;
+  font-size: 0.9em;
+}
+#ascension-next-caption {
+  color: #e8e8e8;
+  text-shadow: 0.15vh 0.15vh #000a;
+  font-size: clamp(0.85rem, 1vw, 1.05rem);
+  text-align: center;
+}
+
+#ascension-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+#ascension-button-gain {
+  font-weight: bold;
+  color: #157a15;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+}
+#ascension-button-gain img {
+  height: 1.3em;
+  width: auto;
+}
+#ascension-button-gain.zero {
+  color: #c0392b;
 }

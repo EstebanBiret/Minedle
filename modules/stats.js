@@ -6,6 +6,7 @@ import { formatNumber, formatDuration } from "./format.js?v=2";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=8";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
+import { prestigeMultiplier } from "./prestige.js?v=1";
 
 // injected from index.js
 let buyEntitySound, computeGlobalYieldPerSecond;
@@ -24,12 +25,15 @@ export function openStatsModal() {
 
   document.getElementById('stat-blocs-total').textContent = formatNumber(data.blocsDepuisToujours);
   document.getElementById('stat-blocs-clics').textContent = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
-  document.getElementById('stat-bps').textContent = `${formatNumber(computeGlobalYieldPerSecond())} / s`;
+  document.getElementById('stat-bps').textContent = `${formatNumber(computeGlobalYieldPerSecond() * prestigeMultiplier())} / s`;
   document.getElementById('stat-pommes').textContent = formatNumber(data.pommes_or);
   document.getElementById('stat-temps').textContent = formatDuration(data.temps_de_jeu_ms || 0);
   document.getElementById('stat-entites').textContent = formatNumber(totalEntities);
   document.getElementById('stat-ameliorations').textContent = `${data.inventaire.length} / ${shop.length}`;
   document.getElementById('stat-succes').textContent = `${data.succes.length} / ${TOTAL_ACHIEVEMENTS}`;
+  document.getElementById('stat-etoiles').textContent = formatNumber(data.etoiles_nether || 0);
+  document.getElementById('stat-ascensions').textContent = formatNumber(data.ascensions || 0);
+  document.getElementById('stat-prestige-bonus').textContent = `+${Math.round((prestigeMultiplier() - 1) * 100)} %`;
 
   document.getElementById('stats-modal').style.display = 'block';
   trapFocus(document.getElementById('stats-modal')); // focus into the modal + confine Tab

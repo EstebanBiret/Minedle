@@ -23,12 +23,12 @@ let nowMs = 1000; // controllable clock injected as performance.now() for the de
 
 new Function('setInterval','document','window','data','activeBonus','missingAchievements',
   'computeGlobalYieldPerSecond','updateEntities','updateShop','checkLevelUp',
-  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER','performance',
+  'checkBlockAchievements','updateBlocksDisplay','saveProgress','updateBonusDisplay','FULL_MULTIPLIER','prestigeMultiplier','performance',
   loopsCode)(
   (fn, ms) => intervals.push({ fn, ms }),
   documentMock, windowMock, data, null, [1],
   () => 100, mk('updateEntities'), mk('updateShop'), mk('checkLevelUp'),
-  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7, { now: () => nowMs }
+  mk('checkBlockAchievements'), mk('updateBlocksDisplay'), mk('saveProgress'), mk('updateBonusDisplay'), 7, () => 1, { now: () => nowMs }
 );
 
 test('4 intervalles enregistrés', intervals.map(i => i.ms), [10, 50, 5000, 1000]);
@@ -71,14 +71,15 @@ let kbdHandler, closeCalls = 0, closeStatsCalls = 0, closeOfflineCalls = 0;
 const modals = {
   'parametres-modal': { style: { display: 'none' } },
   'stats-modal': { style: { display: 'none' } },
+  'ascension-modal': { style: { display: 'none' } },
   'hors-ligne': { style: { display: 'none' } },
 };
 const docMock2 = {
   addEventListener: (ev, fn) => kbdHandler = fn,
   getElementById: id => modals[id],
 };
-new Function('document', 'closeSettingsModal', 'closeStatsModal', 'closeOfflineModal', kbdCode)(
-  docMock2, () => closeCalls++, () => closeStatsCalls++, () => closeOfflineCalls++);
+new Function('document', 'closeSettingsModal', 'closeStatsModal', 'closeAscensionModal', 'closeOfflineModal', kbdCode)(
+  docMock2, () => closeCalls++, () => closeStatsCalls++, () => {}, () => closeOfflineCalls++);
 
 function fakeEvent(key, isButton) {
   return {

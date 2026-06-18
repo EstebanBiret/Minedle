@@ -48,18 +48,18 @@ const stCode = statsSrc.slice(stStart).replace(/^export\s+/gm, '');
 
 function runStats(data) {
   const els = {};
-  for (const id of ['stat-blocs-total','stat-blocs-clics','stat-bps','stat-pommes','stat-temps','stat-entites','stat-ameliorations','stat-succes']) els[id] = { textContent: '' };
+  for (const id of ['stat-blocs-total','stat-blocs-clics','stat-bps','stat-pommes','stat-temps','stat-entites','stat-ameliorations','stat-succes','stat-etoiles','stat-ascensions','stat-prestige-bonus']) els[id] = { textContent: '' };
   els['stats-modal'] = { style: { display: 'none' } };
   els['stats-button'] = { focusCalls: 0, focus() { this.focusCalls++; } };
   const closeBtn = { focusCalls: 0, focus() { this.focusCalls++; } };
   let sounds = 0;
   let trapCalls = [], releaseCalls = [];
   const w = {};
-  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus',
+  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus', 'prestigeMultiplier',
     stCode + '\nreturn { openStatsModal, closeStatsModal };')(
     { getElementById: id => els[id], querySelector: () => closeBtn },
     data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',
-    new Array(36), 30, m => trapCalls.push(m), m => releaseCalls.push(m));
+    new Array(36), 30, m => trapCalls.push(m), m => releaseCalls.push(m), () => 1);
   Object.assign(w, api); // the window.* bindings now live in index.js, not in stats.js
   return { els, closeBtn, w, getSounds: () => sounds, trapCalls, releaseCalls };
 }
