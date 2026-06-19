@@ -14,6 +14,7 @@ import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=3";
 import { bgMusic } from "./modules/music.js?v=2";
 import "./modules/background.js?v=1";
 import "./modules/grids.js?v=2"; // builds the inventory + achievement grid cells from the catalogue
+import { initOnboarding } from "./modules/onboarding.js?v=1";
 
 
 
@@ -28,13 +29,18 @@ const timeout = (div) => {
 
 // sounds. wrap each so a rejected play() (rapid replay, not-yet-loaded audio,
 // autoplay restrictions) never leaves an unhandled promise rejection.
-function makeSound(src, volume = 0.5) {
+function makeSound(src, volume = 0.5, { restart = false, vary = false } = {}) {
   const audio = new Audio(src);
   audio.volume = volume;
-  return { play: () => audio.play().catch(() => {}) };
+  return { play: () => {
+    if (restart) audio.currentTime = 0;                          // restart so rapid clicks each trigger
+    if (vary) audio.playbackRate = 0.92 + Math.random() * 0.16;  // slight pitch variation
+    return audio.play().catch(() => {});
+  } };
 }
 const buyEntitySound = makeSound('./assets/audio/entity.mp3');
 const buyUpgradeSound = makeSound('./assets/audio/shop.mp3');
+const mineSound = makeSound('./assets/audio/mine.mp3', 0.35, { restart: true, vary: true });
 
 // single-tab flag (see the BroadcastChannel block further down)
 let tabActive = true;
@@ -106,6 +112,7 @@ initApples({ timeout, updateBlocksDisplay, saveProgress, checkGoldenAppleAchieve
 queueMicrotask(() => {
   init();
   grantOfflineGains();
+  initOnboarding({ fresh: (data.blocsDepuisToujours || 0) === 0 }); // first-time bubble, only on a fresh start
 });
 
 // stats modal
@@ -214,6 +221,11 @@ function computeGlobalYieldPerSecond() {
 
 // click on the block
 function mineBlock(event) {
+  mineSound.play();
+  // tactile "pop" on the block, retriggered on each click (auto-disabled under reduced-motion)
+  blockImg.classList.remove('mining');
+  void blockImg.offsetWidth; // force reflow so the animation restarts every click
+  blockImg.classList.add('mining');
 
   // click animation (keyboard activation has no coordinates: use the block center)
   const fromKeyboard = event.detail === 0;
@@ -229,15 +241,19 @@ function mineBlock(event) {
       multiplicateur = FULL_MULTIPLIER;
   }
 
-  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * prestigeMultiplier() * multiplicateur)}`  
+  const enBonus = multiplicateur > 1;
+  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * prestigeMultiplier() * multiplicateur)}`
+  const jitter = (Math.random() - 0.5) * 24; // spread overlapping rapid clicks
   div.style.cssText = `
-  color: white; 
-  position: absolute; 
-  top: ${y}px; 
-  left: ${x}px; 
-  font-size: 20px; 
-  pointer-events: none; 
-  white-space: nowrap;`;  
+  color: ${enBonus ? '#ffce5a' : '#fff'};
+  position: absolute;
+  top: ${y}px;
+  left: ${x + jitter}px;
+  font-size: ${enBonus ? '26px' : '20px'};
+  font-weight: bold;
+  text-shadow: 0.2vh 0.2vh #000a;
+  pointer-events: none;
+  white-space: nowrap;`;
   blockImgContainer.appendChild(div)
   div.classList.add('fade-up')
   timeout(div)
@@ -362,6 +378,7 @@ function deleteProgress(){
 }
 
 function openAscensionModal() {
+  buyEntitySound.play();
   const stars = data.etoiles_nether || 0;
   const gain = starsToGain();
   document.getElementById('ascension-etoiles').textContent = formatNumber(stars);
@@ -392,6 +409,7 @@ function openAscensionModal() {
 }
 
 function closeAscensionModal() {
+  buyEntitySound.play();
   const modal = document.getElementById('ascension-modal');
   modal.style.display = 'none';
   releaseFocus(modal);

@@ -1,6 +1,6 @@
 # Tests
 
-408 tests automatisés répartis en 28 suites (lancés via `npm test` ; lint via `npm run lint`) :
+426 tests automatisés répartis en 29 suites (lancés via `npm test` ; lint via `npm run lint`) :
 
 - **save** — export/import/validation des sauvegardes (checksum, schéma, `isValidGameData`)
 - **save-migration** — réconciliation d'une sauvegarde avec le catalogue courant (ajout de contenu neuf, conservation de la progression, suppression des ids disparus)
@@ -18,6 +18,7 @@
 - **robustness** — localStorage corrompu, garde multi-onglets
 - **tooltips-touch** — tooltips au survol et appui long tactile
 - **stats** — page de statistiques et temps de jeu
+- **onboarding** — bulle de premier lancement (une seule fois, nouveau joueur uniquement ; progression des étapes + flag de persistance)
 - **levels** — passage des paliers de minerai (seuils, succès associés)
 - **achievements** — conditions de déblocage des succès (par catégorie)
 - **shop** — achats (améliorations, entités), effets, et dirty-check du DOM
