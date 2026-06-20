@@ -3,7 +3,7 @@
 // imported, so this module never imports the entry point (no circular dependency,
 // no risk of index.js being instantiated twice under a different URL).
 
-import { formatNumber } from "./format.js?v=2";
+import { formatNumber } from "./format.js?v=3";
 import { pop } from "./particles.js?v=3";
 import { data, activeBonus, bonusEndTime, setActiveBonus, setBonusEndTime } from "./state.js?v=4";
 

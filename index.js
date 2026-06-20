@@ -1,13 +1,13 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=10";
-import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=6";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=11";
+import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=7";
 import { refreshTooltips } from "./modules/tooltips.js?v=4";
-import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=6";
+import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=7";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
 import { trapFocus, releaseFocus } from "./modules/focus-trap.js?v=1";
 import { prestigeMultiplier, starsToGain, performAscension, nextStarProgress } from "./modules/prestige.js?v=2";
-import { formatNumber } from "./modules/format.js?v=2";
-import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem } from "./modules/state.js?v=4";
-import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=10";
+import { formatNumber, setNotationMode } from "./modules/format.js?v=3";
+import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem, readStorageJSON } from "./modules/state.js?v=4";
+import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=11";
 import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=6";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkPrestigeAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=9";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=3";
@@ -29,18 +29,96 @@ const timeout = (div) => {
 
 // sounds. wrap each so a rejected play() (rapid replay, not-yet-loaded audio,
 // autoplay restrictions) never leaves an unhandled promise rejection.
+// SFX volume is one shared preference (separate from the music), applied to every sound below.
+const SFX_STORAGE_KEY = 'minedle-sfx';
+let sfxPrefs = readStorageJSON(SFX_STORAGE_KEY, null);
+if (!sfxPrefs || typeof sfxPrefs.muted !== 'boolean' || typeof sfxPrefs.volume !== 'number' || !(sfxPrefs.volume >= 0 && sfxPrefs.volume <= 1)) {
+  sfxPrefs = { muted: false, volume: 0.5 };
+}
+const sfxSounds = []; // { audio, base } registry, so the settings slider can retune them all at once
+
 function makeSound(src, volume = 0.5, { restart = false, vary = false } = {}) {
   const audio = new Audio(src);
-  audio.volume = volume;
+  const entry = { audio, base: volume };
+  sfxSounds.push(entry);
+  audio.volume = sfxPrefs.muted ? 0 : sfxPrefs.volume * volume;
   return { play: () => {
     if (restart) audio.currentTime = 0;                          // restart so rapid clicks each trigger
     if (vary) audio.playbackRate = 0.92 + Math.random() * 0.16;  // slight pitch variation
     return audio.play().catch(() => {});
   } };
 }
-const buyEntitySound = makeSound('./assets/audio/entity.mp3');
+const clickSound = makeSound('./assets/audio/click.mp3');
 const buyUpgradeSound = makeSound('./assets/audio/shop.mp3');
 const mineSound = makeSound('./assets/audio/mine.mp3', 0.35, { restart: true, vary: true });
+
+// SFX settings control: mute toggle + volume slider, in the Paramètres modal
+const sfxSlider = document.getElementById('sfx-slider');
+const sfxToggle = document.getElementById('sfx-toggle');
+const sfxIconOn = document.getElementById('sfx-icon-on');
+const sfxIconOff = document.getElementById('sfx-icon-off');
+
+// apply the prefs to every registered sound + the toggle UI, then persist
+function applySfxState() {
+  for (const entry of sfxSounds) {
+    entry.audio.volume = sfxPrefs.muted ? 0 : sfxPrefs.volume * entry.base;
+  }
+  const audible = !sfxPrefs.muted && sfxPrefs.volume > 0;
+  if (sfxSlider) sfxSlider.value = Math.round(sfxPrefs.volume * 100);
+  if (sfxIconOn) sfxIconOn.style.display = audible ? '' : 'none';
+  if (sfxIconOff) sfxIconOff.style.display = audible ? 'none' : '';
+  safeSetItem(SFX_STORAGE_KEY, JSON.stringify(sfxPrefs));
+}
+
+if (sfxToggle) {
+  sfxToggle.addEventListener('click', () => {
+    sfxPrefs.muted = !sfxPrefs.muted;
+    if (!sfxPrefs.muted && sfxPrefs.volume === 0) sfxPrefs.volume = 0.5; // unmuting at 0 would stay silent
+    applySfxState();
+    if (!sfxPrefs.muted) clickSound.play(); // confirm the new state is audible
+  });
+}
+if (sfxSlider) {
+  sfxSlider.addEventListener('input', () => {
+    sfxPrefs.volume = sfxSlider.value / 100;
+    sfxPrefs.muted = false;            // moving the slider means the player wants to hear something
+    applySfxState();
+  });
+  sfxSlider.addEventListener('change', () => clickSound.play()); // preview once the drag ends
+}
+applySfxState();
+
+// number notation ('abrege' | 'scientifique'): restored from the settings, applied before the first render
+const NOTATION_STORAGE_KEY = 'minedle-notation';
+let notationPref = readStorageJSON(NOTATION_STORAGE_KEY, null);
+notationPref = notationPref === 'scientifique' ? 'scientifique' : 'abrege';
+setNotationMode(notationPref);
+
+// segmented Abrégé / Scientifique toggle in the Paramètres modal
+function applyNotationUI() {
+  for (const btn of document.querySelectorAll('.notation-option')) {
+    const active = btn.dataset.notation === notationPref;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  }
+}
+function setNotation(mode) {
+  notationPref = mode === 'scientifique' ? 'scientifique' : 'abrege';
+  setNotationMode(notationPref);
+  safeSetItem(NOTATION_STORAGE_KEY, JSON.stringify(notationPref));
+  applyNotationUI();
+  // re-render every on-screen number in the new notation
+  updateBlocksDisplay();
+  updateEntities();
+  updateShop();
+  updateInventory();
+  updateBonusDisplay();
+  clickSound.play();
+}
+for (const btn of document.querySelectorAll('.notation-option')) {
+  btn.addEventListener('click', () => setNotation(btn.dataset.notation));
+}
+applyNotationUI();
 
 // single-tab flag (see the BroadcastChannel block further down)
 let tabActive = true;
@@ -90,14 +168,14 @@ if (!localStorage.getItem('minedle-data')) safeSetItem('minedle-data', JSON.stri
 // the sacred call
 
 // wire the offline-gains and settings modules with the index.js helpers they need
-initOffline({ computeGlobalYieldPerSecond, saveProgress, buyEntitySound });
-initSettings({ buyEntitySound });
+initOffline({ computeGlobalYieldPerSecond, saveProgress, clickSound });
+initSettings({ clickSound });
 
 // wire the stats modal with the index.js helpers it needs
-initStats({ buyEntitySound, computeGlobalYieldPerSecond });
+initStats({ clickSound, computeGlobalYieldPerSecond });
 
 // wire the shop/entities/inventory module with the index.js helpers it needs
-initShop({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer });
+initShop({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, clickSound, restartAppleTimer });
 
 // wire the level system with the index.js saveProgress helper
 initLevels({ saveProgress });
@@ -378,7 +456,7 @@ function deleteProgress(){
 }
 
 function openAscensionModal() {
-  buyEntitySound.play();
+  clickSound.play();
   const stars = data.etoiles_nether || 0;
   const gain = starsToGain();
   document.getElementById('ascension-etoiles').textContent = formatNumber(stars);
@@ -409,7 +487,7 @@ function openAscensionModal() {
 }
 
 function closeAscensionModal() {
-  buyEntitySound.play();
+  clickSound.play();
   const modal = document.getElementById('ascension-modal');
   modal.style.display = 'none';
   releaseFocus(modal);
@@ -420,7 +498,7 @@ function ascend() {
   if (gain < 1) return;
   if (!confirm(`Tu vas convertir ta partie en ${gain} étoile(s) du Nether (+${gain * 5} % de production permanents). Toute ta progression actuelle sera remise à zéro. Continuer ?`)) return;
 
-  buyEntitySound.play();
+  clickSound.play();
   performAscension(); // resets the run; stars, achievements and total playtime are kept
 
   // rebuild the fresh run UI (block tier, pickaxe, entities, shop, inventory)

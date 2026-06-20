@@ -65,18 +65,7 @@ body {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #background-blur,
-  #bloc-img,
-  .bloc-img-entite:hover,
-  .fade-up {
-    animation: none;
-  }
-  #ascension-progress-fill {
-    transition: none;
-    animation: none;
-  }
-}
+
 
 #sections-container {
   display: flex;
@@ -141,13 +130,15 @@ body {
   gap: 0.5em;
 }
 
-#music-volume-row {
+#music-volume-row,
+#sfx-volume-row {
   display: flex;
   align-items: center;
   gap: 0.7em;
 }
 
-#music-toggle {
+#music-toggle,
+#sfx-toggle {
   background: none;
   border: none;
   padding: 0;
@@ -161,7 +152,8 @@ body {
   }
 }
 
-#music-toggle svg {
+#music-toggle svg,
+#sfx-toggle svg {
   width: clamp(16px, 1.3vw, 22px);
   height: auto;
   fill: currentColor;
@@ -180,6 +172,71 @@ body {
 
 #music-slider {
   width: clamp(70px, 6vw, 110px);
+}
+
+#sfx-control,
+#notation-control {
+  width: calc(min(5vh, 9vw) * 10);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7vmin;
+}
+
+.param-label {
+  font-size: 0.92em;
+}
+
+#sfx-volume-row {
+  width: 100%;
+}
+
+#sfx-toggle svg {
+  width: clamp(18px, 2vh, 26px);
+}
+
+#sfx-slider {
+  flex: 1;
+}
+
+#notation-options {
+  display: flex;
+  width: 100%;
+  gap: 0.6vmin;
+}
+
+.notation-option {
+  flex: 1;
+  min-height: calc(min(5vh, 9vw) * 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.3em;
+  font-family: inherit;
+  font-size: 0.82em;
+  color: #fff;
+  text-shadow: 0.15vh 0.15vh #202013cc;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  cursor: pointer;
+}
+
+.notation-option:hover {
+  text-shadow: 0.2vh 0.2vh #202013cc;
+  color: #ffffa0;
+}
+
+.notation-option.active {
+  color: #ffffa0;
+  text-shadow: 0.15vh 0.15vh #000c;
+  box-shadow: inset 0.3vh 0.3vh #0007, inset -0.2vh -0.3vh #fff3;
+}
+
+.notation-option:focus-visible {
+  outline: 0.3vh solid #fff;
+  outline-offset: -0.3vh;
 }
 
 #music-progress {
@@ -358,10 +415,6 @@ button:focus-visible,
 
 #bloc-img.mining {
   animation: block-pop 0.13s ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #bloc-img.mining { animation: none; }
 }
 
 #bloc-img {
@@ -1197,4 +1250,18 @@ particle {
 
 #onboarding-buttons button:hover {
   filter: brightness(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #background-blur,
+  #bloc-img,
+  #bloc-img.mining,
+  .bloc-img-entite:hover,
+  .fade-up {
+    animation: none;
+  }
+  #ascension-progress-fill {
+    transition: none;
+    animation: none;
+  }
 }

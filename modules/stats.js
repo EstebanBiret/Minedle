@@ -1,22 +1,22 @@
-// statistics modal. index.js helpers (buyEntitySound, computeGlobalYieldPerSecond)
+// statistics modal. index.js helpers (clickSound, computeGlobalYieldPerSecond)
 // are injected via initStats(); everything else is imported one-directionally.
 
 import { data } from "./state.js?v=4";
-import { formatNumber, formatDuration } from "./format.js?v=2";
+import { formatNumber, formatDuration } from "./format.js?v=3";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=9";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
 import { prestigeMultiplier } from "./prestige.js?v=2";
 
 // injected from index.js
-let buyEntitySound, computeGlobalYieldPerSecond;
+let clickSound, computeGlobalYieldPerSecond;
 
 export function initStats(deps) {
-  ({ buyEntitySound, computeGlobalYieldPerSecond } = deps);
+  ({ clickSound, computeGlobalYieldPerSecond } = deps);
 }
 
 export function openStatsModal() {
-  buyEntitySound.play();
+  clickSound.play();
 
   const totalEntities = data.entites.reduce((sum, e) => sum + e.quantite, 0);
   // adaptive precision: a real but small manual share must not display as "0 %"
@@ -40,7 +40,7 @@ export function openStatsModal() {
 }
 
 export function closeStatsModal() {
-  buyEntitySound.play();
+  clickSound.play();
   document.getElementById('stats-modal').style.display = 'none';
   releaseFocus(document.getElementById('stats-modal')); // remove the trap + restore focus to the trigger
 }

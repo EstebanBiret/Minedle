@@ -1,5 +1,5 @@
 // formatNumber now lives in its own module: import it directly
-const { formatNumber } = await import(new URL('../modules/format.js', import.meta.url));
+const { formatNumber, setNotationMode } = await import(new URL('../modules/format.js', import.meta.url));
 
 let pass = 0, fail = 0;
 const test = (input, expected) => {
@@ -39,6 +39,17 @@ test(1.23e33, '1,23e33');
 test(5e45, '5e45');
 test(Infinity, '∞');                // garde valeur non finie
 test(NaN, '∞');
+
+console.log('--- Mode scientifique (bascule dès 1 M) ---');
+setNotationMode('scientifique');
+test(853.4567, '853,46');           // sous 1 M : reste en notation locale
+test(57349, '57 349');              // idem
+test(1234567, '1,23e6');            // dès 1 M : notation scientifique
+test(1e9, '1e9');
+test(5e12, '5e12');
+test(Infinity, '∞');                // valeur non finie inchangée
+setNotationMode('abrege');          // retour au mode par défaut
+test(2500000, '2,5 millions');      // le mode abrégé fonctionne toujours
 
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);

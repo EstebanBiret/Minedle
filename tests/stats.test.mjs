@@ -55,7 +55,7 @@ function runStats(data) {
   let sounds = 0;
   let trapCalls = [], releaseCalls = [];
   const w = {};
-  const api = new Function('document', 'data', 'buyEntitySound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus', 'prestigeMultiplier',
+  const api = new Function('document', 'data', 'clickSound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus', 'prestigeMultiplier',
     stCode + '\nreturn { openStatsModal, closeStatsModal };')(
     { getElementById: id => els[id], querySelector: () => closeBtn },
     data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',

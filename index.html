@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=19" />
+    <link rel="stylesheet" href="style.css?v=21" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -225,6 +225,46 @@
       <span class="close" data-action="close-settings" role="button" tabindex="0" aria-label="Fermer">&times;</span>
       <p id="parametres-title">Paramètres</p>
 
+      <div id="sfx-control">
+        <span class="param-label">Effets sonores</span>
+        <div id="sfx-volume-row">
+          <button id="sfx-toggle" type="button" aria-label="Activer ou couper les effets sonores">
+            <svg id="sfx-icon-on" viewBox="0 0 11 9" shape-rendering="crispEdges" aria-hidden="true">
+              <rect x="0" y="3" width="2" height="3"/>
+              <rect x="2" y="2" width="1" height="5"/>
+              <rect x="3" y="1" width="1" height="7"/>
+              <rect x="4" y="0" width="1" height="9"/>
+              <rect x="6" y="3" width="1" height="3"/>
+              <rect x="8" y="1" width="1" height="7"/>
+            </svg>
+            <svg id="sfx-icon-off" viewBox="0 0 11 9" shape-rendering="crispEdges" aria-hidden="true" style="display: none;">
+              <rect x="0" y="3" width="2" height="3"/>
+              <rect x="2" y="2" width="1" height="5"/>
+              <rect x="3" y="1" width="1" height="7"/>
+              <rect x="4" y="0" width="1" height="9"/>
+              <rect x="6" y="2" width="1" height="1"/>
+              <rect x="7" y="3" width="1" height="1"/>
+              <rect x="8" y="4" width="1" height="1"/>
+              <rect x="9" y="5" width="1" height="1"/>
+              <rect x="10" y="6" width="1" height="1"/>
+              <rect x="10" y="2" width="1" height="1"/>
+              <rect x="9" y="3" width="1" height="1"/>
+              <rect x="7" y="5" width="1" height="1"/>
+              <rect x="6" y="6" width="1" height="1"/>
+            </svg>
+          </button>
+          <input type="range" id="sfx-slider" class="mc-slider" min="0" max="100" value="50" aria-label="Volume des effets sonores"/>
+        </div>
+      </div>
+
+      <div id="notation-control">
+        <span class="param-label">Notation des nombres</span>
+        <div id="notation-options" role="radiogroup" aria-label="Notation des nombres">
+          <button type="button" class="notation-option" data-notation="abrege" role="radio" aria-checked="true">Abrégé</button>
+          <button type="button" class="notation-option" data-notation="scientifique" role="radio" aria-checked="false">Scientifique</button>
+        </div>
+      </div>
+
       <div id="importer-progression" class="mc-ui-button">
         <div class="title" data-action="import" role="button" tabindex="0">Importer la progression</div>
       </div>
@@ -302,6 +342,6 @@
     </div>
   </div>
 
-  <script type="module" src="index.js?v=35"></script>
+  <script type="module" src="index.js?v=36"></script>
   </body>
 </html>

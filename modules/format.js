@@ -1,7 +1,16 @@
 // pure display formatting helpers (no game state, no DOM)
 
+// number notation: 'abrege' (2,5 millions) or 'scientifique' (2,5e6). set from the settings.
+let notationMode = 'abrege';
+export function setNotationMode(mode) {
+  notationMode = mode === 'scientifique' ? 'scientifique' : 'abrege';
+}
+export function getNotationMode() {
+  return notationMode;
+}
+
 // formats a number for display: spaces between thousands, comma decimals,
-// abbreviated from one million ("2,5 millions")
+// abbreviated from one million ("2,5 millions") — or scientific if the mode is set
 export function formatNumber(n) {
   n = Number(n);
 
@@ -13,10 +22,10 @@ export function formatNumber(n) {
 
   const suffixes = ["", "millions", "milliards", "billions", "billiards", "trillions", "trilliards", "quadrillions", "quadrilliards"]; // numbers up to 30 digits max
 
-  // past the largest suffix (quadrilliards = 1e27), switch to scientific notation so the display
-  // stays compact (e.g. "1,23e30"). NB: integer precision is already lost above 2^53 (Number limit);
-  // this only fixes the display, not the underlying arithmetic.
-  if (n >= 1e30) {
+  // scientific mode: e-notation from one million. abbreviated mode: switch to scientific only past
+  // the largest suffix (quadrilliards, ~1e27) so the display stays compact (e.g. "1,23e30").
+  // NB: integer precision is already lost above 2^53 (Number limit); this only fixes the display.
+  if (notationMode === 'scientifique' || n >= 1e30) {
     const [mantissa, exponent] = n.toExponential(2).split("e");
     return `${parseFloat(mantissa).toString().replace(".", ",")}e${parseInt(exponent, 10)}`;
   }

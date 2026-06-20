@@ -6,14 +6,14 @@
 import { computeCost, computeYield, entities } from "../constants/entities.js?v=3";
 import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
-import { formatNumber } from "./format.js?v=2";
+import { formatNumber } from "./format.js?v=3";
 import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=9";
 
 // injected from index.js
-let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer;
+let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, clickSound, restartAppleTimer;
 
 export function initShop(deps) {
-  ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, buyEntitySound, restartAppleTimer } = deps);
+  ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, clickSound, restartAppleTimer } = deps);
 }
 
 // dirty-check helpers: the display loop runs ~20x/s, but most of what it writes
@@ -172,7 +172,7 @@ export function buyEntity(entityName) {
   const entity = data.entites.find(e => e.nom === entityName);
 
   if (!entity || data.blocsActuels < entity.cout_actuel) return;
-  buyEntitySound.play();
+  clickSound.play();
   data.blocsActuels -= entity.cout_actuel;
 
   // update the entity's current yield, cost and quantity

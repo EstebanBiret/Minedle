@@ -1,8 +1,8 @@
 // offline production gains: production earned while the game was closed, shown in a modal.
-// computeGlobalYieldPerSecond, saveProgress and buyEntitySound live in index.js and are injected.
+// computeGlobalYieldPerSecond, saveProgress and clickSound live in index.js and are injected.
 
 import { data } from "./state.js?v=4";
-import { formatNumber, formatDuration } from "./format.js?v=2";
+import { formatNumber, formatDuration } from "./format.js?v=3";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
 import { prestigeMultiplier } from "./prestige.js?v=2";
 
@@ -11,10 +11,10 @@ const OFFLINE_CAP_MS = 12 * 3600000; // gains stop accumulating after 12 hours a
 const OFFLINE_MIN_MS = 60000;        // ignore absences shorter than a minute
 
 // injected from index.js
-let computeGlobalYieldPerSecond, saveProgress, buyEntitySound;
+let computeGlobalYieldPerSecond, saveProgress, clickSound;
 
 export function initOffline(deps) {
-  ({ computeGlobalYieldPerSecond, saveProgress, buyEntitySound } = deps);
+  ({ computeGlobalYieldPerSecond, saveProgress, clickSound } = deps);
 }
 
 export function grantOfflineGains() {
@@ -37,7 +37,7 @@ export function grantOfflineGains() {
 }
 
 export function closeOfflineModal() {
-  buyEntitySound.play();
+  clickSound.play();
   document.getElementById('hors-ligne').style.display = 'none';
   releaseFocus(document.getElementById('hors-ligne')); // remove the trap + restore focus
 }

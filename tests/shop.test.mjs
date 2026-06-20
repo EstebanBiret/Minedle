@@ -79,7 +79,7 @@ function build(startData) {
     refreshTooltips: () => tooltips++, computeGlobalYieldPerSecond: () => {
       let b = 0; data.entites.forEach(e => b += e.rendement_actuel * e.quantite * e.coefficient); return b || 1;
     },
-    buyUpgradeSound: { play() {} }, buyEntitySound: { play() {} }, restartAppleTimer: () => restarts++,
+    buyUpgradeSound: { play() {} }, clickSound: { play() {} }, restartAppleTimer: () => restarts++,
   });
   return { mod, data, doc, stats: () => ({ saves, blocksDisp, tooltips, checkEnt, checkMisc, restarts }) };
 }
