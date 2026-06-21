@@ -91,9 +91,7 @@ body {
 }
 
 #parametres,
-#stats-button,
-#ascension-button,
-#nether-shop-button {
+#stats-button {
   padding: clamp(0.4rem, 0.6vw, 0.8rem);
   font-size: clamp(0.75rem, 0.85vw, 1.1rem);
   text-align: center;
@@ -1180,11 +1178,6 @@ particle {
   text-align: center;
 }
 
-#ascension-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
 #ascension-button-gain,
 #nether-shop-button-gain {
   font-weight: bold;
@@ -1216,7 +1209,7 @@ particle {
   align-items: center;
   justify-content: center;
   gap: 1.4em;
-  font-size: clamp(0.78rem, 1.5vh, 1.15rem);
+  font-size: clamp(0.92rem, 1.8vh, 1.35rem);
 }
 
 #nether-dock-actions {
@@ -1231,8 +1224,8 @@ particle {
   align-items: center;
   justify-content: center;
   gap: 0.25em;
-  padding: clamp(0.45rem, 0.7vw, 0.85rem) clamp(0.6rem, 1vw, 1.1rem);
-  font-size: clamp(0.75rem, 0.85vw, 1.05rem);
+  padding: clamp(0.35rem, 0.55vw, 0.65rem) clamp(0.5rem, 0.8vw, 0.9rem);
+  font-size: clamp(0.68rem, 0.75vw, 0.92rem);
   font-weight: bold;
   color: #fff;
   text-align: center;
