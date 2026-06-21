@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/shop/pickaxes/diamond-pickaxe.webp" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=21" />
+    <link rel="stylesheet" href="style.css?v=22" />
     <title>Minedle</title>
     <meta name="description" content="Minedle : un idle game gratuit dans l'univers de Minecraft, inspiré de Cookie Clicker. Mine des blocs, recrute des entités, débloque des succès et attrape des pommes d'or !" />
 
@@ -95,10 +95,6 @@
           <div id="stats-button" class="mc-ui-box" role="button" tabindex="0" data-action="open-stats">
             <span>Stats</span>
           </div>
-          <div id="ascension-button" class="mc-ui-box" role="button" tabindex="0" data-action="open-ascension">
-            <span>Ascension</span>
-            <span id="ascension-button-gain" class="zero"><img src="assets/success/33.webp" alt="" aria-hidden="true"> <span id="ascension-button-count">0</span></span>
-          </div>
         </div>
 
         <div id="logo">
@@ -125,6 +121,30 @@
         <div id="cps-infos" class="mc-ui-box">
           <span id="bps-label">par seconde : 0</span>
           <span id="bpc-label">par clic : 0</span>
+        </div>
+
+        <div id="nether-dock" class="mc-ui-box">
+          <div id="nether-dock-head">
+            <span id="nether-dock-title">Étoiles du Nether</span>
+          </div>
+          <div id="nether-dock-actions">
+            <div class="nether-dock-btn" role="button" tabindex="0" data-action="open-ascension">
+              <span>Ascensionner</span>
+              <span id="ascension-button-gain" class="zero"><img src="assets/success/33.webp" alt="" aria-hidden="true"> <span>+<span id="ascension-button-count">0</span></span></span>
+            </div>
+            <div class="nether-dock-btn" role="button" tabindex="0" data-action="open-nether-shop" aria-label="Boutique du Nether">
+              <span>Boutique</span>
+              <span id="nether-shop-button-gain"><img src="assets/success/33.webp" alt="" aria-hidden="true"> <span id="nether-shop-button-count">0</span></span>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="credits" class="mc-ui-box">
+          <span>Crédits : 
+            <span id="surtom" class="tooltip-element" tabindex="0" aria-label="Surtom — Design : tooltips et interfaces de coffre dans le style de Minecraft" data-tooltip-title="Design" data-tooltip-content-deux="Tooltips & interfaces de coffre dans le style de Minecraft">Surtom, </span>
+            <span id="cookie" class="tooltip-element" tabindex="0" aria-label="Cookie Clicker — Gameplay : mécanique du site inspirée du célèbre jeu Cookie Clicker" data-tooltip-title="Gameplay" data-tooltip-content-deux="Mécanique du site inspiré du célèbre jeu 'Cookie Clicker'">Cookie Clicker</span>
+          </span>
         </div>
 
       </div>
@@ -188,12 +208,6 @@
 
     </div>
 
-    <div id="credits" class="mc-ui-box">
-      <span>Crédits : 
-        <span id="surtom" class="tooltip-element" tabindex="0" aria-label="Surtom — Design : tooltips et interfaces de coffre dans le style de Minecraft" data-tooltip-title="Design" data-tooltip-content-deux="Tooltips & interfaces de coffre dans le style de Minecraft">Surtom, </span>
-        <span id="cookie" class="tooltip-element" tabindex="0" aria-label="Cookie Clicker — Gameplay : mécanique du site inspirée du célèbre jeu Cookie Clicker" data-tooltip-title="Gameplay" data-tooltip-content-deux="Mécanique du site inspiré du célèbre jeu 'Cookie Clicker'">Cookie Clicker</span>
-      </span>
-    </div>
   <div id="tooltip" class="transparent">
     <div id="tooltip-title"></div>
     <div id="tooltip-content"></div>
@@ -304,7 +318,7 @@
     <div id="ascension-modal-content" class="mc-ui-box">
       <span class="close" data-action="close-ascension" role="button" tabindex="0" aria-label="Fermer">&times;</span>
       <p id="ascension-title">Ascension</p>
-      <p id="ascension-desc">Convertis ta partie en Étoiles du Nether : chaque étoile donne <strong>+5 % de production et de clic</strong>, pour toujours. Tout le reste (blocs, entités, améliorations, niveau) repart de zéro — tes succès et ton temps de jeu sont conservés.</p>
+      <p id="ascension-desc">Convertis ta partie en Étoiles du Nether : chaque étoile gagnée donne <strong>+5 % de production et de clic</strong> en permanence — ce bonus ne baisse jamais, même quand tu dépenses tes étoiles. Les étoiles sont aussi la monnaie de la <strong>Boutique du Nether</strong>. Le reste (blocs, entités, améliorations de partie, niveau) repart de zéro ; tes succès, ton temps de jeu et tes améliorations du Nether sont conservés.</p>
 
       <div id="ascension-list">
         <div class="stat-row" id="ascension-row-etoiles"><span class="stat-label">Étoiles du Nether possédées</span><span id="ascension-etoiles" class="green-text"></span></div>
@@ -327,6 +341,21 @@
     </div>
   </div>
 
+  <div id="nether-shop-modal" class="modal" role="dialog" aria-modal="true" aria-label="Boutique du Nether">
+    <div id="nether-shop-modal-content" class="mc-ui-box">
+      <span class="close" data-action="close-nether-shop" role="button" tabindex="0" aria-label="Fermer">&times;</span>
+      <p id="nether-shop-title">Boutique du Nether</p>
+      <p id="nether-shop-desc">Dépense tes Étoiles du Nether en améliorations permanentes. Le bonus passif de +5 % par étoile (basé sur ton total gagné) reste acquis même quand tu dépenses.</p>
+
+      <div id="nether-shop-balance" class="stat-row">
+        <span class="stat-label">Étoiles disponibles</span>
+        <span id="nether-shop-stars" class="green-text">0</span>
+      </div>
+
+      <div id="nether-shop-list"></div>
+    </div>
+  </div>
+
   <div id="bonusDisplay"></div>
 
   <div id="sr-announce" role="status" aria-live="polite" class="sr-only"></div>
@@ -342,6 +371,6 @@
     </div>
   </div>
 
-  <script type="module" src="index.js?v=36"></script>
+  <script type="module" src="index.js?v=37"></script>
   </body>
 </html>

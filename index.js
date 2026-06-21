@@ -1,14 +1,14 @@
-import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=11";
-import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=7";
+import { initShop, buyUpgrade, updateShop, buyEntity, updateEntities, updateInventory, clearInventory, updatePickaxeEntityImage } from "./modules/shop.js?v=12";
+import { initStats, openStatsModal, closeStatsModal } from "./modules/stats.js?v=8";
 import { refreshTooltips } from "./modules/tooltips.js?v=4";
-import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=7";
+import { initOffline, grantOfflineGains, closeOfflineModal } from "./modules/offline.js?v=8";
 import { initSettings, openSettingsModal, closeSettingsModal } from "./modules/settings.js?v=2";
 import { trapFocus, releaseFocus } from "./modules/focus-trap.js?v=1";
-import { prestigeMultiplier, starsToGain, performAscension, nextStarProgress } from "./modules/prestige.js?v=2";
+import { prestigeMultiplier, productionMultiplier, clickMultiplier, starsToGain, performAscension, nextStarProgress, NETHER_UPGRADES, netherLevel, netherUpgradeCost, buyNetherUpgrade } from "./modules/prestige.js?v=3";
 import { formatNumber, setNotationMode } from "./modules/format.js?v=3";
 import { DEFAULT_DATA, data, setData, activeBonus, safeSetItem, readStorageJSON } from "./modules/state.js?v=4";
 import { initApples, restartAppleTimer, updateBonusDisplay, MEGA_CLICK_MULTIPLIER, FULL_MULTIPLIER } from "./modules/apples.js?v=11";
-import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=6";
+import { fnv1aHash, isValidSaveData, isValidGameData, migrateData, SAVE_FILE_APP, SAVE_FILE_VERSION } from "./modules/save.js?v=7";
 import { initAchievements, clearAchievements, checkGoldenAppleAchievements, checkClickAchievements, checkBlockAchievements, checkPrestigeAchievements, updateAchievements, unlockAchievement } from "./modules/achievements.js?v=9";
 import { initLevels, checkLevelUp, updateLevel } from "./modules/levels.js?v=3";
 import { bgMusic } from "./modules/music.js?v=2";
@@ -146,6 +146,7 @@ let blocksPerSecondText = document.getElementById("bps-label");
 let blocksPerClickText = document.getElementById("bpc-label");
 let ascensionButtonGain = document.getElementById("ascension-button-gain");
 let ascensionButtonCount = document.getElementById("ascension-button-count");
+let netherShopButtonCount = document.getElementById("nether-shop-button-count");
 
 let blockImgContainer = document.getElementById('bloc-img-container')
 let blockImg = document.getElementById('bloc-img')
@@ -253,8 +254,8 @@ function setBoostStyle(el, boosted) {
 
 // update mined blocks display and per-second info
 function updateBlocksDisplay() {
-  let bps = computeGlobalYieldPerSecond() * prestigeMultiplier();
-  let bpc = data.bpc * data.coefficientClic * prestigeMultiplier();
+  let bps = computeGlobalYieldPerSecond() * productionMultiplier();
+  let bpc = data.bpc * data.coefficientClic * clickMultiplier();
 
   // BPS is boosted only by FullMultiplier
   const bpsBoosted = activeBonus === "fullMultiplier";
@@ -320,7 +321,7 @@ function mineBlock(event) {
   }
 
   const enBonus = multiplicateur > 1;
-  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * prestigeMultiplier() * multiplicateur)}`
+  div.textContent = `+${formatNumber(data.bpc * data.coefficientClic * clickMultiplier() * multiplicateur)}`
   const jitter = (Math.random() - 0.5) * 24; // spread overlapping rapid clicks
   div.style.cssText = `
   color: ${enBonus ? '#ffce5a' : '#fff'};
@@ -337,7 +338,7 @@ function mineBlock(event) {
   timeout(div)
 
   // if a click-multiplier bonus is active
-  const baseGain = data.bpc * data.coefficientClic * prestigeMultiplier();
+  const baseGain = data.bpc * data.coefficientClic * clickMultiplier();
 
   // compute total gain
   let totalGain = baseGain * multiplicateur;
@@ -493,6 +494,103 @@ function closeAscensionModal() {
   releaseFocus(modal);
 }
 
+// --- Nether-star shop -------------------------------------------------------
+// keep the top-bar button's star count in sync with the spendable balance
+function updateNetherButton() {
+  if (netherShopButtonCount) netherShopButtonCount.textContent = formatNumber(data.etoiles_nether || 0);
+}
+
+// (re)build the shop list: one row per upgrade with its level, effect and next-level cost
+function renderNetherShop() {
+  const balance = data.etoiles_nether || 0;
+  document.getElementById('nether-shop-stars').textContent = formatNumber(balance);
+
+  const list = document.getElementById('nether-shop-list');
+  list.replaceChildren(); // clear before rebuilding (replaceChildren keeps the DOM-hygiene test happy)
+
+  for (const up of NETHER_UPGRADES) {
+    const level = netherLevel(up.id);
+    const cost = netherUpgradeCost(up.id); // null when capped out
+    const affordable = cost !== null && balance >= cost;
+
+    const row = document.createElement('div');
+    row.className = 'nether-upgrade';
+
+    const info = document.createElement('div');
+    info.className = 'nether-upgrade-info';
+
+    const name = document.createElement('span');
+    name.className = 'nether-upgrade-name';
+    name.textContent = up.nom;
+    if (level > 0) {
+      const lvl = document.createElement('span');
+      lvl.className = 'nether-upgrade-level';
+      lvl.textContent = `Niv. ${level}`;
+      name.appendChild(document.createTextNode(' '));
+      name.appendChild(lvl);
+    }
+
+    const desc = document.createElement('span');
+    desc.className = 'nether-upgrade-desc';
+    desc.textContent = up.desc;
+
+    info.appendChild(name);
+    info.appendChild(desc);
+
+    const buy = document.createElement('button');
+    buy.type = 'button';
+    buy.className = 'nether-buy';
+    buy.dataset.action = 'buy-nether';
+    buy.dataset.id = up.id;
+    if (cost === null) {
+      buy.classList.add('maxed');
+      buy.disabled = true;
+      buy.textContent = 'Max';
+    } else {
+      if (!affordable) { buy.disabled = true; buy.classList.add('cant-afford'); }
+      const star = document.createElement('img');
+      star.src = 'assets/success/33.webp';
+      star.alt = '';
+      star.setAttribute('aria-hidden', 'true');
+      const costSpan = document.createElement('span');
+      costSpan.textContent = formatNumber(cost);
+      buy.appendChild(star);
+      buy.appendChild(costSpan);
+    }
+
+    row.appendChild(info);
+    row.appendChild(buy);
+    list.appendChild(row);
+  }
+}
+
+function openNetherShop() {
+  clickSound.play();
+  renderNetherShop();
+  const modal = document.getElementById('nether-shop-modal');
+  modal.style.display = 'block';
+  trapFocus(modal);
+}
+
+function closeNetherShop() {
+  clickSound.play();
+  const modal = document.getElementById('nether-shop-modal');
+  modal.style.display = 'none';
+  releaseFocus(modal);
+}
+
+// buy one upgrade level, then refresh the shop, the balance and everything its effects touch
+function buyNetherUpgradeAndRefresh(id) {
+  if (!buyNetherUpgrade(id)) return;
+  buyUpgradeSound.play();
+  renderNetherShop();
+  updateNetherButton();
+  updateShop();      // the "Marché du Nether" discount may have changed entity/upgrade prices
+  updateEntities();
+  updateBlocksDisplay();
+  saveProgress();    // persist the purchase immediately
+}
+
 function ascend() {
   const gain = starsToGain();
   if (gain < 1) return;
@@ -542,6 +640,7 @@ document.addEventListener('click', (event) => {
   if (event.target === document.getElementById('parametres-modal')) { closeSettingsModal(); return; }
   if (event.target === document.getElementById('stats-modal')) { closeStatsModal(); return; }
   if (event.target === document.getElementById('ascension-modal')) { closeAscensionModal(); return; }
+  if (event.target === document.getElementById('nether-shop-modal')) { closeNetherShop(); return; }
 
   const trigger = event.target.closest('[data-action]');
   if (!trigger) return;
@@ -553,6 +652,9 @@ document.addEventListener('click', (event) => {
     case 'open-ascension': openAscensionModal(); break;
     case 'close-ascension':closeAscensionModal(); break;
     case 'ascend':         ascend(); break;
+    case 'open-nether-shop':  openNetherShop(); break;
+    case 'close-nether-shop': closeNetherShop(); break;
+    case 'buy-nether':        buyNetherUpgradeAndRefresh(trigger.dataset.id); break;
     case 'close-settings': closeSettingsModal(); break;
     case 'close-offline':  closeOfflineModal(); break;
     case 'import':         importProgress(); break;
@@ -573,7 +675,7 @@ setInterval(() => {
   const elapsedSeconds = (now - lastProductionTick) / 1000;
   lastProductionTick = now;
 
-  let production = computeGlobalYieldPerSecond() * prestigeMultiplier() * elapsedSeconds;
+  let production = computeGlobalYieldPerSecond() * productionMultiplier() * elapsedSeconds;
   if (activeBonus === "fullMultiplier") production *= FULL_MULTIPLIER;
 
   data.blocsActuels += production;
@@ -590,6 +692,7 @@ setInterval(() => {
   checkPrestigeAchievements();
 
   updateBlocksDisplay();
+  updateNetherButton();
 }, 50);
 
 // persistence: every 5 seconds, plus whenever the tab is hidden or closed

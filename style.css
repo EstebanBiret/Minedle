@@ -92,7 +92,8 @@ body {
 
 #parametres,
 #stats-button,
-#ascension-button {
+#ascension-button,
+#nether-shop-button {
   padding: clamp(0.4rem, 0.6vw, 0.8rem);
   font-size: clamp(0.75rem, 0.85vw, 1.1rem);
   text-align: center;
@@ -110,10 +111,6 @@ body {
 }
 
 #top-controls {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   width: max-content; 
   display: flex;
   align-items: center;
@@ -359,14 +356,14 @@ button:focus-visible,
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: 100%;
   width: 28%;
-  gap: clamp(0.5em, 3vh, 2.5em);
+  gap: clamp(0.4em, 1.5vh, 1.1em);
 }
 
 #logo img {
-  max-height: 14vh;
+  max-height: 11vh;
   object-fit: contain;
 }
 
@@ -908,11 +905,6 @@ particle {
 }
 
 #credits {
-  position: fixed;
-  bottom: 0;
-  left: calc(var(--layout-pad-x) + 0.22 * (100vw - 2 * var(--layout-pad-x)) - var(--layout-gap));
-  transform: translateX(-50%);
-  margin: 20px 0;
   padding: clamp(0.4rem, 0.6vw, 0.8rem);
   font-size: clamp(0.75rem, 0.85vw, 1rem);
   width: max-content;
@@ -1028,7 +1020,8 @@ particle {
 }
 
 #stats-modal-content,
-#ascension-modal-content {
+#ascension-modal-content,
+#nether-shop-modal-content {
   position: relative;
   top: 50%;
   left: 50%;
@@ -1039,9 +1032,15 @@ particle {
   padding: clamp(1.2rem, 2vw, 2rem);
 }
 
+#nether-shop-modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 #stats-modal-content .close,
 #ascension-modal-content .close,
-#parametres-modal-content .close {
+#parametres-modal-content .close,
+#nether-shop-modal-content .close {
   position: absolute;
   top: 0.4em;
   right: 0.7em;
@@ -1049,7 +1048,8 @@ particle {
 
 #stats-title,
 #ascension-title,
-#parametres-title {
+#parametres-title,
+#nether-shop-title {
   text-align: center;
   font-size: clamp(1.2rem, 1.6vw, 1.7rem);
   margin-bottom: 1em;
@@ -1094,7 +1094,8 @@ particle {
   border: 0;
 }
 
-#ascension-desc {
+#ascension-desc,
+#nether-shop-desc {
   max-width: 34em;
   margin: 0 auto 1.2em;
   padding: 0.7em 1em;
@@ -1184,19 +1185,73 @@ particle {
   align-items: center;
   gap: 0.5em;
 }
-#ascension-button-gain {
+#ascension-button-gain,
+#nether-shop-button-gain {
   font-weight: bold;
-  color: #157a15;
+  color: #6f6;
   display: inline-flex;
   align-items: center;
   gap: 0.2em;
 }
-#ascension-button-gain img {
+#ascension-button-gain img,
+#nether-shop-button-gain img {
   height: 1.3em;
   width: auto;
 }
 #ascension-button-gain.zero {
-  color: #c0392b;
+  color: #f66;
+}
+
+#nether-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  padding: 1.4vmin 1.6vmin;
+  width: max-content;
+  max-width: 100%;
+}
+
+#nether-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4em;
+  font-size: clamp(0.78rem, 1.5vh, 1.15rem);
+}
+
+#nether-dock-actions {
+  display: flex;
+  gap: 0.6em;
+}
+
+.nether-dock-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  padding: clamp(0.45rem, 0.7vw, 0.85rem) clamp(0.6rem, 1vw, 1.1rem);
+  font-size: clamp(0.75rem, 0.85vw, 1.05rem);
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0.15vh 0.15vh #202013cc;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
+  cursor: pointer;
+}
+
+.nether-dock-btn:hover {
+  color: #ffffa0;
+  filter: brightness(1.1);
+}
+
+.nether-dock-btn:focus-visible {
+  outline: 0.3vh solid #fff;
+  outline-offset: -0.3vh;
 }
 
 #onboarding {
@@ -1250,6 +1305,103 @@ particle {
 
 #onboarding-buttons button:hover {
   filter: brightness(1.12);
+}
+
+#nether-shop-balance {
+  margin-bottom: 0.9em;
+}
+
+#nether-shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+}
+
+.nether-upgrade {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.7em 1em;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
+}
+
+.nether-upgrade-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  min-width: 0;
+}
+
+.nether-upgrade-name {
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0.15vh 0.15vh #000a;
+}
+
+.nether-upgrade-level {
+  color: #ffd75a;
+  font-weight: normal;
+  font-size: 0.85em;
+}
+
+.nether-upgrade-desc {
+  color: #d8d8d8;
+  font-size: 0.8em;
+  text-shadow: 0.1vh 0.1vh #000a;
+}
+
+.nether-buy {
+  flex-shrink: 0;
+  min-width: calc(min(5vh, 9vw) * 2.6);
+  min-height: calc(min(5vh, 9vw) * 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  padding: 0 0.6em;
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0.15vh 0.15vh #202013cc;
+  background: #999 url("assets/home/bgbtn.png") center / cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid #000;
+  box-shadow: inset -0.2vh -0.4vh #0006, inset 0.2vh 0.2vh #fff7;
+  cursor: pointer;
+}
+
+.nether-buy img {
+  height: 1.1em;
+  width: auto;
+}
+
+.nether-buy:hover:not(:disabled) {
+  color: #ffffa0;
+  filter: brightness(1.1);
+}
+
+.nether-buy:disabled {
+  cursor: not-allowed;
+}
+
+.nether-buy.cant-afford {
+  filter: brightness(0.7) grayscale(0.35);
+  color: #ffc0c0;
+}
+
+.nether-buy.maxed {
+  filter: saturate(0.55);
+  color: #ffd75a;
+}
+
+.nether-buy:focus-visible {
+  outline: 0.3vh solid #fff;
+  outline-offset: -0.3vh;
 }
 
 @media (prefers-reduced-motion: reduce) {

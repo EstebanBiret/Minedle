@@ -8,9 +8,14 @@ import { shop } from "../constants/shop.js?v=2";
 import { data } from "./state.js?v=4";
 import { formatNumber } from "./format.js?v=3";
 import { checkEntityAchievements, checkMiscAchievements } from "./achievements.js?v=9";
+import { netherDiscount } from "./prestige.js?v=3";
 
 // injected from index.js
 let saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, clickSound, restartAppleTimer;
+
+// effective price after the "Marché du Nether" prestige discount (used for the affordability
+// check, the actual charge and the displayed cost so they always agree)
+const effectiveCost = base => Math.round(base * netherDiscount());
 
 export function initShop(deps) {
   ({ saveProgress, updateBlocksDisplay, refreshTooltips, computeGlobalYieldPerSecond, buyUpgradeSound, clickSound, restartAppleTimer } = deps);
@@ -58,14 +63,14 @@ function setRatio(el, ratio) {
 export function buyUpgrade(upgradeName) {
   const index = data.boutique.findIndex(a => a.nom === upgradeName);
   const upgrade = data.boutique[index];
-  if (!upgrade || data.blocsActuels < upgrade.cout) return;
+  if (!upgrade || data.blocsActuels < effectiveCost(upgrade.cout)) return;
   buyUpgradeSound.play();
   // remove from the shop
   let boughtUpgrade = data.boutique.splice(index, 1)[0];
 
   // add to inventory & update current blocks
   data.inventaire.push(boughtUpgrade);
-  data.blocsActuels -= upgrade.cout;
+  data.blocsActuels -= effectiveCost(upgrade.cout);
  
   // hide the purchased upgrade
   document.getElementById(`${boughtUpgrade.nom}-amelioration`).classList.add('bloque');
@@ -126,8 +131,8 @@ export function updateShop() {
 
     // then check whether it can be bought
     const coutElement = document.getElementById(`${upgrade.nom}-amelioration-cout`);
-    setAffordable(upgradeElement, coutElement, data.blocsActuels >= a.cout);
-    setText(coutElement, formatNumber(Math.round(upgrade.cout)));
+    setAffordable(upgradeElement, coutElement, data.blocsActuels >= effectiveCost(a.cout));
+    setText(coutElement, formatNumber(effectiveCost(upgrade.cout)));
   });
 
   // show a message if no upgrade is available to buy
@@ -171,9 +176,9 @@ export function updatePickaxeEntityImage() {
 export function buyEntity(entityName) {
   const entity = data.entites.find(e => e.nom === entityName);
 
-  if (!entity || data.blocsActuels < entity.cout_actuel) return;
+  if (!entity || data.blocsActuels < effectiveCost(entity.cout_actuel)) return;
   clickSound.play();
-  data.blocsActuels -= entity.cout_actuel;
+  data.blocsActuels -= effectiveCost(entity.cout_actuel);
 
   // update the entity's current yield, cost and quantity
   entity.quantite++;
@@ -208,10 +213,10 @@ export function updateEntities() {
 
     // then, if the entity is shown, check whether it can be bought
     const coutElement = document.getElementById(`${entity.nom}-entite-cout`);
-    setAffordable(entityElement, coutElement, data.blocsActuels >= e.cout_actuel);
+    setAffordable(entityElement, coutElement, data.blocsActuels >= effectiveCost(e.cout_actuel));
 
     setText(document.getElementById(`${entity.nom}-quantite`), formatNumber(e.quantite));
-    setText(coutElement, formatNumber(Math.round(e.cout_actuel)));
+    setText(coutElement, formatNumber(effectiveCost(e.cout_actuel)));
 
     const ratio = e.quantite > 0
       ? `${((e.rendement_actuel * e.quantite * e.coefficient / totalYield) * 100).toFixed(2)}% du rendement total`

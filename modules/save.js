@@ -36,6 +36,8 @@ export function isValidGameData(d) {
   if ('temps_de_jeu_ms' in d && (typeof d.temps_de_jeu_ms !== 'number' || !isFinite(d.temps_de_jeu_ms) || d.temps_de_jeu_ms < 0)) return false; // optional field (older saves)
   if ('etoiles_nether' in d && (!Number.isInteger(d.etoiles_nether) || d.etoiles_nether < 0)) return false; // optional field (prestige)
   if ('ascensions' in d && (!Number.isInteger(d.ascensions) || d.ascensions < 0)) return false; // optional field (prestige)
+  if ('etoiles_nether_gagnees' in d && (!Number.isInteger(d.etoiles_nether_gagnees) || d.etoiles_nether_gagnees < 0)) return false; // optional field (prestige shop)
+  if ('ameliorations_nether' in d && (typeof d.ameliorations_nether !== 'object' || d.ameliorations_nether === null || Array.isArray(d.ameliorations_nether))) return false; // optional field (prestige shop)
 
   if (![d.entites, d.boutique, d.inventaire, d.succes].every(Array.isArray)) return false;
 
@@ -119,6 +121,18 @@ export function migrateData(saved) {
   // this is what adds them to every existing save and to a brand-new game on load.
   migrated.etoiles_nether = (typeof saved.etoiles_nether === 'number' && saved.etoiles_nether >= 0) ? Math.floor(saved.etoiles_nether) : 0;
   migrated.ascensions = (typeof saved.ascensions === 'number' && saved.ascensions >= 0) ? Math.floor(saved.ascensions) : 0;
+  // lifetime stars drive the passive +5%/star. existing saves never had this field, so seed it from
+  // the current balance — that preserves their bonus exactly while etoiles_nether becomes spendable.
+  migrated.etoiles_nether_gagnees = (typeof saved.etoiles_nether_gagnees === 'number' && saved.etoiles_nether_gagnees >= 0)
+    ? Math.floor(saved.etoiles_nether_gagnees)
+    : migrated.etoiles_nether;
+  // bought Nether-shop upgrades, stored as { id: level }. keep only positive integer levels.
+  migrated.ameliorations_nether = {};
+  if (saved.ameliorations_nether && typeof saved.ameliorations_nether === 'object' && !Array.isArray(saved.ameliorations_nether)) {
+    for (const [id, lv] of Object.entries(saved.ameliorations_nether)) {
+      if (Number.isInteger(lv) && lv > 0) migrated.ameliorations_nether[id] = lv;
+    }
+  }
 
   return migrated;
 }

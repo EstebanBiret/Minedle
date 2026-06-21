@@ -28,10 +28,10 @@ const test = (name, actual, expected) => {
   console.log(`  ${ok ? '✓' : '✗ ÉCHEC'} ${name}${ok ? '' : ` (attendu ${JSON.stringify(expected)}, obtenu ${JSON.stringify(actual)})`}`);
 };
 
-console.log('--- multiplicateur permanent (+5 % / étoile) ---');
-data.etoiles_nether = 0;  test('0 étoile -> ×1', P.prestigeMultiplier(), 1);
-data.etoiles_nether = 10; test('10 étoiles -> ×1,5', P.prestigeMultiplier(), 1.5);
-data.etoiles_nether = 20; test('20 étoiles -> ×2', P.prestigeMultiplier(), 2);
+console.log('--- multiplicateur permanent (+5 % / étoile gagnée, basé sur le total à vie) ---');
+data.etoiles_nether_gagnees = 0;  test('0 étoile -> ×1', P.prestigeMultiplier(), 1);
+data.etoiles_nether_gagnees = 10; test('10 étoiles -> ×1,5', P.prestigeMultiplier(), 1.5);
+data.etoiles_nether_gagnees = 20; test('20 étoiles -> ×2', P.prestigeMultiplier(), 2);
 
 console.log('--- étoiles gagnées = floor(sqrt(total / seuil)) [relatif au seuil configuré] ---');
 data.blocsDepuisToujours = PER_STAR;       test('1× seuil -> 1', P.starsToGain(), 1);

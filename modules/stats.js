@@ -6,7 +6,7 @@ import { formatNumber, formatDuration } from "./format.js?v=3";
 import { shop } from "../constants/shop.js?v=2";
 import { TOTAL_ACHIEVEMENTS } from "./achievements.js?v=9";
 import { trapFocus, releaseFocus } from "./focus-trap.js?v=1";
-import { prestigeMultiplier } from "./prestige.js?v=2";
+import { productionMultiplier, prestigeMultiplier } from "./prestige.js?v=3";
 
 // injected from index.js
 let clickSound, computeGlobalYieldPerSecond;
@@ -25,7 +25,7 @@ export function openStatsModal() {
 
   document.getElementById('stat-blocs-total').textContent = formatNumber(data.blocsDepuisToujours);
   document.getElementById('stat-blocs-clics').textContent = `${formatNumber(data.blocsMinesAvecClics)} (${shareText} %)`;
-  document.getElementById('stat-bps').textContent = `${formatNumber(computeGlobalYieldPerSecond() * prestigeMultiplier())} / s`;
+  document.getElementById('stat-bps').textContent = `${formatNumber(computeGlobalYieldPerSecond() * productionMultiplier())} / s`;
   document.getElementById('stat-pommes').textContent = formatNumber(data.pommes_or);
   document.getElementById('stat-temps').textContent = formatDuration(data.temps_de_jeu_ms || 0);
   document.getElementById('stat-entites').textContent = formatNumber(totalEntities);

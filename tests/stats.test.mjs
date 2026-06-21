@@ -55,11 +55,11 @@ function runStats(data) {
   let sounds = 0;
   let trapCalls = [], releaseCalls = [];
   const w = {};
-  const api = new Function('document', 'data', 'clickSound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus', 'prestigeMultiplier',
+  const api = new Function('document', 'data', 'clickSound', 'computeGlobalYieldPerSecond', 'formatNumber', 'formatDuration', 'shop', 'TOTAL_ACHIEVEMENTS', 'trapFocus', 'releaseFocus', 'prestigeMultiplier', 'productionMultiplier',
     stCode + '\nreturn { openStatsModal, closeStatsModal };')(
     { getElementById: id => els[id], querySelector: () => closeBtn },
     data, { play: () => sounds++ }, () => 123.4, n => String(n), () => '3 h 07',
-    new Array(36), 30, m => trapCalls.push(m), m => releaseCalls.push(m), () => 1);
+    new Array(36), 30, m => trapCalls.push(m), m => releaseCalls.push(m), () => 1, () => 1);
   Object.assign(w, api); // the window.* bindings now live in index.js, not in stats.js
   return { els, closeBtn, w, getSounds: () => sounds, trapCalls, releaseCalls };
 }

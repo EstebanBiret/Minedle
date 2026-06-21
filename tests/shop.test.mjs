@@ -71,8 +71,8 @@ function build(startData) {
   }, startData);
   const doc = makeDoc();
   let saves = 0, blocksDisp = 0, tooltips = 0, checkEnt = 0, checkMisc = 0, restarts = 0;
-  const mod = new Function('computeCost', 'computeYield', 'entities', 'shop', 'data', 'formatNumber', 'checkEntityAchievements', 'checkMiscAchievements', 'document', 'window', code)(
-    computeCost, computeYield, entitiesCat, shopCat, data, n => String(Math.round(n)), () => checkEnt++, () => checkMisc++, doc, { scrollY: 0 }
+  const mod = new Function('computeCost', 'computeYield', 'entities', 'shop', 'data', 'formatNumber', 'checkEntityAchievements', 'checkMiscAchievements', 'netherDiscount', 'document', 'window', code)(
+    computeCost, computeYield, entitiesCat, shopCat, data, n => String(Math.round(n)), () => checkEnt++, () => checkMisc++, () => 1, doc, { scrollY: 0 }
   );
   mod.initShop({
     saveProgress: () => saves++, updateBlocksDisplay: () => blocksDisp++,
