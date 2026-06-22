@@ -1191,7 +1191,8 @@ particle {
   height: 1.3em;
   width: auto;
 }
-#ascension-button-gain.zero {
+#ascension-button-gain.zero,
+#nether-shop-button-gain.zero {
   color: #f66;
 }
 

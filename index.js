@@ -147,6 +147,7 @@ let blocksPerClickText = document.getElementById("bpc-label");
 let ascensionButtonGain = document.getElementById("ascension-button-gain");
 let ascensionButtonCount = document.getElementById("ascension-button-count");
 let netherShopButtonCount = document.getElementById("nether-shop-button-count");
+let netherShopButtonGain = document.getElementById("nether-shop-button-gain");
 
 let blockImgContainer = document.getElementById('bloc-img-container')
 let blockImg = document.getElementById('bloc-img')
@@ -498,6 +499,7 @@ function closeAscensionModal() {
 // keep the top-bar button's star count in sync with the spendable balance
 function updateNetherButton() {
   if (netherShopButtonCount) netherShopButtonCount.textContent = formatNumber(data.etoiles_nether || 0);
+  if (netherShopButtonGain) netherShopButtonGain.classList.toggle('zero', (data.etoiles_nether || 0) < 1);
 }
 
 // (re)build the shop list: one row per upgrade with its level, effect and next-level cost

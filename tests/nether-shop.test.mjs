@@ -118,5 +118,11 @@ test('améliorations du Nether conservées', captured.ameliorations_nether, { av
 test('succès conservés', captured.succes, [{ id: 1 }]);
 test('temps de jeu conservé', captured.temps_de_jeu_ms, 500);
 
+console.log('--- non-régression : solde dépensable rouge à 0 (comme le gain d\'ascension) ---');
+const cssSrc = fs.readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+test('CSS: #nether-shop-button-gain.zero présent (passe au rouge)', /#nether-shop-button-gain\.zero/.test(cssSrc), true);
+const idxSrc = fs.readFileSync(new URL('../index.js', import.meta.url), 'utf8');
+test('JS: .zero togglé sur le solde Boutique', /netherShopButtonGain\.classList\.toggle\(\s*['"]zero['"]/.test(idxSrc), true);
+
 console.log(`\nRésultat : ${pass} OK, ${fail} échec(s)`);
 process.exit(fail ? 1 : 0);
